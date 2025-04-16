@@ -4,18 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/common/Header";
-import { addOrder } from "@/store/slices/orderSlice";
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { AppDispatch, RootState } from '@/store';
 import useThemeMode from '@/hooks/useTheme';
 import { getUserIdFromLocalStorage } from '@/utils/getUserId';
 import UserSetting from '@/common/UserSetting';
+import { fetchCategories } from '@/store/features/category/category';
 
 export default function UserPage() {
   const [selectedRequest, setSelectedRequest] = useState('');
   const [notes, setNotes] = useState('');
   const [showSettings, setShowSettings] = useState(false);
-  const [userName, setUserName] = useState('John Smith');
+  const [_, setUserName] = useState('John Smith');
   const [submitted, setSubmitted] = useState(false);
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
   const [serviceName] = useState("IntraServe Desk");
@@ -24,22 +24,23 @@ export default function UserPage() {
   const [cart, setCart] = useState<{ [key: string]: { name: string; quantity: number } }>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  const dispatch = useDispatch();
-  const categories = useSelector((state: RootState) => state.categories.categories);
+  const dispatch = useDispatch<AppDispatch>();
+  const categories = useSelector((state: RootState) => state?.categories?.categories || []);
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
-
   const submitRequest = () => {
     setShowConfirmModal(true);
   };
 
+  console.log("selectedRequest:", selectedRequest);
+
   const confirmSendOrder = () => {
-    const orderItems = Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity }));
-    dispatch(addOrder({
-      type: selectedRequest,
-      person: userName,
-      items: orderItems,
-      status: 'Pending',
-    }));
+    // const orderItems = Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity }));
+    // dispatch(addOrder({
+    //   type: selectedRequest,
+    //   person: userName,
+    //   items: orderItems,
+    //   status: 'Pending',
+    // }));
 
     setSubmitted(true);
     setShowConfirmModal(false);
@@ -82,6 +83,22 @@ export default function UserPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSettings, setShowSettings]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("Checking......");
+
+      try {
+        await dispatch(fetchCategories()).unwrap();
+      } catch (error: any) {
+        console.error("Failed to fetch categories:", error.message || error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  console.log(categories);
+
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
       <Header
@@ -96,20 +113,27 @@ export default function UserPage() {
       <div className="max-w-4xl mx-auto p-4 space-y-6">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="md:w-1/3 space-y-4">
-            {categories.map((type) => (
-              <Button
-                key={type.id}
-                variant={selectedRequest === type.id ? "default" : "outline"}
-                className={`w-full border hover:cursor-pointer ${selectedRequest !== type.id
-                  ? theme === 'dark'
-                    ? 'border-white text-white hover:bg-white hover:text-black'
-                    : 'border-black text-black hover:bg-black hover:text-white'
-                  : ''}`}
-                onClick={() => setSelectedRequest(type.id)}
-              >
-                {type.label}
-              </Button>
-            ))}
+            {categories && categories.length > 0 ? (
+              categories.map((type) => (
+                <Button
+                  key={type._id}
+                  variant={selectedRequest == type._id ? "default" : "outline"}
+                  className={`w-full border hover:cursor-pointer ${selectedRequest !== type._id
+                    ? theme === 'dark'
+                      ? 'border-white text-white hover:bg-white hover:text-black'
+                      : 'border-black text-black hover:bg-black hover:text-white'
+                    : ''
+                    }`}
+                  onClick={() => setSelectedRequest(type._id)}
+                >
+                  {type.label}
+                </Button>
+              ))
+            ) : (
+              <p className="text-gray-500 text-sm italic text-center">
+                No categories found. Please ask admin to create one.
+              </p>
+            )}
           </div>
 
           <div className="flex-1 space-y-4">
@@ -122,7 +146,7 @@ export default function UserPage() {
               </Card>
             )}
 
-            {selectedRequest && (
+            {selectedRequest && categories.find(r => r._id === selectedRequest) ? (
               <Card>
                 <CardContent className="space-y-4 p-4 md:px-6 md:py-2">
                   <h2 className="text-xl font-semibold">Submit a Request</h2>
@@ -130,7 +154,7 @@ export default function UserPage() {
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Select Items & Quantity</h3>
                     <div className="space-y-2">
-                      {categories.find(r => r.id === selectedRequest)?.items.map(item => {
+                      {categories.find(r => r._id === selectedRequest)?.items.map(item => {
                         const quantity = itemQuantities[item.name] || 1;
                         return (
                           <Card key={item.name} className="p-[13px] flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -159,33 +183,16 @@ export default function UserPage() {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
-
-                  {Object.keys(cart).length > 0 && (
-                    <>
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-medium">Your Cart</h3>
-                        <div className="space-y-2">
-                          {Object.entries(cart).map(([key, { name, quantity }]) => (
-                            <div key={key} className="flex justify-between">
-                              <span>{name}</span>
-                              <span>{quantity} x</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {submitted && <div className="text-green-500">Request submitted!</div>}
                 </CardContent>
               </Card>
-            )}
+            ) : null}
+
 
 
           </div>
         </div>
       </div>
-      
+
       {showSettings && (
         <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={setUserName} />
       )}

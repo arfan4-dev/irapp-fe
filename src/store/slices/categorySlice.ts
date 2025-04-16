@@ -1,111 +1,60 @@
-// store/slices/categorySlice.ts
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createCategory, fetchCategories, updateCategory, deleteCategory } from '../features/category/category';
 
 interface CategoryItem {
   name: string;
-  allowMultiple: boolean; // 🆕 Add this line
+  allowMultiple: boolean;
 }
 
-
 interface Category {
-  id: string;
+  _id: string;
   label: string;
   items: CategoryItem[];
+  userId: string;
 }
 
 interface CategoryState {
   categories: Category[];
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: CategoryState = {
-  categories: [
-    {
-      id: "drinks",
-      label: "Drinks",
-      items: [
-        { name: "Tea", allowMultiple: false },
-        { name: "Coffee", allowMultiple: true },
-      ],
-    },
-    {
-      id: "food",
-      label: "Food",
-      items: [
-        { name: "Pizza", allowMultiple: false },
-        { name: "Burger", allowMultiple: true },
-      ],
-    },
-  ],
+  categories: [],
+  loading: false,
+  error: null,
 };
 
-
 const categorySlice = createSlice({
-  name: "categories",
+  name: 'categories',
   initialState,
-  reducers: {
-    addCategory: (
-      state,
-      action: PayloadAction<{ id: string; label: string }>
-    ) => {
-      state.categories.push({ ...action.payload, items: [] });
-    },
-    addItemToCategory: (
-      state,
-      action: PayloadAction<{
-        categoryId: string;
-        itemName: string;
-        allowMultiple?: boolean;
-      }>
-    ) => {
-      const category = state.categories.find(
-        (cat) => cat.id === action.payload.categoryId
-      );
-      if (category) {
-        category.items.push({
-          name: action.payload.itemName,
-          allowMultiple: action.payload.allowMultiple ?? false, // default true
-        });
-      }
-    },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCategories.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.loading = false;
+        state.categories = action.payload;
+      })
+      .addCase(fetchCategories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
 
-    removeItemFromCategory: (
-      state,
-      action: PayloadAction<{ categoryId: string; itemName: string }>
-    ) => {
-      const category = state.categories.find(
-        (cat) => cat.id === action.payload.categoryId
-      );
-      if (category) {
-        category.items = category.items.filter(
-          (item) => item.name !== action.payload.itemName
-        );
-      }
-    },
-    updateCategory: (
-      state,
-      action: PayloadAction<{ id: string; newLabel: string }>
-    ) => {
-      const category = state.categories.find(
-        (cat) => cat.id === action.payload.id
-      );
-      if (category) {
-        category.label = action.payload.newLabel;
-      }
-    },
-    removeCategory: (state, action: PayloadAction<string>) => {
-      state.categories = state.categories.filter(
-        (cat) => cat.id !== action.payload
-      );
-    },
+      .addCase(createCategory.fulfilled, (state, action) => {
+        state.categories.push(action.payload);
+      })
+      .addCase(updateCategory.fulfilled, (state, action) => {
+        const idx = state.categories.findIndex((cat) => cat._id === action.payload._id);
+        if (idx !== -1) state.categories[idx] = action.payload;
+      })
+      .addCase(deleteCategory.fulfilled, (state, action: PayloadAction<string>) => {
+        state.categories = state.categories.filter((cat) => cat._id !== action.payload);
+      });
   },
 });
-
-export const {
-  addCategory,
-  addItemToCategory,
-  removeItemFromCategory,
-  updateCategory,
-  removeCategory,
-} = categorySlice.actions;
 
 export default categorySlice.reducer;

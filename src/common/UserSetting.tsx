@@ -35,12 +35,12 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
     };
 
     const handleSave = () => {
-        const data = new FormData();
-        if (formData.username) data.append("username", formData.username);
-        if (formData.password) data.append("password", formData.password);
+        // const data = new FormData();
+        // if (formData.username) data.append("username", formData.username);
+        // if (formData.password) data.append("password", formData.password);
         // if (image) data.append("image", image);
 
-        dispatch(updateUser({ data, id: user.id }))
+        dispatch(updateUser({ formData, id: user.id }))
             .unwrap()
             .then(() => {
                 toast.success("User updated successfully!");

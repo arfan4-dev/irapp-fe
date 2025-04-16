@@ -6,10 +6,17 @@ interface LoginData {
   password: string;
 }
 
+interface formData {
+  username: string;
+  email: string;
+  password: string;
+  role: string;
+};
 export const registerUser = createAsyncThunk(
   "user/register",
-  async (formData: FormData, { rejectWithValue }) => {
+  async (formData:formData, { rejectWithValue }) => {
     try {
+      console.log(formData);
       const response = await api.post("/user", formData);
       return response.data;
     } catch (error: any) {
@@ -53,16 +60,23 @@ export const fetchUserById = createAsyncThunk(
 
 interface UpdateUserArgs {
   id: string;
-  data: FormData;
+  formData: {
+    username: string;
+    password: string;
+  };
 }
+
+
 
 export const updateUser = createAsyncThunk(
   "user/updateUser",
-  async ({ id, data }: UpdateUserArgs, { rejectWithValue }) => {
+  async ({ id, formData }: UpdateUserArgs, { rejectWithValue }) => {
+    console.log(formData);
+    
     try {
-      const response = await api.put(`/update-user/${id}`, data, {
+      const response = await api.put(`/update-user/${id}`, formData, {
         withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
+        // headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
     } catch (error: any) {

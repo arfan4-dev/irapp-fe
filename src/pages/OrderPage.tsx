@@ -12,6 +12,7 @@ import {
 import Header from '@/common/Header';
 import useThemeMode from '@/hooks/useTheme';
 import { getOrdersByUser } from '@/store/features/order/order';
+import { useLocation } from 'react-router-dom';
 
 export default function OrderPage() {
   const [filter, setFilter] = useState<'Answered' | 'In Progress' | 'Pending'>('Pending');
@@ -20,6 +21,7 @@ export default function OrderPage() {
   const [serviceName] = useState('All Orders');
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
+  const location = useLocation()
 
   const orders = useSelector((state: RootState) => state.orders.orders);
  
@@ -43,7 +45,7 @@ export default function OrderPage() {
         setTheme={setTheme}
         setShowSettings={setShowSettings}
         showSettings={showSettings}
-        location=""
+        location={location.pathname}
       />
 
       <div className="h-[calc(100vh-61px)] bg-white dark:bg-gray-900 text-black dark:text-white p-6">

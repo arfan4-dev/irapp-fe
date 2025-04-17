@@ -27,9 +27,9 @@ export const createOrder = createAsyncThunk(
 
 export const getOrdersByUser = createAsyncThunk(
   "order/fetchByUser",
-  async (userId: string, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/order/${userId}`, {
+      const response = await api.get(`/order/all`, {
         withCredentials: true,
       });
       return response.data;

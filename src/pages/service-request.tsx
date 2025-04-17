@@ -31,6 +31,7 @@ export default function UserPage() {
   const submitRequest = () => {
     setShowConfirmModal(true);
   };
+console.log(cart);
 
   const confirmSendOrder = () => {
     const orderItems = Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity }));
@@ -64,7 +65,7 @@ export default function UserPage() {
   const handleAddToCart = (item: string, quantity: number) => {
     if (quantity > 0) {
       setCart(prev => ({ ...prev, [item]: { name: item, quantity } }));
-  
+
 
     }
   };
@@ -156,10 +157,10 @@ export default function UserPage() {
                       {categories.find(r => r._id === selectedRequest)?.items.map(item => {
                         const quantity = itemQuantities[item.name] || 1;
                         return (
-                          <Card key={item.name} className="p-[13px] flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="text-lg font-medium w-[15%]">{item.name}</div>
+                          <Card key={item.name} className="p-[12px] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <span className="text-[14px] font-medium w-[19%] ">{item.name}</span>
                             {item.allowMultiple ? (
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-3 ">
                                 <Button variant="outline" onClick={() => handleQuantityChange(item.name, Math.max(1, quantity - 1))}>–</Button>
                                 <span className="min-w-[24px] text-center">{quantity}</span>
                                 <Button variant="outline" onClick={() => handleQuantityChange(item.name, quantity + 1)}>+</Button>

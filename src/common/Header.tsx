@@ -73,6 +73,20 @@ const Header: React.FC<HeaderProps> = ({
         </Link>
 
         <h1 className="text-xl font-semibold">{serviceName}</h1>
+        {location == "/order-status" && (
+          <nav>
+            <ul className="flex items-center ml-6">
+              <li>
+                <NavLink
+                  to="/service-request"
+                  className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                >
+                  Home
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+        )}
         {(location !== "/admin" && location !== "/answered-order") && (
           <nav>
             <ul className="flex items-center ml-6">
@@ -116,6 +130,7 @@ const Header: React.FC<HeaderProps> = ({
             </ul>
           </nav>
         )}
+        
       </div>
 
       <div className="flex items-center gap-4">

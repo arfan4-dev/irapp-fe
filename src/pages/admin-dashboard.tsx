@@ -25,14 +25,14 @@ export default function AdminPage() {
   const categories = useSelector((state: RootState) => state.categories.categories);
   const orders = useSelector((state: RootState) => state.orders.orders);
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
 
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
   useEffect(() => {
     dispatch(fetchCategories())
-    dispatch(getOrdersByUser(user.id))
+    dispatch(getOrdersByUser())
   }, [dispatch])
+
 
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
@@ -103,7 +103,7 @@ export default function AdminPage() {
                     pendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>): (pendingOrders.map(req => (
                   <Card key={req._id}>
                     <CardContent className="space-y-2 p-4">
-                      <div><strong>Type:</strong> {req.type}</div>
+                      {/* <div><strong>Type:</strong> {req.type}</div> */}
                       <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
                       <div><strong>By:</strong> {req.person}</div>
                       <div><strong>Time:</strong> {req.timestamp}</div>

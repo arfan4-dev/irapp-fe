@@ -1,7 +1,9 @@
 import { useEffect, useState, ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import api from "@/api/api";
-import { Loader2 } from "lucide-react"; // or any spinner icon you prefer
+import { Loader2 } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 interface ProtectedRouteProps {
     children: ReactNode;
@@ -9,17 +11,18 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+    const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
+    const location = useLocation();
 
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                await api.get("/refresh-token", { withCredentials: true }); // or your auth check endpoint
+                await api.get("/refresh-token", { withCredentials: true });
                 setIsAuthenticated(true);
             } catch (error) {
                 setIsAuthenticated(false);
             }
         };
-
         checkAuth();
     }, []);
 
@@ -34,7 +37,29 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         );
     }
 
-    return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+    // ✅ If user is NOT authenticated, redirect to login
+    if (!isAuthenticated) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    // ✅ Redirect '/' based on role
+    if (isAuthenticated && location.pathname === "/") {
+        if (user?.role === "admin") return <Navigate to="/admin" replace />;
+        if (user?.role === "user") return <Navigate to="/service-request" replace />;
+    }
+
+    // ❌ Prevent admin from accessing user dashboard
+    if (user?.role === "admin" && location.pathname.startsWith("/service-request")) {
+        return <Navigate to="/admin" replace />;
+    }
+
+    // ❌ Prevent user from accessing admin dashboard
+    if (user?.role === "user" && location.pathname.startsWith("/admin")) {
+        return <Navigate to="/service-request" replace />;
+    }
+
+    // ✅ Authenticated and authorized
+    return <>{children}</>;
 };
 
 export default ProtectedRoute;

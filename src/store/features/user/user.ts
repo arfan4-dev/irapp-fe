@@ -35,7 +35,7 @@ export const loginUser = createAsyncThunk(
         withCredentials: true,
       });
 
-      return response.data;
+      return response?.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
     }
@@ -48,6 +48,7 @@ export const fetchUserById = createAsyncThunk(
       const response = await api.get(`/${id}`, {
         withCredentials: true,
       });
+      
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 401) {

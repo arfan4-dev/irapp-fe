@@ -33,7 +33,6 @@ export default function AdminPage() {
     dispatch(fetchCategories())
     dispatch(getOrdersByUser(user.id))
   }, [dispatch])
-  console.log("orders:", orders);
 
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>

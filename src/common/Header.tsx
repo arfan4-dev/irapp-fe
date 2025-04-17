@@ -47,8 +47,8 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
-
   useEffect(() => {
+    
     if (user?.id) {
       dispatch(fetchUserById(user.id));
     }
@@ -58,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({
   const getInitials = (name: string) => {
     return name?.charAt(0).toUpperCase() || "U";
   };
-
+  console.log("location:", location)
   return (
     <header className="sticky top-0 bg-inherit border-b z-10 dark:bg-gray-900 dark:text-white flex justify-between items-center px-4 ">
       <div className="flex items-center gap-2">
@@ -71,8 +71,7 @@ const Header: React.FC<HeaderProps> = ({
         </Link>
 
         <h1 className="text-xl font-semibold">{serviceName}</h1>
-
-        {location !== "/admin" && (
+        {(location !== "/admin" && location !== "/answered-order") && (
           <nav>
             <ul className="flex items-center ml-6">
               <li>
@@ -81,6 +80,35 @@ const Header: React.FC<HeaderProps> = ({
                   className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                 >
                   Orders
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+        )}
+
+        {location == "/admin" && (
+          <nav>
+            <ul className="flex items-center ml-6">
+              <li>
+                <NavLink
+                  to="/answered-order"
+                  className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                >
+                  Answered order
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+        )}
+        {location == "/answered-order" && (
+          <nav>
+            <ul className="flex items-center ml-6">
+              <li>
+                <NavLink
+                  to="/admin"
+                  className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                >
+                  Home
                 </NavLink>
               </li>
             </ul>

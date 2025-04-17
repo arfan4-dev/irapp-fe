@@ -5,12 +5,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Header from "@/common/Header";
 import useThemeMode from "@/hooks/useTheme";
+import { useLocation } from "react-router-dom";
 
 export default function AnsweredOrdersPage() {
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const [showSettings, setShowSettings] = useState(false);
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
     const [serviceName] = useState("Answered Requests");
+    const location = useLocation()
 
     const orders = useSelector((state: RootState) =>
         (state.orders as RootState['orders']).orders.filter(order => order.status === 'Answered')
@@ -24,6 +26,7 @@ export default function AnsweredOrdersPage() {
                 serviceName={serviceName}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
+                location={location.pathname}
             />
 
             <div className="max-w-5xl mx-auto space-y-6 p-4">

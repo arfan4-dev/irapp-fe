@@ -28,16 +28,18 @@ export default function Login() {
         e.preventDefault();
 
         try {
-             await dispatch(loginUser(formData)).unwrap()
-            .then((res) => {              
+            await dispatch(loginUser(formData)).unwrap()
+                .then((res) => {
                     toast.success("Login successful!");
-                    // Optional: redirect or update UI
-                if (res.success) {
-                    navigate("/service-request"); // Redirect to service request page after successful login
+                    console.log("role", res.data)
+                    // Redirect based on role
+                    if (res.data?.role === "admin") {
+                        navigate("/admin");
+                    } else {
+                        navigate("/service-request");
+                    }
+                });
 
-                }
-               
-            })
         } catch (err) {
             console.error("Login error:", err);
             toast.error(err as any);

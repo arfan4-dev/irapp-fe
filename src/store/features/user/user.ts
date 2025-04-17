@@ -46,7 +46,7 @@ export const fetchUserById = createAsyncThunk(
       const response = await api.get(`/${id}`, {
         withCredentials: true,
       });
-      
+
       return response.data;
     } catch (error: any) {
       if (error.response?.status === 401) {
@@ -61,8 +61,6 @@ interface UpdateUserArgs {
   id: string;
   data: FormData;
 }
-
-
 
 export const updateUser = createAsyncThunk(
   "user/updateUser",

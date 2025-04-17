@@ -9,6 +9,7 @@ import { FaTrashCan } from "react-icons/fa6";
 import { useLocation } from "react-router-dom";
 import useThemeMode from "@/hooks/useTheme";
 import { addItemToCategory, createCategory, deleteCategory, fetchCategories, removeItemFromCategory, updateCategory } from "@/store/features/category/category";
+import { getOrdersByUser, updateOrderStatus } from "@/store/features/order/order";
 
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
@@ -24,13 +25,15 @@ export default function AdminPage() {
   const categories = useSelector((state: RootState) => state.categories.categories);
   const orders = useSelector((state: RootState) => state.orders.orders);
   const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
 
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
-  console.log("categories:", categories);
   useEffect(() => {
     dispatch(fetchCategories())
+    dispatch(getOrdersByUser(user.id))
   }, [dispatch])
+  console.log("orders:", orders);
 
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
@@ -56,7 +59,7 @@ export default function AdminPage() {
         </div>
 
 
-        {/* <Card>
+         <Card>
           <CardContent className="p-4 md:p-6">
             <h2 className="text-xl font-semibold mb-4">Pending Requests</h2>
             {viewMode === "list" ? (
@@ -72,7 +75,7 @@ export default function AdminPage() {
                 </thead>
                 <tbody>
                   {pendingOrders.map(req => (
-                    <tr key={req.id} className="border-b align-top">
+                    <tr key={req._id} className="border-b align-top">
                       <td className="p-2">
                         <div className="font-semibold italic">{req.type}</div>
                         <div className="text-sm italic">
@@ -83,10 +86,10 @@ export default function AdminPage() {
                       <td className="p-2">{req.timestamp}</td>
                       <td className="p-2">{req.status}</td>
                       <td className="p-2 space-x-2">
-                        <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req.id, status: "In Progress" }))}>
+                        <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "In Progress" }))}>
                           Accept
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req.id, status: "Answered" }))}>
+                        <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>
                           Answered
                         </Button>
                       </td>
@@ -99,7 +102,7 @@ export default function AdminPage() {
                 
                 {
                     pendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>): (pendingOrders.map(req => (
-                  <Card key={req.id}>
+                  <Card key={req._id}>
                     <CardContent className="space-y-2 p-4">
                       <div><strong>Type:</strong> {req.type}</div>
                       <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
@@ -107,8 +110,8 @@ export default function AdminPage() {
                       <div><strong>Time:</strong> {req.timestamp}</div>
                       <div><strong>Status:</strong> {req.status}</div>
                       <div className="space-x-2 pt-2">
-                        <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req.id, status: "In Progress" }))}>Accept</Button>
-                        <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req.id, status: "Answered" }))}>Answered</Button>
+                            <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "In Progress" }))}>Accept</Button>
+                            <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>Answered</Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -116,10 +119,10 @@ export default function AdminPage() {
               </div>
             )}
           </CardContent>
-        </Card> */}
+        </Card>
 
 
-        {/* <Card>
+       <Card>
           <CardContent className="p-4 md:p-6">
             <h2 className="text-xl font-semibold mb-4">In Progress Requests</h2>
             {inProgressOrders.length === 0 ? (
@@ -137,7 +140,7 @@ export default function AdminPage() {
                 </thead>
                 <tbody>
                   {inProgressOrders.map(req => (
-                    <tr key={req.id} className="border-b align-top">
+                    <tr key={req._id} className="border-b align-top">
                       <td className="p-2">
                         <div className="font-semibold italic">{req.type}</div>
                         <div className="text-sm italic">
@@ -148,7 +151,7 @@ export default function AdminPage() {
                       <td className="p-2">{req.timestamp}</td>
                       <td className="p-2">{req.status}</td>
                       <td className="p-2">
-                        <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req.id, status: "Answered" }))}>
+                        <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>
                           Mark as Answered
                         </Button>
                       </td>
@@ -159,7 +162,7 @@ export default function AdminPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {inProgressOrders.map(req => (
-                  <Card key={req.id}>
+                  <Card key={req._id}>
                     <CardContent className="space-y-2 p-4">
                       <div><strong>Type:</strong> {req.type}</div>
                       <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
@@ -167,7 +170,7 @@ export default function AdminPage() {
                       <div><strong>Time:</strong> {req.timestamp}</div>
                       <div><strong>Status:</strong> {req.status}</div>
                       <div className="pt-2">
-                        <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req.id, status: "Answered" }))}>Mark as Answered</Button>
+                        <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>Mark as Answered</Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -175,7 +178,7 @@ export default function AdminPage() {
               </div>
             )}
           </CardContent>
-        </Card> */}
+        </Card> 
 
 
         <Card>

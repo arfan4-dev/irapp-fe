@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
@@ -11,23 +11,29 @@ import {
 } from '@/components/ui/select';
 import Header from '@/common/Header';
 import useThemeMode from '@/hooks/useTheme';
+import { getOrdersByUser } from '@/store/features/order/order';
 
 export default function OrderPage() {
   const [filter, setFilter] = useState<'Answered' | 'In Progress' | 'Pending'>('Pending');
   const { theme, setTheme } = useThemeMode();
   const [showSettings, setShowSettings] = useState(false);
   const [serviceName] = useState('All Orders');
+  const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
 
   const orders = useSelector((state: RootState) => state.orders.orders);
-  const userName = 'John Smith'; // Replace with dynamic user if needed
-
+ 
   const filteredOrders = orders.filter((order) => {
-    const isMine = order.person === userName;
+    const isMine = order.person === user.username;
     if (filter === 'Pending') return isMine && order.status === 'Pending';
     if (filter === 'In Progress') return isMine && order.status === 'In Progress';
     if (filter === 'Answered') return isMine && order.status === 'Answered';
     return false;
   });
+
+   useEffect(() => {  
+      dispatch(getOrdersByUser(user.id))
+    }, [dispatch])
 
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>
@@ -65,7 +71,7 @@ export default function OrderPage() {
                 ) : (
                   filteredOrders.map((order) => (
                     <div
-                      key={order.id}
+                      key={order._id}
                       className="border border-gray-300 dark:border-gray-600 rounded p-3 text-sm bg-gray-50 dark:bg-zinc-900 text-black dark:text-white"
                     >
                       <div><strong>Status:</strong> {order.status}</div>

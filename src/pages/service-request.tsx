@@ -10,13 +10,14 @@ import useThemeMode from '@/hooks/useTheme';
 import { getUserIdFromLocalStorage } from '@/utils/getUserId';
 import UserSetting from '@/common/UserSetting';
 import { fetchCategories } from '@/store/features/category/category';
+import { createOrder } from '@/store/features/order/order';
 
 export default function UserPage() {
   const [selectedRequest, setSelectedRequest] = useState('');
   const [notes, setNotes] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [_, setUserName] = useState('John Smith');
-  const [submitted, setSubmitted] = useState(false);
+  const [, setSubmitted] = useState(false);
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
   const [serviceName] = useState("IntraServe Desk");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -31,16 +32,15 @@ export default function UserPage() {
     setShowConfirmModal(true);
   };
 
-  console.log("selectedRequest:", selectedRequest);
-
   const confirmSendOrder = () => {
-    // const orderItems = Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity }));
-    // dispatch(addOrder({
-    //   type: selectedRequest,
-    //   person: userName,
-    //   items: orderItems,
-    //   status: 'Pending',
-    // }));
+    const orderItems = Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity }));
+    dispatch(createOrder({
+      type: selectedRequest,
+      userId: user.id,
+      person: user.username,
+      items: orderItems,
+      status: 'Pending',
+    }));
 
     setSubmitted(true);
     setShowConfirmModal(false);
@@ -64,6 +64,8 @@ export default function UserPage() {
   const handleAddToCart = (item: string, quantity: number) => {
     if (quantity > 0) {
       setCart(prev => ({ ...prev, [item]: { name: item, quantity } }));
+  
+
     }
   };
 
@@ -85,8 +87,6 @@ export default function UserPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log("Checking......");
-
       try {
         await dispatch(fetchCategories()).unwrap();
       } catch (error: any) {
@@ -97,7 +97,6 @@ export default function UserPage() {
     fetchData();
   }, []);
 
-  console.log(categories);
 
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-black"}`}>

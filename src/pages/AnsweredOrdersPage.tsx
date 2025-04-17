@@ -53,7 +53,7 @@ export default function AnsweredOrdersPage() {
                             </thead>
                             <tbody>
                                 {orders.map((order) => (
-                                    <tr key={order.id} className="border-b align-top">
+                                    <tr key={order._id} className="border-b align-top">
                                         <td className="p-2">
                                             <div className="font-semibold italic inline-block mr-2">{order.type}</div>
                                             <span className="text-sm italic">{order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}</span>
@@ -69,7 +69,7 @@ export default function AnsweredOrdersPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {orders.map((order) => (
-                            <Card key={order.id} className="border">
+                            <Card key={order._id} className="border">
                                 <CardContent className="p-4 space-y-2">
                                     <div><strong>Type:</strong> {order.type}</div>
                                     <div>

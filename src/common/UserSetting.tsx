@@ -18,16 +18,16 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
         password: ""
     });
 
-    // const [image, setImage] = useState<File | null>(null);
-    // const [preview, setPreview] = useState<string | null>(null);
+    const [image, setImage] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
 
-    // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const file = e.target.files?.[0];
-    //     if (file) {
-    //         setImage(file);
-    //         setPreview(URL.createObjectURL(file));
-    //     }
-    // };
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImage(file);
+            setPreview(URL.createObjectURL(file));
+        }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -35,12 +35,12 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
     };
 
     const handleSave = () => {
-        // const data = new FormData();
-        // if (formData.username) data.append("username", formData.username);
-        // if (formData.password) data.append("password", formData.password);
-        // if (image) data.append("image", image);
+        const data = new FormData();
+        if (formData.username) data.append("username", formData.username);
+        if (formData.password) data.append("password", formData.password);
+        if (image) data.append("image", image);
 
-        dispatch(updateUser({ formData, id: user.id }))
+        dispatch(updateUser({ data, id: user.id }))
             .unwrap()
             .then(() => {
                 toast.success("User updated successfully!");
@@ -65,7 +65,7 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
                 </button>
                 <h2 className="text-xl font-semibold mb-4 mt-2">User Settings</h2>
                 <div className="space-y-4">
-                    {/* <label
+                    <label
                         htmlFor="upload"
                         className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm text-center"
                     >
@@ -89,7 +89,7 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
                         accept="image/*"
                         className="hidden"
                         onChange={handleFileChange}
-                    /> */}
+                    />
 
                     <Input
                         type="text"

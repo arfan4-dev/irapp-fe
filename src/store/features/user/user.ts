@@ -6,18 +6,15 @@ interface LoginData {
   password: string;
 }
 
-interface formData {
-  username: string;
-  email: string;
-  password: string;
-  role: string;
-};
 export const registerUser = createAsyncThunk(
   "user/register",
-  async (formData:formData, { rejectWithValue }) => {
+  async (payload: FormData, { rejectWithValue }) => {
     try {
-      console.log(formData);
-      const response = await api.post("/user", formData);
+      const response = await api.post("/user", payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -26,6 +23,7 @@ export const registerUser = createAsyncThunk(
     }
   }
 );
+
 export const loginUser = createAsyncThunk(
   "user/login",
   async (data: LoginData, { rejectWithValue }) => {
@@ -61,23 +59,18 @@ export const fetchUserById = createAsyncThunk(
 
 interface UpdateUserArgs {
   id: string;
-  formData: {
-    username: string;
-    password: string;
-  };
+  data: FormData;
 }
 
 
 
 export const updateUser = createAsyncThunk(
   "user/updateUser",
-  async ({ id, formData }: UpdateUserArgs, { rejectWithValue }) => {
-    console.log(formData);
-    
+  async ({ id, data }: UpdateUserArgs, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/update-user/${id}`, formData, {
+      const response = await api.put(`/update-user/${id}`, data, {
         withCredentials: true,
-        // headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
     } catch (error: any) {

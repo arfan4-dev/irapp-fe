@@ -30,9 +30,9 @@ export default function Register() {
         email: "",
         password: "",
         role: "user",
-        // image: null as File | null,
+        image: null as File | null,
     });
-    // const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const { theme, setTheme } = useThemeMode();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,26 +55,26 @@ export default function Register() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // const payload = new FormData();
-        // payload.append("username", formData.username);
-        // payload.append("email", formData.email);
-        // payload.append("password", formData.password);
-        // payload.append("role", formData.role);
-        // if (formData.image) {
-        //     payload.append("image", formData.image);
-        // }
+        const payload = new FormData();
+        payload.append("username", formData.username);
+        payload.append("email", formData.email);
+        payload.append("password", formData.password);
+        payload.append("role", formData.role);
+        if (formData.image) {
+            payload.append("image", formData.image);
+        }
 
-        dispatch(registerUser(formData)).unwrap()
+        dispatch(registerUser(payload)).unwrap()
             .then(() => {
                 setFormData({
                     username: "",
                     email: "",
                     password: "",
                     role: "user",
-                    // image: null,
+                    image: null,
                 });
                toast.success("Registration successful!");
-                // setPreviewUrl(null); // Reset preview URL after successful registration
+                setPreviewUrl(null); // Reset preview URL after successful registration
                 toast.success("Verification email sent. Please check your inbox.");
             })
             .catch(() => {
@@ -135,7 +135,7 @@ export default function Register() {
                                 </Select>
                             </div>
 
-                            {/* <div className="space-y-2">
+                            <div className="space-y-2">
                                 <Label>Profile Picture</Label>
                                 <Input
                                     type="file"
@@ -154,7 +154,7 @@ export default function Register() {
                                         />
                                     </div>
                                 )}
-                            </div> */}
+                            </div>
 
 
                             <Button type="submit" className="w-full cursor-pointer" disabled={loading}>

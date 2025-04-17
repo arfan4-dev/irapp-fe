@@ -37,15 +37,32 @@ export default function Register() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, files } = e.target;
+
         if (name === "image" && files?.[0]) {
             const file = files[0];
+            const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+            if (!allowedTypes.includes(file.type)) {
+                toast.error("Only JPG, PNG, or WEBP images are allowed.");
+                return;
+            }
+
             setFormData(prev => ({ ...prev, image: file }));
-            // setPreviewUrl(URL.createObjectURL(file));
+            setPreviewUrl(URL.createObjectURL(file));
+        } else if (name === "email") {
+            setFormData(prev => ({ ...prev, email: value.toLowerCase() }));
+        } else if (name === "username") {
+            // Allow only alphanumeric and spaces
+            const isValid = /^[a-zA-Z0-9 ]*$/.test(value);
+            if (!isValid) {
+                toast.error("Username cannot contain special characters.");
+                return;
+            }
+            setFormData(prev => ({ ...prev, username: value }));
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
-
     const handleRoleChange = (value: string) => {
         setFormData(prev => ({ ...prev, role: value }));
     };
@@ -110,7 +127,7 @@ export default function Register() {
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
-                                    className="pr-10"
+                                    className="pr-10 lowercase"
                                 />
                                 <button
                                     type="button"

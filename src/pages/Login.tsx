@@ -20,10 +20,19 @@ export default function Login() {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const { loading } = useSelector((state: RootState) => state?.user);
-    const navigate=useNavigate()
+    const navigate=useNavigate();
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+
+        if (name === "email") {
+            setFormData(prev => ({ ...prev, email: value.toLowerCase() }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
     };
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 

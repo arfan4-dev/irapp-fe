@@ -66,7 +66,7 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
                 >
                     ×
                 </button>
-                <h2 className="text-xl font-semibold mb-4 mt-2">User Settings</h2>
+                <h2 className="text-xl font-semibold mb-4 ">User Settings</h2>
 
                 <form className="space-y-4" onSubmit={handleSave}>
                     <label

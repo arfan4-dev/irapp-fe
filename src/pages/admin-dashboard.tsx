@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 
@@ -10,10 +10,15 @@ import { useLocation } from "react-router-dom";
 import useThemeMode from "@/hooks/useTheme";
 import { addItemToCategory, createCategory, deleteCategory, fetchCategories, removeItemFromCategory, updateCategory } from "@/store/features/category/category";
 import { getOrdersByUser, updateOrderStatus } from "@/store/features/order/order";
+import UserSetting from "@/common/UserSetting";
+import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
   const [showSettings, setShowSettings] = useState(false);
+  const [showAdminSettings, setShowAdminSettings] = useState(false);
+    const modalRef = useRef<HTMLDivElement>(null);
+
   const [serviceName] = useState("IntraServe Admin Panel");
   const [viewMode, setViewMode] = useState<'list' | 'grid'>("grid");
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
@@ -25,6 +30,7 @@ export default function AdminPage() {
   const categories = useSelector((state: RootState) => state.categories.categories);
   const orders = useSelector((state: RootState) => state.orders.orders);
   const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
 
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
@@ -33,6 +39,18 @@ export default function AdminPage() {
     dispatch(getOrdersByUser())
   }, [dispatch])
 
+ useEffect(() => {
+    getUserIdFromLocalStorage()
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setShowSettings(false)
+      }
+    };
+    if (showSettings) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showSettings, setShowSettings]);
 
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
@@ -41,8 +59,8 @@ export default function AdminPage() {
         theme={theme}
         serviceName={serviceName}
         setTheme={setTheme}
-        setShowSettings={setShowSettings}
-        showSettings={showSettings}
+        setShowSettings={setShowAdminSettings}
+        showSettings={showAdminSettings}
       />
 
       <div className="max-w-5xl mx-auto space-y-6 p-4">
@@ -331,6 +349,11 @@ export default function AdminPage() {
             </Card>
           </div>
         )}
+
+          {showAdminSettings && (
+          <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowAdminSettings} userName={user?.username} setUserName={""} />
+              )}
+        
       </div>
     </div>
   );

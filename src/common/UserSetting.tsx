@@ -6,11 +6,10 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { updateUser } from '@/store/features/user/user';
+import { fetchUserById, updateUser } from '@/store/features/user/user';
 
-const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
+const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
     const dispatch = useDispatch<AppDispatch>();
-    console.log("user:",user);
 
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
@@ -34,7 +33,8 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSave = () => {
+    const handleSave = (e:any) => {
+        e.preventDefault();
         const data = new FormData();
         if (formData.username) data.append("username", formData.username);
         if (formData.password) data.append("password", formData.password);
@@ -43,8 +43,11 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
         dispatch(updateUser({ data, id: user.id }))
             .unwrap()
             .then(() => {
+                dispatch(fetchUserById(user.id));
                 toast.success("User updated successfully!");
+
                 setShowSettings(false);
+
             })
             .catch((err) => {
                 toast.error("Update failed: " + err);
@@ -64,7 +67,8 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
                     ×
                 </button>
                 <h2 className="text-xl font-semibold mb-4 mt-2">User Settings</h2>
-                <div className="space-y-4">
+
+                <form className="space-y-4" onSubmit={handleSave}>
                     <label
                         htmlFor="upload"
                         className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm text-center"
@@ -80,6 +84,7 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
                                 src={preview}
                                 alt="Preview"
                                 className="mt-3 w-24 h-24 rounded-full object-cover border"
+
                             />
                         )}
                     </label>
@@ -89,6 +94,7 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
                         accept="image/*"
                         className="hidden"
                         onChange={handleFileChange}
+                        required
                     />
 
                     <Input
@@ -98,6 +104,7 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
                         onChange={handleInputChange}
                         placeholder="Username"
                         className="w-full"
+                        required
                     />
 
                     <div className="relative">
@@ -108,6 +115,7 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
                             onChange={handleInputChange}
                             placeholder="Password"
                             className="pr-10"
+                            required
                         />
                         <button
                             type="button"
@@ -119,8 +127,8 @@ const UserSetting = ({ modalRef, setShowSettings,user }: any) => {
                         </button>
                     </div>
 
-                    <Button onClick={handleSave}>Save</Button>
-                </div>
+                    <Button >Save</Button>
+                </form>
             </Card>
         </div>
     );

@@ -31,7 +31,6 @@ export default function UserPage() {
   const submitRequest = () => {
     setShowConfirmModal(true);
   };
-console.log(cart);
 
   const confirmSendOrder = () => {
     const orderItems = Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity }));

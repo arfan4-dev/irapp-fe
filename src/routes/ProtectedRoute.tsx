@@ -49,14 +49,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     }
 
     // ❌ Prevent admin from accessing user dashboard
-    if (user?.role === "admin" && location.pathname.startsWith("/service-request")) {
+    if (user?.role === "admin" && location.pathname.startsWith("/service-request") || location.pathname.startsWith("/order-status")) {
         return <Navigate to="/admin" replace />;
     }
 
-    // ❌ Prevent user from accessing admin dashboard
-    if (user?.role === "user" && location.pathname.startsWith("/admin")) {
+    // ❌ Prevent user from accessing admin dashboard or answered order
+    if (
+        user?.role === "user" &&
+        (location.pathname.startsWith("/admin") || location.pathname.startsWith("/answered-order"))
+    ) {
         return <Navigate to="/service-request" replace />;
     }
+
 
     // ✅ Authenticated and authorized
     return <>{children}</>;

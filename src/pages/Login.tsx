@@ -33,27 +33,27 @@ export default function Login() {
     };
 
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-        try {
-            const res = await dispatch(loginUser(formData)).unwrap();
+    try {
+        const res = await dispatch(loginUser(formData)).unwrap();
 
-            toast.success("Login successfully!");
+        toast.success("Login successfully!");
 
-            // ✅ Now do role-based navigation here
-            if (res.data?.role === "admin") {
-                navigate("/admin");
-            } else {
-                navigate("/service-request");
-            }
-
-        } catch (err: any) {
-            // 🔥 This will handle wrong password case
-            console.error("Login error:", err);
-            toast.error(err || "Login failed. Please try again.");
+        // ✅ Now do role-based navigation here
+        if (res.data?.role === "admin") {
+            navigate("/admin");
+        } else {
+            navigate("/service-request");
         }
-    };
+
+    } catch (err: any) {
+        // 🔥 This will handle wrong password case
+        console.log("Login error:", err);
+        toast.error(err || "Login failed. Please try again.");
+    }
+};
 
 
     return (

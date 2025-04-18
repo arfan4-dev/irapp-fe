@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ import { Link } from "react-router-dom";
 export default function Register() {
     const { loading } = useSelector((state: RootState) => state?.user);
     const [showPassword, setShowPassword] = useState(false); // 👈 toggle state
-   
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState({
         username: "",
@@ -73,6 +73,15 @@ export default function Register() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (formData.username.length < 3) {
+            toast.error("Username must be at least 3 characters long.");
+            return;
+        }
+
+        if (formData.password.length < 6) {
+            toast.error("Password must be at least 6 characters long.");
+            return;
+        }
         const payload = new FormData();
         payload.append("username", formData.username);
         payload.append("email", formData.email);
@@ -92,7 +101,10 @@ export default function Register() {
                     image: null,
                 });
                toast.success("Registration successful!");
-                setPreviewUrl(null); // Reset preview URL after successful registration
+                setPreviewUrl(null);
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                } // Reset preview URL after successful registration
                 toast.success("Verification email sent. Please check your inbox.");
             })
             .catch(() => {
@@ -162,6 +174,8 @@ export default function Register() {
                                     onChange={handleChange}
                                     className="w-full"
                                     required
+                                    ref={fileInputRef}
+
                                 />
                                 {previewUrl && (
                                     <div className="mt-3 flex flex-col items-center">

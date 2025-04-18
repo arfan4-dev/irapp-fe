@@ -7,9 +7,11 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import EmailVerification from "./pages/VerifyEmail";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import ErrorBoundary from "./components/error-boundary";
 
 function App() {
   return (
+    <ErrorBoundary>
     <Routes>
       {/* Public Route */}
       <Route path="/" element={<Register />} />
@@ -24,6 +26,7 @@ function App() {
 
 
     </Routes>
+    </ErrorBoundary>
   );
 }
 

@@ -8,7 +8,7 @@ import Header from "@/common/Header";
 import { FaTrashCan } from "react-icons/fa6";
 import { useLocation } from "react-router-dom";
 import useThemeMode from "@/hooks/useTheme";
-import { addItemToCategory, createCategory, deleteCategory, fetchCategories, removeItemFromCategory, updateCategory } from "@/store/features/category/category";
+import { addItemToCategory, createCategory, deleteCategory, fetchCategories, removeItemFromCategory, updateCategory, updateItemInCategory } from "@/store/features/category/category";
 import { getOrdersByUser, updateOrderStatus } from "@/store/features/order/order";
 import UserSetting from "@/common/UserSetting";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
@@ -34,6 +34,9 @@ export default function AdminPage() {
   const [showAdminSettings, setShowAdminSettings] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   // const sensors = useSensors(useSensor(PointerSensor));
+  const [editingItem, setEditingItem] = useState<{ categoryId: string; name: string } | null>(null);
+  const [editedItemName, setEditedItemName] = useState('');
+  const [editedAllowMultiple, setEditedAllowMultiple] = useState(false);
 
   const [serviceName] = useState("IntraServe Admin Panel");
   const [viewMode, setViewMode] = useState<'list' | 'grid'>("grid");
@@ -193,7 +196,7 @@ export default function AdminPage() {
                   <tr className="bg-gray-200 dark:bg-gray-700">
                     <th className="p-2">Type & Items</th>
                     <th className="p-2">Requested By</th>
-                      <th className="p-2">Date</th>
+                    <th className="p-2">Date</th>
                     <th className="p-2">Time</th>
                     <th className="p-2">Status</th>
                     <th className="p-2">Actions</th>
@@ -210,19 +213,19 @@ export default function AdminPage() {
                       </td>
                       <td className="p-2">{req.person}</td>
                       <td className="p-2">{req.timestamp ? (
-                      
-                        <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>   
-                         
-                        
+
+                        <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>
+
+
                       ) : (
                         <div><em>No timestamp available</em></div>
                       )}
-</td>
+                      </td>
                       <td className="p-2">{req.timestamp ? (
-                        
-                         
+
+
                         <> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</>
-                      
+
                       ) : (
                         <div><em>No timestamp available</em></div>
                       )}
@@ -272,16 +275,16 @@ export default function AdminPage() {
             <h2 className="text-xl font-semibold mb-4">Manage Categories</h2>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Add New Category</h3>
-              <Button size="lg" type="submit" onClick={() => setShowCategoryModal(true)} className="mt-2 cursor-pointer">
+              <Button size="lg" type="submit"  onClick={() => setShowCategoryModal(true)} className="mt-2 cursor-pointer hover:opacity-75">
                 Add
               </Button>
             </div>
 
 
-            <div className="flex gap-6 flex-col md:flex-row items-start">
+            <div className="flex gap-5 flex-wrap items-start">
               {categories && categories.length > 0 ? (
                 categories.map((cat) => (
-                  <div key={cat._id} className="rounded-lg border p-4 flex-1 bg-white dark:bg-zinc-800 shadow-sm space-y-3">
+                  <div key={cat._id} className="rounded-lg  border p-4 basis-[48%]  bg-white dark:bg-zinc-800 shadow-sm space-y-3">
                     <div className="flex justify-between items-center">
                       {editingCategoryId === cat._id ? (
                         <input
@@ -318,63 +321,95 @@ export default function AdminPage() {
                     </div>
 
                     <ul className="space-y-2  ">
-                      {cat.items.map(item => (
-                        <li key={item.name} className="flex justify-between text-sm border-b pb-1">
-                          <span>{item.name}</span>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => {
-                              dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name })).unwrap().then(() => {
-                                dispatch(fetchCategories())
-                              }).catch(() => { }
-                              )
-                            }}
-                          >
-                            Remove
-                          </Button>
-                        </li>
-                      ))}
+                      {cat.items.map(item => {
+                        const isEditingItem = editingItem?.categoryId === cat._id && editingItem?.name === item.name;
+                        return (
+                          <li key={item.name} className="flex flex-col gap-2 text-sm border-b pb-2">
+                            {isEditingItem ? (
+                              <>
+                                <input
+                                  value={editedItemName}
+                                  onChange={(e) => setEditedItemName(e.target.value)}
+                                  className="px-2 py-1 border rounded dark:bg-zinc-900"
+                                />
+                                <label className="flex items-center gap-2 text-xs">
+                                  <input
+                                    type="checkbox"
+                                    checked={editedAllowMultiple}
+                                    onChange={(e) => setEditedAllowMultiple(e.target.checked)}
+                                  />
+                                  Allow Quantity Selection
+                                </label>
+                                <div className="flex gap-2 mt-1">
+                                  <Button
+                                    size="sm"
+                                    className="cursor-pointer hover:opacity-75"
+                                    onClick={() => {
+                                      dispatch(updateItemInCategory({
+                                        categoryId: cat._id,
+                                        oldItemName: item.name,
+                                        newItem: {
+                                          name: editedItemName.trim(),
+                                          allowMultiple: editedAllowMultiple,
+                                        }
+                                      }))
+                                        .unwrap()
+                                        .then(() => {
+                                          dispatch(fetchCategories());
+                                          setEditingItem(null);
+                                        });
+                                    }}
+                                  >
+                                    Save
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="cursor-pointer hover:opacity-90"
+                                    onClick={() => setEditingItem(null)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </>
+                            ) : (
+                              <div className="flex justify-between items-center">
+                                <span>{item.name}</span>
+                                <div className="flex">
+                                  <Button
+                                    size="sm"
+                                    className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                                    variant="ghost"
+                                    onClick={() => {
+                                      setEditingItem({ categoryId: cat._id, name: item.name });
+                                      setEditedItemName(item.name);
+                                      setEditedAllowMultiple(item.allowMultiple);
+                                    }}
+                                  >
+                                    Update
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="text-red-600 hover:text-red-800 cursor-pointer"
+                                    onClick={() => {
+                                      dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }))
+                                        .unwrap()
+                                        .then(() => dispatch(fetchCategories()))
+                                    }}
+                                  >
+                                    Remove
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </li>
+                        );
+                      })}
+
                     </ul>
 
-                    {/* <DndContext
-                      sensors={sensors}
-                      collisionDetection={closestCenter}
-                      onDragEnd={({ active, over }) => {
-                        if (active.id !== over?.id) {
-                          const oldIndex = cat.items.findIndex(item => item.name === active.id);
-                          const newIndex = cat.items.findIndex(item => item.name === over?.id);
-
-                          const updatedItems = arrayMove(cat.items, oldIndex, newIndex);
-                          // Dispatch update to redux/local state here
-                          console.log("Sorted items:", updatedItems);
-                        }
-                      }}
-                    >
-                      <SortableContext
-                        items={cat.items.map(item => item.name)}
-                        strategy={verticalListSortingStrategy}
-                      >
-                        <ul className="space-y-2">
-                          {cat.items.map((item) => (
-                            <SortableItem key={item.name} id={item.name}>
-                              <>
-                                <span>{item.name}</span>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => {
-                                    dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }));
-                                  }}
-                                >
-                                  Remove
-                                </Button>
-                              </>
-                            </SortableItem>
-                          ))}
-                        </ul>
-                      </SortableContext>
-                    </DndContext> */}
+                  
 
                     <form
                       onSubmit={(e) => {
@@ -442,7 +477,10 @@ export default function AdminPage() {
                       toast.error("Category name should not contain special characters.");
                       return;
                     }
-
+                    if (categories.some(cat => cat.label === label)) {
+                      toast.error("Category already exists.");
+                      return;
+                    }
                     dispatch(createCategory({ label }));
                     setShowCategoryModal(false);
                   }}

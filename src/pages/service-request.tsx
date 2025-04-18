@@ -11,6 +11,9 @@ import { getUserIdFromLocalStorage } from '@/utils/getUserId';
 import UserSetting from '@/common/UserSetting';
 import { fetchCategories } from '@/store/features/category/category';
 import { createOrder } from '@/store/features/order/order';
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
+import { saveOrderOffline } from "@/utils/orderStorage";
+import { OfflineOrder } from '@/types/indexedDB';
 
 export default function UserPage() {
   const [selectedRequest, setSelectedRequest] = useState('');
@@ -24,23 +27,38 @@ export default function UserPage() {
   const [itemQuantities, setItemQuantities] = useState<Record<string, number>>({});
   const [cart, setCart] = useState<{ [key: string]: { name: string; quantity: number } }>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-
+  const isOnline = useOfflineStatus();
   const dispatch = useDispatch<AppDispatch>();
   const categories = useSelector((state: RootState) => state?.categories?.categories || []);
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
+  const order: OfflineOrder = {
+    userId: user.id,
+    person: user.username,
+    type: selectedRequest,
+    items: Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity })),
+    status: 'Pending',
+    timestamp: new Date().toISOString(),
+  };
   const submitRequest = () => {
     setShowConfirmModal(true);
   };
 
   const confirmSendOrder = () => {
     const orderItems = Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity }));
-    dispatch(createOrder({
+    // dispatch(createOrder({
+    //   type: selectedRequest,
+    //   userId: user.id,
+    //   person: user.username,
+    //   items: orderItems,
+    //   status: 'Pending',
+    // }));
+    handleOrder({
       type: selectedRequest,
       userId: user.id,
       person: user.username,
       items: orderItems,
       status: 'Pending',
-    }));
+    });
 
     setSubmitted(true);
     setShowConfirmModal(false);
@@ -71,6 +89,26 @@ export default function UserPage() {
 
   const modalRef = useRef<HTMLDivElement>(null);
 
+
+  const handleOrder = async (orderItems:any) => {
+    if (isOnline) {
+      try {
+        await dispatch(createOrder(orderItems)).unwrap();
+        setShowSuccessPopup(true);
+        setTimeout(() => setShowSuccessPopup(false), 3000);
+      } catch (error) {
+        console.error("Failed to create order:");
+      }
+    } else {
+      try {
+        await saveOrderOffline(order);
+        setShowSuccessPopup(true);
+        setTimeout(() => setShowSuccessPopup(false), 3000);
+      } catch (error) {
+        console.error("Failed to save order offline:");
+      }
+    }
+  }
   // Close on outside click
   useEffect(() => {
     getUserIdFromLocalStorage()
@@ -84,6 +122,7 @@ export default function UserPage() {
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSettings, setShowSettings]);
+
 
   useEffect(() => {
     const fetchData = async () => {

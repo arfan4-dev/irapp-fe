@@ -119,19 +119,25 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
                                     htmlFor="upload"
                                     className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition text-sm text-center"
                                 >
-                                    <div>
+                                    {!preview&& <div>
                                         <p className="text-sm text-gray-600 dark:text-gray-300">
                                             Click or drag image to upload
                                         </p>
                                         <p className="text-xs text-gray-400">(Only image files accepted)</p>
-                                    </div>
+                                    </div>}
                                     {preview && (
-                                        <img
-                                            src={preview}
-                                            alt="Preview"
-                                            className="mt-3 w-24 h-24 rounded-full object-cover border"
+                                        <div className='relative'>
+                                            <img
+                                                src={preview}
+                                                alt="Preview"
+                                                className="mt-3 w-24 h-24 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
 
-                                        />
+                                            />
+                                            <div className='absolute top-0 right-0 bg-white rounded-full p-[2px] cursor-pointer hover:opacity-75' onClick={() => { setPreview(null); setImage(null) }}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                                            </div>
+                                        </div>
+                                        
                                     )}
                                 </label>
                                 <input

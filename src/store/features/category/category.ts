@@ -85,6 +85,26 @@ export const addItemToCategory = createAsyncThunk(
   }
 );
 
+export const updateItemInCategory = createAsyncThunk(
+  "category/updateItem",
+  async (
+    { categoryId, oldItemName, newItem }: any,
+    { rejectWithValue }
+  ) => {
+    try {
+      const res = await api.put(`/categories/${categoryId}/items`, {
+        oldItemName,
+        newItem,
+      });
+      return res.data.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update item"
+      );
+    }
+  }
+);
+
 export const removeItemFromCategory = createAsyncThunk(
   "category/removeItem",
   async ({ categoryId, itemName }: RemoveItemPayload, { rejectWithValue }) => {

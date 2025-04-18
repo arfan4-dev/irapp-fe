@@ -172,12 +172,12 @@ const Header: React.FC<HeaderProps> = ({
               <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.username}</p>
               <p className="text-xs text-gray-500 truncate dark:text-gray-400">{user?.email}</p>
             </div>
-            <DropdownMenuItem onClick={() => setShowSettings(true)}>
+            <DropdownMenuItem onClick={() => setShowSettings(true)} className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
               ⚙️ User Setting
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleLogout}
-              className="flex items-center gap-2 text-red-600 hover:text-red-700"
+              className="flex items-center gap-2 text-red-600 hover:text-red-700 cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
               Logout

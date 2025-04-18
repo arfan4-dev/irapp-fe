@@ -47,7 +47,7 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
     // Add this above the form return
     const handleVerifyPassword = async () => {
         if (!currentPassword) {
-            toast.error("Please enter your current password");
+            toast.error("Please Enter Your Current Password");
             return;
         }
 
@@ -109,7 +109,7 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                 required
                             />
-                            <Button type="button" onClick={handleVerifyPassword}>
+                            <Button type="button" onClick={handleVerifyPassword} className='cursor-pointer hover:opacity-75'>
                                 Verify Password
                             </Button>
                         </>

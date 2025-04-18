@@ -37,23 +37,24 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            await dispatch(loginUser(formData)).unwrap()
-                .then((res) => {
-                    toast.success("Login successfully!");
-                    console.log("role", res.data)
-                    // Redirect based on role
-                    if (res.data?.role === "admin") {
-                        navigate("/admin");
-                    } else {
-                        navigate("/service-request");
-                    }
-                });
+            const res = await dispatch(loginUser(formData)).unwrap();
 
-        } catch (err) {
+            toast.success("Login successfully!");
+
+            // ✅ Now do role-based navigation here
+            if (res.data?.role === "admin") {
+                navigate("/admin");
+            } else {
+                navigate("/service-request");
+            }
+
+        } catch (err: any) {
+            // 🔥 This will handle wrong password case
             console.error("Login error:", err);
-            toast.error(err as any);
+            toast.error(err || "Login failed. Please try again.");
         }
     };
+
 
     return (
         <div>

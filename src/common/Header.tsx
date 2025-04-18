@@ -60,17 +60,28 @@ const Header: React.FC<HeaderProps> = ({
   const getInitials = (name: string) => {
     return name?.charAt(0).toUpperCase() || "U";
   };
-  console.log("location:", location)
   return (
     <header className="sticky top-0 bg-inherit border-b z-10 dark:bg-gray-900 dark:text-white flex justify-between items-center px-4 ">
       <div className="flex items-center gap-2">
-        <Link to="/">
+        {
+          user?.role === "user" ?
+ <Link to="/service-request">
           <img
             src={theme === "dark" ? "/logo-white.png" : "/logo.png"}
             alt="Logo"
             className="h-[60px] w-[60px]"
           />
         </Link>
+:
+        <Link to="/admin">
+          <img
+            src={theme === "dark" ? "/logo-white.png" : "/logo.png"}
+            alt="Logo"
+            className="h-[60px] w-[60px]"
+          />
+        </Link>
+        }
+       
 
         <h1 className="text-xl font-semibold">{serviceName}</h1>
         {location == "/order-status" && (
@@ -162,7 +173,7 @@ const Header: React.FC<HeaderProps> = ({
               <p className="text-xs text-gray-500 truncate dark:text-gray-400">{user?.email}</p>
             </div>
             <DropdownMenuItem onClick={() => setShowSettings(true)}>
-              ⚙️ User Settings
+              ⚙️ User Setting
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleLogout}

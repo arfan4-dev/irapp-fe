@@ -12,12 +12,28 @@ import { addItemToCategory, createCategory, deleteCategory, fetchCategories, rem
 import { getOrdersByUser, updateOrderStatus } from "@/store/features/order/order";
 import UserSetting from "@/common/UserSetting";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
+import { toast } from "sonner";
+// import {
+//   DndContext,
+//   closestCenter,
+//   useSensor,
+//   useSensors,
+//   PointerSensor
+// } from "@dnd-kit/core";
+// import {
+//   arrayMove,
+//   SortableContext,
+//   verticalListSortingStrategy
+// } from "@dnd-kit/sortable";
+// import { SortableItem } from "@/components/dnd/SortableItem"; // ⬅️ created above
+
 
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
   const [showSettings, setShowSettings] = useState(false);
   const [showAdminSettings, setShowAdminSettings] = useState(false);
-    const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  // const sensors = useSensors(useSensor(PointerSensor));
 
   const [serviceName] = useState("IntraServe Admin Panel");
   const [viewMode, setViewMode] = useState<'list' | 'grid'>("grid");
@@ -39,7 +55,7 @@ export default function AdminPage() {
     dispatch(getOrdersByUser())
   }, [dispatch])
 
- useEffect(() => {
+  useEffect(() => {
     getUserIdFromLocalStorage()
     const handleClickOutside = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -76,7 +92,7 @@ export default function AdminPage() {
         </div>
 
 
-         <Card>
+        <Card>
           <CardContent className="p-4 md:p-6">
             <h2 className="text-xl font-semibold mb-4">Pending Requests</h2>
             {viewMode === "list" ? (
@@ -85,7 +101,8 @@ export default function AdminPage() {
                   <tr className="bg-gray-200 dark:bg-gray-700">
                     <th className="p-2">Type & Items</th>
                     <th className="p-2">Requested By</th>
-                    <th className="p-2">Timestamp</th>
+                    <th className="p-2">Date</th>
+                    <th className="p-2">Time</th>
                     <th className="p-2">Status</th>
                     <th className="p-2">Actions</th>
                   </tr>
@@ -100,7 +117,24 @@ export default function AdminPage() {
                         </div>
                       </td>
                       <td className="p-2">{req.person}</td>
-                      <td className="p-2">{req.timestamp}</td>
+                      <td className="p-2">{req.timestamp ? (
+
+                        <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>
+
+
+                      ) : (
+                        <div><em>No timestamp available</em></div>
+                      )}
+                      </td>
+                      <td className="p-2">{req.timestamp ? (
+
+
+                        <> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</>
+
+                      ) : (
+                        <div><em>No timestamp available</em></div>
+                      )}
+                      </td>
                       <td className="p-2">{req.status}</td>
                       <td className="p-2 space-x-2">
                         <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "In Progress" }))}>
@@ -116,30 +150,39 @@ export default function AdminPage() {
               </table>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
+
                 {
-                    pendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>): (pendingOrders.map(req => (
-                  <Card key={req._id}>
-                    <CardContent className="space-y-2 p-4">
-                      {/* <div><strong>Type:</strong> {req.type}</div> */}
-                      <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
-                      <div><strong>By:</strong> {req.person}</div>
-                      <div><strong>Time:</strong> {req.timestamp}</div>
-                      <div><strong>Status:</strong> {req.status}</div>
-                      <div className="space-x-2 pt-2">
-                            <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "In Progress" }))}>Accept</Button>
-                            <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>Answered</Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )))}
+                  pendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>) : (pendingOrders.map(req => (
+                    <Card key={req._id}>
+                      <CardContent className="space-y-2 p-4">
+                        {/* <div><strong>Type:</strong> {req.type}</div> */}
+                        <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
+                        <div><strong>By:</strong> {req.person}</div>
+                        {req.timestamp ? (
+                          <>
+                            <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
+                            <div><strong>Time:</strong> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</div>
+                          </>
+                        ) : (
+                          <div><em>No timestamp available</em></div>
+                        )}
+
+
+                        <div><strong>Status:</strong> {req.status}</div>
+                        <div className="space-x-2 pt-2">
+                          <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "In Progress" }))}>Accept</Button>
+                          <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>Answered</Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )))}
               </div>
             )}
           </CardContent>
         </Card>
 
 
-       <Card>
+        <Card>
           <CardContent className="p-4 md:p-6">
             <h2 className="text-xl font-semibold mb-4">In Progress Requests</h2>
             {inProgressOrders.length === 0 ? (
@@ -150,7 +193,8 @@ export default function AdminPage() {
                   <tr className="bg-gray-200 dark:bg-gray-700">
                     <th className="p-2">Type & Items</th>
                     <th className="p-2">Requested By</th>
-                    <th className="p-2">Timestamp</th>
+                      <th className="p-2">Date</th>
+                    <th className="p-2">Time</th>
                     <th className="p-2">Status</th>
                     <th className="p-2">Actions</th>
                   </tr>
@@ -165,7 +209,24 @@ export default function AdminPage() {
                         </div>
                       </td>
                       <td className="p-2">{req.person}</td>
-                      <td className="p-2">{req.timestamp}</td>
+                      <td className="p-2">{req.timestamp ? (
+                      
+                        <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>   
+                         
+                        
+                      ) : (
+                        <div><em>No timestamp available</em></div>
+                      )}
+</td>
+                      <td className="p-2">{req.timestamp ? (
+                        
+                         
+                        <> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</>
+                      
+                      ) : (
+                        <div><em>No timestamp available</em></div>
+                      )}
+                      </td>
                       <td className="p-2">{req.status}</td>
                       <td className="p-2">
                         <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>
@@ -184,7 +245,15 @@ export default function AdminPage() {
                       <div><strong>Type:</strong> {req.type}</div>
                       <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
                       <div><strong>By:</strong> {req.person}</div>
-                      <div><strong>Time:</strong> {req.timestamp}</div>
+                      {req.timestamp ? (
+                        <>
+                          <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
+                          <div><strong>Time:</strong> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</div>
+                        </>
+                      ) : (
+                        <div><em>No timestamp available</em></div>
+                      )}
+
                       <div><strong>Status:</strong> {req.status}</div>
                       <div className="pt-2">
                         <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>Mark as Answered</Button>
@@ -195,7 +264,7 @@ export default function AdminPage() {
               </div>
             )}
           </CardContent>
-        </Card> 
+        </Card>
 
 
         <Card>
@@ -209,10 +278,10 @@ export default function AdminPage() {
             </div>
 
 
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="flex gap-6 flex-col md:flex-row items-start">
               {categories && categories.length > 0 ? (
                 categories.map((cat) => (
-                  <div key={cat._id} className="rounded-lg border p-4 bg-white dark:bg-zinc-800 shadow-sm space-y-3">
+                  <div key={cat._id} className="rounded-lg border p-4 flex-1 bg-white dark:bg-zinc-800 shadow-sm space-y-3">
                     <div className="flex justify-between items-center">
                       {editingCategoryId === cat._id ? (
                         <input
@@ -248,7 +317,7 @@ export default function AdminPage() {
                       )}
                     </div>
 
-                    <ul className="space-y-2">
+                    <ul className="space-y-2  ">
                       {cat.items.map(item => (
                         <li key={item.name} className="flex justify-between text-sm border-b pb-1">
                           <span>{item.name}</span>
@@ -259,13 +328,53 @@ export default function AdminPage() {
                               dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name })).unwrap().then(() => {
                                 dispatch(fetchCategories())
                               }).catch(() => { }
-                              )}}
+                              )
+                            }}
                           >
                             Remove
                           </Button>
                         </li>
                       ))}
                     </ul>
+
+                    {/* <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={({ active, over }) => {
+                        if (active.id !== over?.id) {
+                          const oldIndex = cat.items.findIndex(item => item.name === active.id);
+                          const newIndex = cat.items.findIndex(item => item.name === over?.id);
+
+                          const updatedItems = arrayMove(cat.items, oldIndex, newIndex);
+                          // Dispatch update to redux/local state here
+                          console.log("Sorted items:", updatedItems);
+                        }
+                      }}
+                    >
+                      <SortableContext
+                        items={cat.items.map(item => item.name)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        <ul className="space-y-2">
+                          {cat.items.map((item) => (
+                            <SortableItem key={item.name} id={item.name}>
+                              <>
+                                <span>{item.name}</span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }));
+                                  }}
+                                >
+                                  Remove
+                                </Button>
+                              </>
+                            </SortableItem>
+                          ))}
+                        </ul>
+                      </SortableContext>
+                    </DndContext> */}
 
                     <form
                       onSubmit={(e) => {
@@ -275,7 +384,7 @@ export default function AdminPage() {
                           const allowMultiple = itemOptions[cat._id] ?? false;
                           dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple })).unwrap().then(() => {
                             dispatch(fetchCategories())
-                          }).catch(() => {})
+                          }).catch(() => { })
 
                           setNewItems(prev => ({ ...prev, [cat._id]: "" }));
                           setItemOptions(prev => ({ ...prev, [cat._id]: false }));
@@ -298,7 +407,7 @@ export default function AdminPage() {
                         />
                         Allow Quantity Selection (+ / -)
                       </label>
-                      <Button size="sm" type="submit" disabled={!newItems[cat._id]?.trim()}>
+                      <Button size="sm" type="submit" className="cursor-pointer hover:opacity-75" disabled={!newItems[cat._id]?.trim()}>
                         Add
                       </Button>
                     </form>
@@ -326,12 +435,18 @@ export default function AdminPage() {
                     const form = e.target as any;
                     const label = form.catLabel.value.trim();
 
-                    if (!label) return;
-                    // const id = label.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+                    // Disallow special characters except space, dash, underscore
+                    const isValid = /^[a-zA-Z0-9 _-]+$/.test(label);
+
+                    if (!label || !isValid) {
+                      toast.error("Category name should not contain special characters.");
+                      return;
+                    }
+
                     dispatch(createCategory({ label }));
-                    // form.reset();
                     setShowCategoryModal(false);
                   }}
+
                   className="space-y-4"
                 >
                   <input
@@ -342,7 +457,7 @@ export default function AdminPage() {
                   />
                   <div className="flex justify-end gap-2">
                     <Button variant="outline" onClick={() => setShowCategoryModal(false)} type="button">Cancel</Button>
-                    <Button type="submit">Add</Button>
+                    <Button type="submit" className="cursor-pointer">Add</Button>
                   </div>
                 </form>
               </CardContent>
@@ -350,10 +465,10 @@ export default function AdminPage() {
           </div>
         )}
 
-          {showAdminSettings && (
+        {showAdminSettings && (
           <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowAdminSettings} userName={user?.username} setUserName={""} />
-              )}
-        
+        )}
+
       </div>
     </div>
   );

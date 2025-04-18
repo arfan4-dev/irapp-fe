@@ -39,7 +39,7 @@ export default function Login() {
         try {
             await dispatch(loginUser(formData)).unwrap()
                 .then((res) => {
-                    toast.success("Login successful!");
+                    toast.success("Login successfully!");
                     console.log("role", res.data)
                     // Redirect based on role
                     if (res.data?.role === "admin") {

@@ -50,7 +50,8 @@ export default function AnsweredOrdersPage() {
                                 <tr className="bg-gray-200 dark:bg-gray-700">
                                     <th className="p-2">Type & Items</th>
                                     <th className="p-2">Requested By</th>
-                                    <th className="p-2">Timestamp</th>
+                                        <th className="p-2">Date</th>
+                                    <th className="p-2">Time</th>
                                     <th className="p-2">Status</th>
                                 </tr>
                             </thead>
@@ -62,7 +63,24 @@ export default function AnsweredOrdersPage() {
                                             <span className="text-sm italic">{order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}</span>
                                         </td>
                                         <td className="p-2">{order.person}</td>
-                                        <td className="p-2">{order.timestamp}</td>
+                                        <td className="p-2">{order.timestamp ? (
+
+                                            <>{new Date(order.timestamp as string).toISOString().split("T")[0]}</>
+
+
+                                        ) : (
+                                            <div><em>No timestamp available</em></div>
+                                        )}
+                                        </td>
+                                        <td className="p-2">{order.timestamp ? (
+
+
+                                            <> {new Date(order.timestamp as string).toTimeString().split(" ")[0]}</>
+
+                                        ) : (
+                                            <div><em>No timestamp available</em></div>
+                                        )}
+                                        </td>
                                         <td className="p-2">{order.status}</td>
                                     </tr>
                                 ))}
@@ -79,7 +97,14 @@ export default function AnsweredOrdersPage() {
                                         <strong>Items:</strong> {order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}
                                     </div>
                                     <div><strong>By:</strong> {order.person}</div>
-                                    <div><strong>Time:</strong> {order.timestamp}</div>
+                                    {order.timestamp ? (
+                                        <>
+                                            <div><strong>Date:</strong> {new Date(order.timestamp as string).toISOString().split("T")[0]}</div>
+                                            <div><strong>Time:</strong> {new Date(order.timestamp as string).toTimeString().split(" ")[0]}</div>
+                                        </>
+                                    ) : (
+                                        <div><em>No timestamp available</em></div>
+                                    )}
                                     <div><strong>Status:</strong> {order.status}</div>
                                 </CardContent>
                             </Card>

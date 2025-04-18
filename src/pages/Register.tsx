@@ -44,6 +44,7 @@ export default function Register() {
 
             if (!allowedTypes.includes(file.type)) {
                 toast.error("Only JPG, PNG, or WEBP images are allowed.");
+                e.target.value = ""; // reset the input
                 return;
             }
 

@@ -78,7 +78,14 @@ export default function OrderPage() {
                     >
                       <div><strong>Status:</strong> {order.status}</div>
                       <div><strong>Items:</strong> {order.items.map((i) => `${i.quantity} × ${i.name}`).join(', ')}</div>
-                      <div><strong>Time:</strong> {order.timestamp}</div>
+                      {order.timestamp ? (
+                        <>
+                          <div><strong>Date:</strong> {new Date(order.timestamp as string).toISOString().split("T")[0]}</div>
+                          <div><strong>Time:</strong> {new Date(order.timestamp as string).toTimeString().split(" ")[0]}</div>
+                        </>
+                      ) : (
+                        <div><em>No timestamp available</em></div>
+                      )}
                     </div>
                   ))
                 )}

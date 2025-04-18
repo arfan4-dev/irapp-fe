@@ -161,6 +161,7 @@ export default function Register() {
                                     accept="image/*"
                                     onChange={handleChange}
                                     className="w-full"
+                                    required
                                 />
                                 {previewUrl && (
                                     <div className="mt-3 flex flex-col items-center">

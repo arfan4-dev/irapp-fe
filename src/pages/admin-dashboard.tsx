@@ -272,16 +272,16 @@ export default function AdminPage() {
 
         <Card>
           <CardContent className="p-4 md:p-6 space-y-6">
-            <h2 className="text-xl font-semibold mb-4">Manage Categories</h2>
+            <h2 className="text-xl font-semibold mb-4 ">Manage Categories </h2>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Add New Category</h3>
-              <Button size="lg" type="submit"  onClick={() => setShowCategoryModal(true)} className="mt-2 cursor-pointer hover:opacity-75">
+              <Button size="lg" type="submit"  onClick={() => setShowCategoryModal(true)} className="mt-2 cursor-pointer hover:opacity-75 mr-5">
                 Add
               </Button>
             </div>
 
 
-            <div className="flex gap-5 flex-wrap items-start">
+            <div className="flex gap-4 flex-wrap items-start">
               {categories && categories.length > 0 ? (
                 categories.map((cat) => (
                   <div key={cat._id} className="rounded-lg  border p-4 basis-[48%]  bg-white dark:bg-zinc-800 shadow-sm space-y-3">

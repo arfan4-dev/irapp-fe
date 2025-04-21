@@ -27,6 +27,7 @@ export default function UserPage() {
   const [itemQuantities, setItemQuantities] = useState<Record<string, number>>({});
   const [cart, setCart] = useState<{ [key: string]: { name: string; quantity: number } }>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
   const isOnline = useOfflineStatus();
   const dispatch = useDispatch<AppDispatch>();
   const categories = useSelector((state: RootState) => state?.categories?.categories || []);
@@ -37,7 +38,6 @@ export default function UserPage() {
     type: selectedRequest,
     items: Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity })),
     status: 'Pending',
-    timestamp: new Date().toISOString(),
   };
   const submitRequest = () => {
     setShowConfirmModal(true);
@@ -132,7 +132,6 @@ export default function UserPage() {
         console.error("Failed to fetch categories:", error.message || error);
       }
     };
-
     fetchData();
   }, []);
 

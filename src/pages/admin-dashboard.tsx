@@ -13,23 +13,13 @@ import { getOrdersByUser, updateOrderStatus } from "@/store/features/order/order
 import UserSetting from "@/common/UserSetting";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import { toast } from "sonner";
-// import {
-//   DndContext,
-//   closestCenter,
-//   useSensor,
-//   useSensors,
-//   PointerSensor
-// } from "@dnd-kit/core";
-// import {
-//   arrayMove,
-//   SortableContext,
-//   verticalListSortingStrategy
-// } from "@dnd-kit/sortable";
-// import { SortableItem } from "@/components/dnd/SortableItem"; // ⬅️ created above
-
-
+import { saveStatusUpdateOffline } from "@/utils/orderStorage";
+import { useOfflineStatus } from "@/hooks/useOfflineStatus";
+import { updateOrderStatusSync } from "@/utils/orderSync";
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
+  updateOrderStatusSync()
+
   const [showSettings, setShowSettings] = useState(false);
   const [showAdminSettings, setShowAdminSettings] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -50,14 +40,27 @@ export default function AdminPage() {
   const orders = useSelector((state: RootState) => state.orders.orders);
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
+  const isOnline = useOfflineStatus();
 
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
+
+  const handleStatusUpdate = async (orderId: string, status: string) => {
+    if (isOnline) {
+      await dispatch(updateOrderStatus({ id: orderId, status }));
+    } else {
+      await saveStatusUpdateOffline(orderId, status);
+      toast.success("Status change saved offline and will sync once online.");
+    }
+  };
+  console.log("isOnline:", isOnline);
+
   useEffect(() => {
     dispatch(fetchCategories())
     dispatch(getOrdersByUser())
   }, [dispatch])
 
+  
   useEffect(() => {
     getUserIdFromLocalStorage()
     const handleClickOutside = (e: MouseEvent) => {
@@ -140,12 +143,22 @@ export default function AdminPage() {
                       </td>
                       <td className="p-2">{req.status}</td>
                       <td className="p-2 space-x-2">
-                        <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "In Progress" }))}>
+                        
+                        <Button
+                          size="sm"
+                          onClick={() => handleStatusUpdate(req._id!, "In Progress")}
+                        >
                           Accept
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>
-                          Answered
-                        </Button>
+
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleStatusUpdate(req._id!, "Answered")}
+                          >
+                            Answered
+                          </Button>
+
                       </td>
                     </tr>
                   ))}
@@ -173,8 +186,22 @@ export default function AdminPage() {
 
                         <div><strong>Status:</strong> {req.status}</div>
                         <div className="space-x-2 pt-2">
-                          <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "In Progress" }))}>Accept</Button>
-                          <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>Answered</Button>
+                          {/* <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "In Progress" }))}>Accept</Button>
+                          <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>Answered</Button> */}
+                          <Button
+                            size="sm"
+                            onClick={() => handleStatusUpdate(req._id!, "In Progress")}
+                          >
+                            Accept
+                          </Button>
+
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleStatusUpdate(req._id!, "Answered")}
+                          >
+                            Answered
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -232,7 +259,11 @@ export default function AdminPage() {
                       </td>
                       <td className="p-2">{req.status}</td>
                       <td className="p-2">
-                        <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>
+                        {/* <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>
+                          Mark as Answered
+                        </Button> */}
+                        <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}
+>
                           Mark as Answered
                         </Button>
                       </td>
@@ -259,7 +290,7 @@ export default function AdminPage() {
 
                       <div><strong>Status:</strong> {req.status}</div>
                       <div className="pt-2">
-                        <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>Mark as Answered</Button>
+                        <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}>Mark as Answered</Button>
                       </div>
                     </CardContent>
                   </Card>

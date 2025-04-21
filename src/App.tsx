@@ -8,8 +8,11 @@ import Login from "./pages/Login";
 import EmailVerification from "./pages/VerifyEmail";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import ErrorBoundary from "./components/error-boundary";
+import {  useOrderSync } from "./utils/orderSync";
 
 function App() {
+  useOrderSync();
+
   return (
     <ErrorBoundary>
     <Routes>

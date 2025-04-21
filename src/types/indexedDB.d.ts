@@ -1,4 +1,3 @@
-// types/indexedDB.d.ts
 
 export interface OfflineOrder {
   id?: number;
@@ -7,5 +6,4 @@ export interface OfflineOrder {
   type: string;
   items: { name: string; quantity: number }[];
   status: "Pending" | "In Progress" | "Answered";
-  timestamp: string;
 }

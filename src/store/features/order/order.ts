@@ -5,13 +5,12 @@ import api from "@/api/api";
 
 interface UpdateStatusPayload {
   id?: string;
-  status: "Pending" | "In Progress" | "Answered";
+  status: string;
 }
 export const createOrder = createAsyncThunk(
   "order/create",
   async (orderData: any, { rejectWithValue }) => {
     try {
-      console.log("orderData:", orderData);
       
       const response = await api.post("/order", orderData, {
         withCredentials: true,

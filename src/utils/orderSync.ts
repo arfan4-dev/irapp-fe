@@ -53,8 +53,8 @@ console.log("updateOrderStatusSync.....");
     const handlePendingStatusUpdatesSync = async () => {
       const db = await initDB();
       const updates = await db.getAll("pendingStatusUpdates");
-      console.log(updates);
-
+      if (updates.length === 0) return;
+      console.log("Pending status updates found:", updates);
       for (const update of updates) {
         try {
                 await dispatch(

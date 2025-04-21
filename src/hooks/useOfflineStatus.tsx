@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export const useOfflineStatus = () => {
     const [isOnline, setIsOnline] = useState(navigator.onLine);
+    
     useEffect(() => {
         const handleOnline = () => setIsOnline(true);
         const handleOffline = () => setIsOnline(false);

@@ -16,10 +16,14 @@ import { toast } from "sonner";
 import { saveStatusUpdateOffline } from "@/utils/orderStorage";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { updateOrderStatusSync } from "@/utils/orderSync";
+import { getOfflineCategories, getPendingCategoryItems, savePendingCategoryItem, savePendingCategoryUpdate } from "@/utils/categoryStorage";
+import { useSyncPendingCategoryItems, useSyncPendingCategoryUpdates } from "@/utils/categorySync";
+import { setCategories } from "@/store/slices/categorySlice";
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
   updateOrderStatusSync()
-
+  useSyncPendingCategoryUpdates()
+  useSyncPendingCategoryItems()
   const [showSettings, setShowSettings] = useState(false);
   const [showAdminSettings, setShowAdminSettings] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -27,6 +31,7 @@ export default function AdminPage() {
   const [editingItem, setEditingItem] = useState<{ categoryId: string; name: string } | null>(null);
   const [editedItemName, setEditedItemName] = useState('');
   const [editedAllowMultiple, setEditedAllowMultiple] = useState(false);
+  const [offlineCategoryItems, setOfflineCategoryItems] = useState<Record<string, { name: string; allowMultiple: boolean }[]>>({});
 
   const [serviceName] = useState("IntraServe Admin Panel");
   const [viewMode, setViewMode] = useState<'list' | 'grid'>("grid");
@@ -53,14 +58,53 @@ export default function AdminPage() {
       toast.success("Status change saved offline and will sync once online.");
     }
   };
-  console.log("isOnline:", isOnline);
 
   useEffect(() => {
-    dispatch(fetchCategories())
-    dispatch(getOrdersByUser())
-  }, [dispatch])
+    const loadOfflineItems = async () => {
+      const pendingItems = await getPendingCategoryItems(); // from IndexedDB
 
-  
+      const map: Record<string, { name: string; allowMultiple: boolean }[]> = {};
+
+      pendingItems.forEach(item => {
+        if (!map[item.categoryId]) map[item.categoryId] = [];
+        map[item.categoryId].push({
+          name: item.itemName,
+          allowMultiple: item.allowMultiple,
+        });
+      });
+
+      setOfflineCategoryItems(map);
+    };
+
+    loadOfflineItems();
+  }, [categories, showCategoryModal]); // also refetch when modal closes
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      if (isOnline) {
+        dispatch(getOrdersByUser());
+
+        dispatch(fetchCategories())
+          .unwrap()
+          .then(() => toast.success("Categories synced successfully!"))
+          .catch(() => toast.error("Failed to sync categories."));
+      } else {
+        const offlineCats = await getOfflineCategories();
+        console.log("offlineCats:", offlineCats);
+        
+        dispatch(setCategories([...categories, ...offlineCats])); // ✅ use actual action
+        toast.info("Showing offline categories.");
+      }
+
+    };
+
+    loadCategories();
+  }, [dispatch, isOnline, showCategoryModal]);
+  // useEffect(() => {
+  //   dispatch(fetchCategories())
+  //   dispatch(getOrdersByUser())
+  // }, [dispatch])
+
   useEffect(() => {
     getUserIdFromLocalStorage()
     const handleClickOutside = (e: MouseEvent) => {
@@ -73,7 +117,7 @@ export default function AdminPage() {
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSettings, setShowSettings]);
-
+  console.log(offlineCategoryItems)
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
       <Header
@@ -143,7 +187,7 @@ export default function AdminPage() {
                       </td>
                       <td className="p-2">{req.status}</td>
                       <td className="p-2 space-x-2">
-                        
+
                         <Button
                           size="sm"
                           onClick={() => handleStatusUpdate(req._id!, "In Progress")}
@@ -151,13 +195,13 @@ export default function AdminPage() {
                           Accept
                         </Button>
 
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleStatusUpdate(req._id!, "Answered")}
-                          >
-                            Answered
-                          </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleStatusUpdate(req._id!, "Answered")}
+                        >
+                          Answered
+                        </Button>
 
                       </td>
                     </tr>
@@ -263,7 +307,7 @@ export default function AdminPage() {
                           Mark as Answered
                         </Button> */}
                         <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}
->
+                        >
                           Mark as Answered
                         </Button>
                       </td>
@@ -306,7 +350,7 @@ export default function AdminPage() {
             <h2 className="text-xl font-semibold mb-4 ">Manage Categories </h2>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Add New Category</h3>
-              <Button size="lg" type="submit"  onClick={() => setShowCategoryModal(true)} className="mt-2 cursor-pointer hover:opacity-75 mr-5">
+              <Button size="lg" type="submit" onClick={() => setShowCategoryModal(true)} className="mt-2 cursor-pointer hover:opacity-75 mr-5">
                 Add
               </Button>
             </div>
@@ -314,7 +358,7 @@ export default function AdminPage() {
 
             <div className="flex gap-4 flex-wrap items-start">
               {categories && categories.length > 0 ? (
-                categories.map((cat) => (
+                categories?.map((cat) => (
                   <div key={cat._id} className="rounded-lg  border p-4 basis-[48%]  bg-white dark:bg-zinc-800 shadow-sm space-y-3">
                     <div className="flex justify-between items-center">
                       {editingCategoryId === cat._id ? (
@@ -352,7 +396,7 @@ export default function AdminPage() {
                     </div>
 
                     <ul className="space-y-2  ">
-                      {cat.items.map(item => {
+                      {cat?.items?.map(item => {
                         const isEditingItem = editingItem?.categoryId === cat._id && editingItem?.name === item.name;
                         return (
                           <li key={item.name} className="flex flex-col gap-2 text-sm border-b pb-2">
@@ -376,6 +420,7 @@ export default function AdminPage() {
                                     size="sm"
                                     className="cursor-pointer hover:opacity-75"
                                     onClick={() => {
+                                      
                                       dispatch(updateItemInCategory({
                                         categoryId: cat._id,
                                         oldItemName: item.name,
@@ -437,10 +482,31 @@ export default function AdminPage() {
                           </li>
                         );
                       })}
+                      {!isOnline &&
+                        offlineCategoryItems?.[cat._id]
+                          ?.filter(offlineItem =>
+                            !cat.items.some(dbItem =>
+                              dbItem.name.trim().toLowerCase() === offlineItem.name.trim().toLowerCase()
+                            )
+                          )
+                          ?.map((item, index) => (
+                            <li
+                              key={`offline-${item.name}-${index}`}
+                              className="flex justify-between text-sm border-b pb-1 italic opacity-70"
+                            >
+                              <div>
+                                {item.name}
+                                <span className="ml-1 text-xs text-yellow-600">(Offline)</span>
+                              </div>
+                              <div className="text-xs">
+                                Quantity: {item.allowMultiple ? "Yes" : "No"}
+                              </div>
+                            </li>
+                          ))}
 
                     </ul>
 
-                  
+
 
                     <form
                       onSubmit={(e) => {
@@ -448,9 +514,46 @@ export default function AdminPage() {
                         const itemName = newItems[cat._id]?.trim();
                         if (itemName) {
                           const allowMultiple = itemOptions[cat._id] ?? false;
-                          dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple })).unwrap().then(() => {
-                            dispatch(fetchCategories())
-                          }).catch(() => { })
+                          if (isOnline) {
+                            dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple }))
+                              .unwrap()
+                              .then(() => dispatch(fetchCategories()));
+                          } else {
+                            const alreadyExistsInState =
+                              cat.items.some(item => item.name === itemName) || // from MongoDB
+                              (offlineCategoryItems[cat._id]?.some(item => item.name === itemName) ?? false); // from offline state
+
+                            if (alreadyExistsInState) {
+                              toast.error("Item already exists in this category.");
+                              return;
+                            }
+
+                            savePendingCategoryItem({ categoryId: cat._id, itemName, allowMultiple })
+                              .then(() => {
+                                setOfflineCategoryItems(prev => {
+                                  const updated = { ...prev };
+
+                                  // Prevent duplicates
+                                  const alreadyExists = updated[cat._id]?.some(
+                                    item => item.name.trim().toLowerCase() === itemName.trim().toLowerCase()
+                                  );
+
+                                  if (alreadyExists) return updated;
+
+                                  if (!updated[cat._id]) updated[cat._id] = [];
+                                  updated[cat._id].push({ name: itemName, allowMultiple });
+
+                                  return updated;
+                                });
+
+                                toast.success("Saved offline. Will sync later.");
+                              });
+                          }
+
+
+                          // dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple })).unwrap().then(() => {
+                          //   dispatch(fetchCategories())
+                          // }).catch(() => { })
 
                           setNewItems(prev => ({ ...prev, [cat._id]: "" }));
                           setItemOptions(prev => ({ ...prev, [cat._id]: false }));
@@ -493,9 +596,28 @@ export default function AdminPage() {
         {showCategoryModal && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
             <Card className="w-full max-w-md bg-white dark:bg-zinc-900 text-black dark:text-white rounded-lg shadow-lg">
-              <CardContent className="p-6 space-y-4">
+              <CardContent className="px-6 space-y-4">
                 <h3 className="text-lg font-semibold">Add New Category</h3>
                 <form
+                  // onSubmit={(e) => {
+                  //   e.preventDefault();
+                  //   const form = e.target as any;
+                  //   const label = form.catLabel.value.trim();
+
+                  //   // Disallow special characters except space, dash, underscore
+                  //   const isValid = /^[a-zA-Z0-9 _-]+$/.test(label);
+
+                  //   if (!label || !isValid) {
+                  //     toast.error("Category name should not contain special characters.");
+                  //     return;
+                  //   }
+                  //   if (categories.some(cat => cat.label === label)) {
+                  //     toast.error("Category already exists.");
+                  //     return;
+                  //   }
+                  //   dispatch(createCategory({ label }));
+                  //   setShowCategoryModal(false);
+                  // }}
                   onSubmit={(e) => {
                     e.preventDefault();
                     const form = e.target as any;
@@ -512,9 +634,29 @@ export default function AdminPage() {
                       toast.error("Category already exists.");
                       return;
                     }
-                    dispatch(createCategory({ label }));
-                    setShowCategoryModal(false);
+
+                    const newCategory = { label };
+
+                    if (isOnline) {
+                      dispatch(createCategory(newCategory))
+                        .unwrap()
+                        .then(() => {
+                          toast.success("Category created!");
+                          setShowCategoryModal(false);
+                        })
+                        .catch(() => {
+                          toast.error("Failed to create category.");
+                        });
+                    } else {
+                      savePendingCategoryUpdate(newCategory)
+                        .then(() => {
+                          toast.success("Category saved offline. Will sync when online.");
+                          setShowCategoryModal(false);
+                        })
+                        .catch(() => toast.error("Failed to save offline."));
+                    }
                   }}
+
 
                   className="space-y-4"
                 >

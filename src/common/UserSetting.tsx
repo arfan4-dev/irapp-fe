@@ -38,8 +38,18 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
+
+        if (name === "username") {
+            const isValid = /^[a-zA-Z0-9 ]*$/.test(value); // only letters, numbers, spaces
+            if (!isValid) {
+                toast.error("Username cannot contain special characters.");
+                return;
+            }
+        }
+
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
+
 
     const [currentPassword, setCurrentPassword] = useState("");
     const [isVerified, setIsVerified] = useState(false);
@@ -91,6 +101,8 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
             return;
         }
         if (image) data.append("image", image);
+        if (formData.password) data.append("password", formData.password);
+      
 
         dispatch(updateUser({ data, id: user.id }))
             .unwrap()
@@ -105,6 +117,8 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
                 toast.error("Update failed: " + err);
             });
     };
+
+    console.log(formData, "formData")
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -126,13 +140,33 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
                 <div className="space-y-4" >
                     {!isVerified ? (
                         <>
-                            <Input
+                            <div className="relative">
+                                <Input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    placeholder="Enter current password"
+                                    value={currentPassword}
+                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    className="pr-10"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-800 dark:hover:text-white"
+                                    tabIndex={-1}
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
+
+                            {/* <Input
                                 type="password"
                                 placeholder="Enter current password"
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                 required
-                            />
+                            /> */}
                             <Button type="button" onClick={handleVerifyPassword} className='cursor-pointer hover:opacity-75'>
                                 Verify Password
                             </Button>

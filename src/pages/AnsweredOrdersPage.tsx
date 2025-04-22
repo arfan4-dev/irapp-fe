@@ -15,24 +15,24 @@ export default function AnsweredOrdersPage() {
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
     const [serviceName] = useState("Answered Requests");
     const location = useLocation()
-  const modalRef = useRef<HTMLDivElement>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const orders = useSelector((state: RootState) =>
         (state.orders as RootState['orders']).orders.filter(order => order.status === 'Answered')
     );
-   useEffect(() => {
-     getUserIdFromLocalStorage()
-     const handleClickOutside = (e: MouseEvent) => {
-       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-         setShowSettings(false)
-       }
-     };
-     if (showSettings) {
-       document.addEventListener("mousedown", handleClickOutside);
-     }
-     return () => document.removeEventListener("mousedown", handleClickOutside);
-   }, [showSettings, setShowSettings]);
- 
+    useEffect(() => {
+        getUserIdFromLocalStorage()
+        const handleClickOutside = (e: MouseEvent) => {
+            if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+                setShowSettings(false)
+            }
+        };
+        if (showSettings) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [showSettings, setShowSettings]);
+
 
     return (
         <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
@@ -66,7 +66,7 @@ export default function AnsweredOrdersPage() {
                                 <tr className="bg-gray-200 dark:bg-gray-700">
                                     <th className="p-2">Type & Items</th>
                                     <th className="p-2">Requested By</th>
-                                        <th className="p-2">Date</th>
+                                    <th className="p-2">Date</th>
                                     <th className="p-2">Time</th>
                                     <th className="p-2">Status</th>
                                 </tr>

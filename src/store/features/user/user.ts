@@ -3,7 +3,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/api/api";
 import { LoginData, UpdateUserArgs } from "@/types/users";
 
-
 export const registerUser = createAsyncThunk(
   "user/register",
   async (payload: FormData, { rejectWithValue }) => {
@@ -76,11 +75,12 @@ export const fetchUserById = createAsyncThunk(
   }
 );
 
-
 export const updateUser = createAsyncThunk(
   "user/updateUser",
   async ({ id, data }: UpdateUserArgs, { rejectWithValue }) => {
     try {
+      console.log("data:", data);
+
       const response = await api.put(`/update-user/${id}`, data, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
@@ -103,7 +103,6 @@ export const updateUserRoleAndDepartment = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      
       const response = await api.put(
         `/users/${userId}/update-role-department`,
         {
@@ -121,18 +120,15 @@ export const updateUserRoleAndDepartment = createAsyncThunk(
 );
 export const updateUserRole = createAsyncThunk(
   "user/updateUserRole",
-  async ({ userId, role, department }:any, { rejectWithValue }) => {
+  async ({ userId, role, department }: any, { rejectWithValue }) => {
     try {
-       const response = await api.put(`/users/${userId}/update-role`, {
-         role,
-         department,
-       });
-       return response.data;
+      const response = await api.put(`/users/${userId}/update-role`, {
+        role,
+        department,
+      });
+      return response.data;
     } catch (error) {
-      return rejectWithValue(
-        "Update failed"
-      );
+      return rejectWithValue("Update failed");
     }
-   
   }
 );

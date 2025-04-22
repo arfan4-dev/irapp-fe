@@ -43,7 +43,6 @@ export default function Login() {
         const res = await dispatch(loginUser(formData)).unwrap();
 
         toast.success("Login successfully");
-console.log();
 
         // ✅ Now do role-based navigation here
         if (res.data.changePassword) return ;
@@ -71,8 +70,8 @@ console.log(user)
                         <h2 className="text-2xl font-bold text-center">Login</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Email</Label>
-                                <Input type="email" name="email" value={formData.email} onChange={handleChange} required />
+                                <Label>Email / Username</Label>
+                                <Input type="text" name="email" value={formData.email} onChange={handleChange} required />
                             </div>
                             <div className="space-y-2 relative">
                                 <Label>Password</Label>

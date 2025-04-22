@@ -103,8 +103,8 @@ export default function AdminPage() {
 
         dispatch(fetchCategories())
           .unwrap()
-          .then(() => toast.success("Categories synced successfully."))
-          .catch(() => toast.error("Failed to sync categories."));
+          // .then(() => toast.success("Categories synced successfully."))
+          // .catch(() => toast.error("Failed to sync categories."));
       } else {
         const offlineCats = await getOfflineCategories();
         

@@ -132,7 +132,7 @@ export default function Register() {
             .catch((error) => {
                 console.log(error);
                 
-                toast.error(error);
+            toast.error(error);
                 // Handle registration error, e.g., show an error message
             });
     };

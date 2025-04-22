@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,6 +13,8 @@ import Header from '@/common/Header';
 import useThemeMode from '@/hooks/useTheme';
 import { getOrdersByUser } from '@/store/features/order/order';
 import { useLocation } from 'react-router-dom';
+import UserSetting from '@/common/UserSetting';
+import { getUserIdFromLocalStorage } from '@/utils/getUserId';
 
 export default function OrderPage() {
   const [filter, setFilter] = useState<'Answered' | 'In Progress' | 'Pending'>('Pending');
@@ -22,7 +24,7 @@ export default function OrderPage() {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
   const location = useLocation()
-
+  const modalRef = useRef<HTMLDivElement>(null);
   const orders = useSelector((state: RootState) => state.orders.orders);
  
   const filteredOrders = orders.filter((order) => {
@@ -36,6 +38,18 @@ export default function OrderPage() {
    useEffect(() => {  
       dispatch(getOrdersByUser(user.id))
     }, [dispatch])
+  useEffect(() => {
+    getUserIdFromLocalStorage()
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setShowSettings(false)
+      }
+    };
+    if (showSettings) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showSettings, setShowSettings]);
 
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>
@@ -94,6 +108,9 @@ export default function OrderPage() {
           </Card>
         </div>
       </div>
+        {showSettings && (
+              <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={''} />
+            )}
     </div>
   );
 }

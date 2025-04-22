@@ -113,12 +113,15 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
                 className="relative p-4 w-full max-w-md bg-white text-black dark:bg-zinc-800 dark:text-white"
             >
                 <button
-                    onClick={() => setShowSettings(false)}
-                    className="absolute top-4 right-4 text-black dark:text-white text-[24px] hover:scale-110 transition cursor-pointer"
+                    onClick={() =>{ 
+                        console.log("close");
+                        
+                        setShowSettings(false)}}
+                    className="absolute top-2.5 right-4 text-black dark:text-white text-[24px] hover:scale-110 transition cursor-pointer"
                 >
                     ×
                 </button>
-                <h2 className="text-xl font-semibold mb- ">User Settings</h2>
+                <h2 className="text-xl font-semibold mb- " >User Settings</h2>
 
                 <div className="space-y-4" >
                     {!isVerified ? (

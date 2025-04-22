@@ -17,13 +17,12 @@ const departments = ['Kitchen', 'Reception', 'Cleaning Staff', 'Security'];
 
 export default function ManageUsers() {
     const dispatch = useDispatch<AppDispatch>();
+    const modalRef = useRef<HTMLDivElement>(null);
     const users = useSelector((state: RootState) => state?.user?.users ||[]);
     const [changes, setChanges] = useState<Record<string, { role: string; department: string }>>({});
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const [showSettings, setShowSettings] = useState(false);
     const location = useLocation()
-    const [showAdminSettings, setShowAdminSettings] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const [serviceName] = useState("Manage Users");
 
@@ -67,6 +66,8 @@ export default function ManageUsers() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSettings, setShowSettings]);
 
+    
+  
     return (
         <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
                <Header
@@ -133,8 +134,8 @@ export default function ManageUsers() {
           
 
 
-             {showAdminSettings && (
-                      <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowAdminSettings} userName={user?.username} setUserName={""} />
+            {showSettings && (
+                <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={""} />
                     )}
         </div>
     );

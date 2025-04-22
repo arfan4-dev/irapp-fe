@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import Header from "@/common/Header";
 import useThemeMode from "@/hooks/useTheme";
 import { useLocation } from "react-router-dom";
+import UserSetting from "@/common/UserSetting";
+import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 
 export default function AnsweredOrdersPage() {
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
@@ -13,10 +15,24 @@ export default function AnsweredOrdersPage() {
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
     const [serviceName] = useState("Answered Requests");
     const location = useLocation()
-
+  const modalRef = useRef<HTMLDivElement>(null);
+    const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const orders = useSelector((state: RootState) =>
         (state.orders as RootState['orders']).orders.filter(order => order.status === 'Answered')
     );
+   useEffect(() => {
+     getUserIdFromLocalStorage()
+     const handleClickOutside = (e: MouseEvent) => {
+       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+         setShowSettings(false)
+       }
+     };
+     if (showSettings) {
+       document.addEventListener("mousedown", handleClickOutside);
+     }
+     return () => document.removeEventListener("mousedown", handleClickOutside);
+   }, [showSettings, setShowSettings]);
+ 
 
     return (
         <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
@@ -112,6 +128,9 @@ export default function AnsweredOrdersPage() {
                     </div>
                 )}
             </div>
+            {showSettings && (
+                <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={""} />
+            )}
         </div>
     );
 }

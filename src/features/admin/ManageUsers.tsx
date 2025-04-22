@@ -66,10 +66,9 @@ export default function ManageUsers() {
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSettings, setShowSettings]);
-    console.log("users:", users);
 
     return (
-        <div className="">
+        <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
                <Header
                             theme={theme}
                             setTheme={setTheme}

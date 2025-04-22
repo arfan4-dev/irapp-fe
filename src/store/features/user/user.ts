@@ -103,6 +103,8 @@ export const updateUserRoleAndDepartment = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      console.log(userId, role, department);
+      
       const response = await api.put(
         `/users/${userId}/update-role-department`,
         {

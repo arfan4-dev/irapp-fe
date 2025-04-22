@@ -1,10 +1,8 @@
 // src/features/user/userThunks.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/api/api";
-interface LoginData {
-  email: string;
-  password: string;
-}
+import { LoginData, UpdateUserArgs } from "@/types/users";
+
 
 export const registerUser = createAsyncThunk(
   "user/register",
@@ -39,6 +37,27 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+
+export const fetchAllUsers = createAsyncThunk(
+  "adminUsers/fetchAll",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/users/all", { withCredentials: true });
+
+      // Only return users that are NOT admins
+      const filteredUsers = response.data.filter(
+        (user: any) => user.role !== "admin"
+      );
+
+      return filteredUsers;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch users"
+      );
+    }
+  }
+);
+
 export const fetchUserById = createAsyncThunk(
   "user/fetchById",
   async (id: string, { rejectWithValue }) => {
@@ -57,10 +76,6 @@ export const fetchUserById = createAsyncThunk(
   }
 );
 
-interface UpdateUserArgs {
-  id: string;
-  data: FormData;
-}
 
 export const updateUser = createAsyncThunk(
   "user/updateUser",
@@ -74,5 +89,49 @@ export const updateUser = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Update failed");
     }
+  }
+);
+
+export const updateUserRoleAndDepartment = createAsyncThunk(
+  "user/updateRoleAndDepartment",
+  async (
+    {
+      userId,
+      role,
+      department,
+    }: { userId: string; role: string; department?: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.put(
+        `/users/${userId}/update-role-department`,
+        {
+          role,
+          department,
+        }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data || "Failed to update user role/department"
+      );
+    }
+  }
+);
+export const updateUserRole = createAsyncThunk(
+  "user/updateUserRole",
+  async ({ userId, role, department }:any, { rejectWithValue }) => {
+    try {
+       const response = await api.put(`/users/${userId}/update-role`, {
+         role,
+         department,
+       });
+       return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        "Update failed"
+      );
+    }
+   
   }
 );

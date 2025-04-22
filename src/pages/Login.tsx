@@ -13,6 +13,7 @@ import { loginUser } from "@/store/features/user/user";
 import { Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import PasswordChangeModal from "@/components/modal/PasswordChangeModal";
 
 export default function Login() {
     const dispatch = useDispatch<AppDispatch>();
@@ -20,6 +21,8 @@ export default function Login() {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const { loading } = useSelector((state: RootState) => state?.user);
+    const user = useSelector((state: RootState) => state.user.currentUser?.data);
+
     const navigate=useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,10 +42,12 @@ export default function Login() {
     try {
         const res = await dispatch(loginUser(formData)).unwrap();
 
-        toast.success("Login successfully!");
+        toast.success("Login successfully");
+console.log();
 
         // ✅ Now do role-based navigation here
-        if (res.data?.role === "admin") {
+        if (res.data.changePassword) return ;
+        if (res.data?.role === "admin" ) {
             navigate("/admin");
         } else {
             navigate("/service-request");
@@ -54,7 +59,7 @@ export default function Login() {
         toast.error(err || "Login failed. Please try again.");
     }
 };
-
+console.log(user)
 
     return (
         <div>
@@ -112,6 +117,10 @@ export default function Login() {
                     </CardContent>
                 </Card>
             </div>
+
+            {user?.changePassword && (
+      <PasswordChangeModal open={true} userId={user.id} />
+    )}
         </div>
        
     );

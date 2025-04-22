@@ -18,6 +18,10 @@ export const deleteOfflineOrders = async (id: any) => {
   await db.delete("orders", id);
 };
 
+export const getPendingStatusUpdates = async () => {
+  const db = await initDB();
+  return await db.getAll("pendingStatusUpdates"); // store used earlier for offline categories
+};
 
 export const saveStatusUpdateOffline = async (
   orderId: string,

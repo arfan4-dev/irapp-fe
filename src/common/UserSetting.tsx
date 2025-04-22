@@ -68,7 +68,28 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
       
         const data = new FormData();
         if (formData.username) data.append("username", formData.username);
-        if (formData.password) data.append("password", formData.password);
+        const errors = [];
+
+        if (formData.password.length < 6) {
+            errors.push("at least 6 characters");
+        }
+        if (!/[a-z]/.test(formData.password)) {
+            errors.push("one lowercase letter");
+        }
+        if (!/[A-Z]/.test(formData.password)) {
+            errors.push("one uppercase letter");
+        }
+        if (!/\d/.test(formData.password)) {
+            errors.push("one number");
+        }
+        if (!/[@$!%*?&]/.test(formData.password)) {
+            errors.push("one symbol (e.g. @$!%*?&)");
+        }
+
+        if (errors.length > 0) {
+            toast.error(`Password must contain: ${errors.join(", ")}`);
+            return;
+        }
         if (image) data.append("image", image);
 
         dispatch(updateUser({ data, id: user.id }))

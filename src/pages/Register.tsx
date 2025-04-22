@@ -80,11 +80,30 @@ export default function Register() {
             toast.error("Username must be at least 3 characters long.");
             return;
         }
+        const errors = [];
 
         if (formData.password.length < 6) {
-            toast.error("Password must be at least 6 characters long.");
+            errors.push("at least 6 characters");
+        }
+        if (!/[a-z]/.test(formData.password)) {
+            errors.push("one lowercase letter");
+        }
+        if (!/[A-Z]/.test(formData.password)) {
+            errors.push("one uppercase letter");
+        }
+        if (!/\d/.test(formData.password)) {
+            errors.push("one number");
+        }
+        if (!/[@$!%*?&]/.test(formData.password)) {
+            errors.push("one symbol");
+        }
+
+        if (errors.length > 0) {
+            toast.error(`Password must contain: ${errors.join(", ")}`);
             return;
         }
+
+
         const payload = new FormData();
         payload.append("username", formData.username);
         payload.append("email", formData.email);
@@ -110,8 +129,10 @@ export default function Register() {
                 } // Reset preview URL after successful registration
                 toast.success("Verification email sent. Please check your inbox.");
             })
-            .catch(() => {
-            toast.error("Registration failed. Please try again.");
+            .catch((error) => {
+                console.log(error);
+                
+                toast.error(error);
                 // Handle registration error, e.g., show an error message
             });
     };
@@ -128,7 +149,7 @@ export default function Register() {
                         <h2 className="text-2xl font-bold text-center">Register</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Name</Label>
+                                <Label>Username</Label>
                                 <Input name="username" value={formData.username} onChange={handleChange} required />
                             </div>
                             <div className="space-y-2">
@@ -143,7 +164,7 @@ export default function Register() {
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
-                                    className="pr-10 lowercase"
+                                    className="pr-10 "
                                 />
                                 <button
                                     type="button"

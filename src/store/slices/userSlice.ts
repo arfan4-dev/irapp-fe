@@ -1,17 +1,19 @@
 // store/slices/userSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { fetchUserById, loginUser, registerUser } from "../features/user/user";
+import { fetchAllUsers, fetchUserById, loginUser, registerUser, updateUserRole } from "../features/user/user";
 
 interface UserState {
   loading: boolean;
   error: string | null;
   currentUser: any;
+  users: [],
 }
 
 const initialState: UserState = {
   loading: false,
   error: null,
   currentUser: null,
+  users: [],
 };
 
 const userSlice = createSlice({
@@ -24,7 +26,18 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-
+ .addCase(fetchAllUsers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllUsers.fulfilled, (state, action) => {
+        state.users = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchAllUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
       // 🔹 REGISTER USER
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
@@ -65,7 +78,16 @@ const userSlice = createSlice({
       .addCase(fetchUserById.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(updateUserRole.fulfilled, (state, action) => {
+        const index = state.currentUser.findIndex(
+          (u:any) => u._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.currentUser[index] = action.payload;
+        }
       });
+
   },
 });
 

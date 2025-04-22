@@ -56,7 +56,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     // ❌ Prevent user from accessing admin dashboard or answered order
     if (
         user?.role === "user" &&
-        (location.pathname.startsWith("/admin") || location.pathname.startsWith("/answered-order"))
+        (location.pathname.startsWith("/admin") || location.pathname.startsWith("/answered-order") || location.pathname.startsWith("/manage-users"))
     ) {
         return <Navigate to="/service-request" replace />;
     }

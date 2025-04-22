@@ -9,6 +9,7 @@ import EmailVerification from "./pages/VerifyEmail";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import ErrorBoundary from "./components/error-boundary";
 import {  useOrderSync } from "./utils/orderSync";
+import ManageUsers from "./features/admin/ManageUsers";
 
 function App() {
   useOrderSync();
@@ -23,6 +24,8 @@ function App() {
       {/* Login Route */}
       <Route path="/service-request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/manage-users" element={<ProtectedRoute><ManageUsers /></ProtectedRoute>} />
+
       <Route path="/answered-order" element={<ProtectedRoute><AnsweredOrdersPage /></ProtectedRoute>} />
       <Route path="/order-status" element={<ProtectedRoute><OrderPage /> </ProtectedRoute>} />
       <Route path="/verify-email/:token" element={<EmailVerification />} />

@@ -36,7 +36,11 @@ const initialState: OrderState = {
 const orderSlice = createSlice({
   name: "orders",
   initialState,
-  reducers: {},
+  reducers: {
+    setOrder: (state, action) => {
+      state.orders = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     // 🔄 Create Order
     builder.addCase(createOrder.pending, (state) => {
@@ -102,5 +106,7 @@ const orderSlice = createSlice({
     );
   },
 });
+
+export const { setOrder } = orderSlice.actions; // Exporting the action to set orders
 
 export default orderSlice.reducer;

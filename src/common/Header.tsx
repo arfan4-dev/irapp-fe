@@ -98,7 +98,7 @@ const Header: React.FC<HeaderProps> = ({
             </ul>
           </nav>
         )}
-        {(location !== "/admin" && location !== "/answered-order") && (
+        {(location !== "/admin" && location !== "/answered-order" && location !== "/manage-users") && (
           <nav>
             <ul className="flex items-center ml-6">
               <li>
@@ -113,9 +113,25 @@ const Header: React.FC<HeaderProps> = ({
           </nav>
         )}
 
-        {location == "/admin" && (
+        {(location == "/admin" || location == "/answered-order" || location == '/manage-users') && (
           <nav>
-            <ul className="flex items-center ml-6">
+            <ul className="flex items-center gap-10 ml-6">
+              <li>
+                <NavLink
+                  to="/admin"
+                  className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                >
+                  Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/manage-users"
+                  className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                >
+                  User Management
+                </NavLink>
+              </li>
               <li>
                 <NavLink
                   to="/answered-order"
@@ -127,21 +143,8 @@ const Header: React.FC<HeaderProps> = ({
             </ul>
           </nav>
         )}
-        {location == "/answered-order" && (
-          <nav>
-            <ul className="flex items-center ml-6">
-              <li>
-                <NavLink
-                  to="/admin"
-                  className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
-                >
-                  Home
-                </NavLink>
-              </li>
-            </ul>
-          </nav>
-        )}
-        
+
+    
       </div>
 
       <div className="flex items-center gap-4">
@@ -158,12 +161,13 @@ const Header: React.FC<HeaderProps> = ({
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="p-0 cursor-pointer  rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800">
               <Avatar className="h-9 w-9">
+               { user?.image ?
                 <AvatarImage
                   // src={'/logo.png'}
                   src={getImageUrl(user?.image)}
                   alt={user?.name || "User"}
                 />
-                <AvatarFallback>{getInitials(user?.username || "U")}</AvatarFallback>
+                :<AvatarFallback>{getInitials(user?.username || "U")}</AvatarFallback>}
               </Avatar>
             </Button>
           </DropdownMenuTrigger>

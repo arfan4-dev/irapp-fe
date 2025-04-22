@@ -13,12 +13,13 @@ import { getOrdersByUser, updateOrderStatus } from "@/store/features/order/order
 import UserSetting from "@/common/UserSetting";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import { toast } from "sonner";
-import { saveStatusUpdateOffline } from "@/utils/orderStorage";
+import { getOfflineOrders, saveStatusUpdateOffline } from "@/utils/orderStorage";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { updateOrderStatusSync } from "@/utils/orderSync";
 import { getOfflineCategories, getPendingCategoryItems, savePendingCategoryItem, savePendingCategoryUpdate } from "@/utils/categoryStorage";
 import { useSyncPendingCategoryItems, useSyncPendingCategoryUpdates } from "@/utils/categorySync";
 import { setCategories } from "@/store/slices/categorySlice";
+import { setOrder } from "@/store/slices/orderSlice";
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
   updateOrderStatusSync()
@@ -55,6 +56,7 @@ export default function AdminPage() {
       await dispatch(updateOrderStatus({ id: orderId, status }));
     } else {
       await saveStatusUpdateOffline(orderId, status);
+    
       toast.success("Status change saved offline and will sync once online.");
     }
   };
@@ -80,17 +82,31 @@ export default function AdminPage() {
   }, [categories, showCategoryModal]); // also refetch when modal closes
 
   useEffect(() => {
+    const loadOrders = async () => {
+      if (isOnline) {
+        dispatch(getOrdersByUser());
+      } else {
+              const offlineOrderStatus = await getOfflineOrders();
+
+        dispatch(setOrder([...orders, ...offlineOrderStatus])); // ✅ use actual action
+        toast.info("Showing offline categories.");
+      }
+
+    };
+
+    loadOrders()
+  }, [dispatch]);
+  useEffect(() => {
     const loadCategories = async () => {
       if (isOnline) {
         dispatch(getOrdersByUser());
 
         dispatch(fetchCategories())
           .unwrap()
-          .then(() => toast.success("Categories synced successfully!"))
+          .then(() => toast.success("Categories synced successfully."))
           .catch(() => toast.error("Failed to sync categories."));
       } else {
         const offlineCats = await getOfflineCategories();
-        console.log("offlineCats:", offlineCats);
         
         dispatch(setCategories([...categories, ...offlineCats])); // ✅ use actual action
         toast.info("Showing offline categories.");
@@ -100,6 +116,9 @@ export default function AdminPage() {
 
     loadCategories();
   }, [dispatch, isOnline, showCategoryModal]);
+
+
+
   // useEffect(() => {
   //   dispatch(fetchCategories())
   //   dispatch(getOrdersByUser())
@@ -117,7 +136,7 @@ export default function AdminPage() {
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSettings, setShowSettings]);
-  console.log(offlineCategoryItems)
+
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
       <Header

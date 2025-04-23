@@ -85,7 +85,10 @@ const Header: React.FC<HeaderProps> = ({
         }
        
 
-        <h1 className="text-xl font-semibold">{serviceName}</h1>
+        <h1 className="text-[14px] md:text-xl font-semibold">{serviceName}</h1>
+        <div className="hidden lg:flex items-center gap-4 ml-6">
+
+       
         {location == "/order-status" && (
           <nav>
             <ul className="flex items-center ml-6">
@@ -145,7 +148,7 @@ const Header: React.FC<HeaderProps> = ({
             </ul>
           </nav>
         )}
-
+        </div>
     
       </div>
 
@@ -178,6 +181,74 @@ const Header: React.FC<HeaderProps> = ({
               <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.username}</p>
               <p className="text-xs text-gray-500 truncate dark:text-gray-400">{user?.email}</p>
             </div>
+            <DropdownMenuItem
+              asChild
+              className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
+            >
+              <div className="flex flex-col lg:hidden items-start gap-4 ">
+
+
+                {location == "/order-status" && (
+                  <nav>
+                    <ul className="flex  ">
+                      <li>
+                        <NavLink
+                          to="/service-request"
+                          className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                        >
+                          Home
+                        </NavLink>
+                      </li>
+                    </ul>
+                  </nav>
+                )}
+                {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users") && (
+                  <nav>
+                    <ul className="flex  ">
+                      <li>
+                        <NavLink
+                          to="/order-status"
+                          className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                        >
+                          Orders
+                        </NavLink>
+                      </li>
+                    </ul>
+                  </nav>
+                )}
+
+                {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users') && (
+                  <nav>
+                    <ul className="flex flex-col items-start gap-2 list-disc ml-4">
+                      <li>
+                        <NavLink
+                          to="/admin-panel"
+                          className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                        >
+                          Home
+                        </NavLink>
+                      </li>
+                      <li>
+                        <NavLink
+                          to="/manage-users"
+                          className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                        >
+                          User Management
+                        </NavLink>
+                      </li>
+                      <li>
+                        <NavLink
+                          to="/answered-order"
+                          className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                        >
+                          Answered order
+                        </NavLink>
+                      </li>
+                    </ul>
+                  </nav>
+                )}
+              </div>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setShowSettings(true)} className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
               ⚙️ User Setting
             </DropdownMenuItem>

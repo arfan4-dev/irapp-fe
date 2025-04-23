@@ -34,7 +34,7 @@ const departments = [
 export default function ManageUsers() {
     const dispatch = useDispatch<AppDispatch>();
     const modalRef = useRef<HTMLDivElement>(null);
-    const users = useSelector((state: RootState) => state?.user?.users ||[]);
+    const users = useSelector((state: RootState) => state?.user?.users || []);
     const [changes, setChanges] = useState<Record<string, { role: string; department: string }>>({});
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const [showSettings, setShowSettings] = useState(false);
@@ -69,31 +69,31 @@ export default function ManageUsers() {
             .catch(() => toast.error("Failed to update user."));
     };
 
-  useEffect(() => {
-    getUserIdFromLocalStorage()
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        setShowSettings(false)
-      }
-    };
-    if (showSettings) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showSettings, setShowSettings]);
+    useEffect(() => {
+        getUserIdFromLocalStorage()
+        const handleClickOutside = (e: MouseEvent) => {
+            if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+                setShowSettings(false)
+            }
+        };
+        if (showSettings) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [showSettings, setShowSettings]);
 
-    
-  
+
+
     return (
         <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
-               <Header
-                            theme={theme}
-                            setTheme={setTheme}
-                            serviceName={serviceName}
-                            showSettings={showSettings}
-                            setShowSettings={setShowSettings}
-                            location={location.pathname}
-                        />
+            <Header
+                theme={theme}
+                setTheme={setTheme}
+                serviceName={serviceName}
+                showSettings={showSettings}
+                setShowSettings={setShowSettings}
+                location={location.pathname}
+            />
             <div className="max-w-4xl mx-auto p-4 space-y-4">
                 <h2 className="text-2xl font-semibold mb-6">Manage Users</h2>
 
@@ -147,12 +147,12 @@ export default function ManageUsers() {
                     </Card>
                 ))}
             </div>
-          
+
 
 
             {showSettings && (
                 <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={""} />
-                    )}
+            )}
         </div>
     );
 }

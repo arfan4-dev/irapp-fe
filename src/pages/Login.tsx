@@ -68,7 +68,7 @@ export default function Login() {
                         <h2 className="text-2xl font-bold text-center">Login</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Email / Username</Label>
+                                <Label>Email</Label>
                                 <Input type="email" name="email" value={formData.email} onChange={handleChange} required />
                             </div>
                             <div className="space-y-2 relative">

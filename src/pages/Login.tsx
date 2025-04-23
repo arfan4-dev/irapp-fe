@@ -46,16 +46,15 @@ export default function Login() {
 
         // ✅ Now do role-based navigation here
         if (res.data.changePassword) return ;
-        if (res.data?.role === "admin" ) {
-            navigate("/admin-panel");
-        } else {
+        // if (res.data?.role === "admin" ) {
+        //     navigate("/admin-panel");
+        // } else {
             navigate("/service-request");
-        }
+        // }
 
     } catch (err: any) {
-        // 🔥 This will handle wrong password case
-        console.log("Login error:", err);
-        toast.error(err || "Login failed. Please try again.");
+       
+        toast.error(err);
     }
 };
 
@@ -70,7 +69,7 @@ export default function Login() {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label>Email / Username</Label>
-                                <Input type="text" name="email" value={formData.email} onChange={handleChange} required />
+                                <Input type="email" name="email" value={formData.email} onChange={handleChange} required />
                             </div>
                             <div className="space-y-2 relative">
                                 <Label>Password</Label>

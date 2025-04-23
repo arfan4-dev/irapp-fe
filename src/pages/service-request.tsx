@@ -32,6 +32,8 @@ export default function UserPage() {
   const dispatch = useDispatch<AppDispatch>();
   const categories = useSelector((state: RootState) => state?.categories?.categories || []);
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
+  console.log("user:", user);
+  
   const order: OfflineOrder = {
     userId: user.id,
     person: user.username,

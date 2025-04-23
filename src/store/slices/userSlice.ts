@@ -1,16 +1,18 @@
 // store/slices/userSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { fetchAllUsers, fetchUserById, loginUser, registerUser, updateUserRole } from "../features/user/user";
+import { adminLogin, fetchAllUsers, fetchUserById, loginUser, registerUser, updateUserRole } from "../features/user/user";
 
 interface UserState {
   loading: boolean;
+  departmentLoading: boolean;
   error: string | null;
   currentUser: any;
-  users: [],
+  users: [];
 }
 
 const initialState: UserState = {
   loading: false,
+  departmentLoading: false,
   error: null,
   currentUser: null,
   users: [],
@@ -79,13 +81,35 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(updateUserRole.pending, (state) => {
+        state.departmentLoading = true;
+        state.error = null;
+      })
       .addCase(updateUserRole.fulfilled, (state, action) => {
         const index = state.currentUser.findIndex(
-          (u:any) => u._id === action.payload._id
+          (u: any) => u._id === action.payload._id
         );
         if (index !== -1) {
           state.currentUser[index] = action.payload;
         }
+        state.departmentLoading = false;
+      })
+      .addCase(updateUserRole.rejected, (state, action) => {
+        state.departmentLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(adminLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(adminLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+        state.error = null;
+      })
+      .addCase(adminLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
 
   },

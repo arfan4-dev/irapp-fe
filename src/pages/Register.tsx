@@ -19,14 +19,12 @@ import { AppDispatch, RootState } from "@/store"; // if using custom typed dispa
 import { registerUser } from "@/store/features/user/user";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
-import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 
 export default function Register() {
     const { loading } = useSelector((state: RootState) => state?.user);
     const [showPassword, setShowPassword] = useState(false); // 👈 toggle state
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const  isOnline = useOfflineStatus()
-    console.log("isOnline:", isOnline);
+
 
     const [formData, setFormData] = useState({
         username: "",
@@ -183,7 +181,7 @@ export default function Register() {
                                         <SelectValue placeholder="Select role" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="admin">Admin</SelectItem>
+                                        {/* <SelectItem value="admin">Admin</SelectItem> */}
                                         <SelectItem value="user">User</SelectItem>
                                     </SelectContent>
                                 </Select>

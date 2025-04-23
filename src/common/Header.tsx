@@ -44,6 +44,8 @@ const Header: React.FC<HeaderProps> = ({
     try {
       await api.post("/logout", {}, { withCredentials: true });
       navigate("/login");
+      localStorage.removeItem("persist:user");
+      localStorage.removeItem("persist:root");
     } catch (error) {
       console.error(error);
     }
@@ -118,7 +120,7 @@ const Header: React.FC<HeaderProps> = ({
             <ul className="flex items-center gap-10 ml-6">
               <li>
                 <NavLink
-                  to="/admin"
+                  to="/admin-panel"
                   className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                 >
                   Home

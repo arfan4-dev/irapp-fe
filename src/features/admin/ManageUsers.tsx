@@ -25,7 +25,7 @@ export default function ManageUsers() {
     const location = useLocation()
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const [serviceName] = useState("Manage Users");
-
+    
     useEffect(() => {
         dispatch(fetchAllUsers());
     }, [dispatch]);
@@ -124,7 +124,7 @@ export default function ManageUsers() {
                                 </div>
                             </div>
 
-                            <Button size="sm" className="mt-2" onClick={() => handleSave(user._id)}>
+                            <Button size="sm" onClick={() => handleSave(user._id)} className="cursor-pointer hover:opacity-75 mt-2 text-white">
                                 Save Changes
                             </Button>
                         </CardContent>

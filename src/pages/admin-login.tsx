@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { loginUser } from "@/store/features/user/user";
+import { adminLogin } from "@/store/features/user/user";
 import { useNavigate } from "react-router-dom";
 import PublicHeader from "@/common/PublicHeader";
 import useThemeMode from "@/hooks/useTheme";
@@ -28,17 +28,20 @@ export default function AdminLogin() {
             toast.error("Please enter both email and password.");
             return;
         }
+        console.log(form);
 
         try {
-            const user = await dispatch(loginUser(form)).unwrap();
-            if (user.role !== "admin") {
+            const user = await dispatch(adminLogin(form)).unwrap();
+          
+            
+            if (user.data.role !== "admin") {
                 toast.error("Access denied. Only admins can log in.");
                 return;
             }
             toast.success("Admin logged in successfully!");
-            navigate("/admin"); // redirect to admin dashboard
+            navigate("/admin-panel"); // redirect to admin dashboard
         } catch (err: any) {
-            toast.error(err?.message || "Login failed");
+            toast.error( "Invalid email or password.");
         }
     };
 
@@ -50,9 +53,9 @@ export default function AdminLogin() {
                     <h2 className="text-2xl font-bold text-center mb-6">Admin Login</h2>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="text-sm font-medium block mb-1">Email</label>
+                            <label className="text-sm font-medium block mb-1">Email / Username</label>
                             <Input
-                                type="email"
+                                type="text"
                                 name="email"
                                 value={form.email}
                                 onChange={handleChange}

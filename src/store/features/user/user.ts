@@ -132,3 +132,24 @@ export const updateUserRole = createAsyncThunk(
     }
   }
 );
+
+export const adminLogin = createAsyncThunk(
+  "user/adminLogin",
+  async (
+    { email, password }: { email: string; password: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.post(
+        "/auth/admin",
+        { email, password },
+        { withCredentials: true }
+      );
+      return response.data; // Only return the actual user data object
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Admin login failed"
+      );
+    }
+  }
+);

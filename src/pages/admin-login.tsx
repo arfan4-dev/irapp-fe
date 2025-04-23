@@ -53,7 +53,7 @@ export default function AdminLogin() {
                     <h2 className="text-2xl font-bold text-center mb-6">Admin Login</h2>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="text-sm font-medium block mb-1">Email / Username</label>
+                            <label className="text-sm font-medium block mb-1"> Username / Email</label>
                             <Input
                                 type="text"
                                 name="email"

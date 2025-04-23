@@ -24,7 +24,7 @@ export default function UserPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
   const [serviceName] = useState("IntraServe Desk");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [itemQuantities, setItemQuantities] = useState<Record<string, number>>({});
+  const [itemQuantities, setItemQuantities] = useState<any>({});
   const [cart, setCart] = useState<{ [key: string]: { name: string; quantity: number } }>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
@@ -32,7 +32,6 @@ export default function UserPage() {
   const dispatch = useDispatch<AppDispatch>();
   const categories = useSelector((state: RootState) => state?.categories?.categories || []);
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
-  console.log("user:", user);
   
   const order: OfflineOrder = {
     userId: user.id,
@@ -78,7 +77,7 @@ export default function UserPage() {
   };
 
   const handleQuantityChange = (item: string, quantity: number) => {
-    setItemQuantities(prev => ({ ...prev, [item]: quantity }));
+    setItemQuantities((prev: any) => ({ ...prev, [item]: quantity }));
   };
 
   const handleAddToCart = (item: string, quantity: number) => {
@@ -136,6 +135,12 @@ export default function UserPage() {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const items:any = Object.values(cart); // Convert object to array for mapping
+   
+    setItemQuantities(items);
+  }, [cart])
 
 
   return (
@@ -222,11 +227,22 @@ export default function UserPage() {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
+                  <h2 className="text-lg font-semibold">Your Cart</h2>
+                  {itemQuantities.length === 0 ? (
+                    <p className="text-gray-500 italic">Cart is empty.</p>
+                  ) : (
+                    <ul className="space-y-2">
+                        {itemQuantities.map((item:any, index:any) => (
+                        <li key={index} className="flex justify-between border-b pb-1">
+                          <span className='font-light italic text-[14px]'>{item.name}</span>
+                            <span className="text-sm text-gray-600 font-light italic">Qty: {item.quantity}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </CardContent>
               </Card>
             ) : null}
-
-
 
           </div>
         </div>

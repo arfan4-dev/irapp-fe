@@ -6,12 +6,12 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import ErrorBoundary from "./components/error-boundary";
 import { useOrderSync } from "./utils/orderSync";
 import ManageUsers from "./features/admin/ManageUsers";
-import Login from "./pages/login";
+import Login from "./pages/Login";
 import AnsweredOrdersPage from "./pages/answered-orders-page";
 import OrderPage from "./pages/order-page";
 import EmailVerification from "./pages/verify-email";
 import AdminLogin from "./pages/admin-login";
-import Register from "@/pages/register";
+import Register from "./pages/Register";
 
 function App() {
   useOrderSync();

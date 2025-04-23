@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 interface PublicHeaderProps {
     theme: "light" | "dark";
     setTheme: (theme: "light" | "dark") => void;
+    serviceName?: string;
 }
 
-const PublicHeader: React.FC<PublicHeaderProps> = ({ theme, setTheme }) => {
+const PublicHeader: React.FC<PublicHeaderProps> = ({ theme, setTheme, serviceName='IntraServe' }) => {
     
     return (
         <header className="w-full p-2 flex justify-between items-center bg-white dark:bg-gray-900 border-b dark:border-gray-700">
@@ -19,7 +20,7 @@ const PublicHeader: React.FC<PublicHeaderProps> = ({ theme, setTheme }) => {
                     className="h-10 w-10"
                 />
                 <span className="text-xl font-semibold text-black dark:text-white">
-                    IntraServe
+                    {serviceName}
                 </span>
             </Link>
             <Button

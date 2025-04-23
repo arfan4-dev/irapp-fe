@@ -122,12 +122,12 @@ export default function Register() {
                     role: "user",
                     image: null,
                 });
-                toast.success("Registration successfully!");
+                toast.success("Registration successfully. Please check your email for verification.");
                 setPreviewUrl(null);
                 if (fileInputRef.current) {
                     fileInputRef.current.value = "";
                 } // Reset preview URL after successful registration
-                toast.success("Verification email sent. Please check your inbox.");
+                
             })
             .catch((error) => {
                 console.log(error);

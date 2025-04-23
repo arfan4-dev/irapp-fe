@@ -29,7 +29,7 @@ console.log(userId)
             });
 
             toast.success("Password changed successfully!");
-            navigate("/admin");
+            navigate("/admin-panel");
         } catch (err) {
             toast.error("Failed to change password.");
         } finally {

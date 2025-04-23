@@ -73,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({
           />
         </Link>
 :
-        <Link to="/admin">
+            <Link to="/admin-panel">
           <img
             src={theme === "dark" ? "/logo-white.png" : "/logo.png"}
             alt="Logo"
@@ -98,7 +98,7 @@ const Header: React.FC<HeaderProps> = ({
             </ul>
           </nav>
         )}
-        {(location !== "/admin" && location !== "/answered-order" && location !== "/manage-users") && (
+        {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users") && (
           <nav>
             <ul className="flex items-center ml-6">
               <li>
@@ -113,7 +113,7 @@ const Header: React.FC<HeaderProps> = ({
           </nav>
         )}
 
-        {(location == "/admin" || location == "/answered-order" || location == '/manage-users') && (
+        {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users') && (
           <nav>
             <ul className="flex items-center gap-10 ml-6">
               <li>

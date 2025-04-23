@@ -47,7 +47,7 @@ export default function Login() {
         // ✅ Now do role-based navigation here
         if (res.data.changePassword) return ;
         if (res.data?.role === "admin" ) {
-            navigate("/admin");
+            navigate("/admin-panel");
         } else {
             navigate("/service-request");
         }
@@ -58,7 +58,6 @@ export default function Login() {
         toast.error(err || "Login failed. Please try again.");
     }
 };
-console.log(user)
 
     return (
         <div>

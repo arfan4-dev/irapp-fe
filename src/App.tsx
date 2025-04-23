@@ -23,7 +23,7 @@ function App() {
 
       {/* Login Route */}
       <Route path="/service-request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
-      <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/admin-panel" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
         <Route path="/manage-users" element={<ProtectedRoute><ManageUsers /></ProtectedRoute>} />
 
       <Route path="/answered-order" element={<ProtectedRoute><AnsweredOrdersPage /></ProtectedRoute>} />

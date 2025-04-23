@@ -44,19 +44,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
     // ✅ Redirect '/' based on role
     if (isAuthenticated && location.pathname === "/") {
-        if (user?.role === "admin") return <Navigate to="/admin" replace />;
+        if (user?.role === "admin") return <Navigate to="/admin-panel" replace />;
         if (user?.role === "user") return <Navigate to="/service-request" replace />;
     }
 
     // ❌ Prevent admin from accessing user dashboard
     if (user?.role === "admin" && (location.pathname.startsWith("/service-request") || location.pathname.startsWith("/order-status"))) {
-        return <Navigate to="/admin" replace />;
+        return <Navigate to="/admin-panel" replace />;
     }
 
     // ❌ Prevent user from accessing admin dashboard or answered order
     if (
         user?.role === "user" &&
-        (location.pathname.startsWith("/admin") || location.pathname.startsWith("/answered-order") || location.pathname.startsWith("/manage-users"))
+        (location.pathname.startsWith("/admin-panel") || location.pathname.startsWith("/answered-order") || location.pathname.startsWith("/manage-users"))
     ) {
         return <Navigate to="/service-request" replace />;
     }

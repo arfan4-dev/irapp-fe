@@ -13,7 +13,23 @@ import UserSetting from "@/common/UserSetting";
 import { useLocation } from "react-router-dom";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 
-const departments = ['Kitchen', 'Reception', 'Cleaning Staff', 'Security'];
+const departments = [
+    "Reception",
+    "Kitchen",
+    "Housekeeping",
+    "Maintenance",
+    "Security",
+    "IT Support",
+    "Accounts / Finance",
+    "HR (Human Resources)",
+    "Front Desk",
+    "Customer Service",
+    "Logistics",
+    "Cleaning Crew",
+    "Operations",
+    "Managerial Staff",
+    "Laundry"
+];
 
 export default function ManageUsers() {
     const dispatch = useDispatch<AppDispatch>();
@@ -25,7 +41,7 @@ export default function ManageUsers() {
     const location = useLocation()
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const [serviceName] = useState("Manage Users");
-    
+
     useEffect(() => {
         dispatch(fetchAllUsers());
     }, [dispatch]);

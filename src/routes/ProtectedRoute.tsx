@@ -1,6 +1,5 @@
 import { useEffect, useState, ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import api from "@/api/api";
 import { Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";

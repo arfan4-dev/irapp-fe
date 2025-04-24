@@ -60,7 +60,7 @@ console.log("updateOrderStatusSync.....");
                 await dispatch(
                   updateOrderStatus({ id: update.id, status: update.status })
                 );
-          toast.success(`✅ Synced status for order ${update.id}`);
+          toast.success(` Synced status for order ${update.id}`);
           await db.delete("pendingStatusUpdates", update.id);
           console.log(`✅ Synced status for order ${update.id}`);
         } catch (err) {

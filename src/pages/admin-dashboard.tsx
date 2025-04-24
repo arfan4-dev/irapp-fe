@@ -20,6 +20,7 @@ import { getOfflineCategories, getPendingCategoryItems, savePendingCategoryItem,
 import { useSyncPendingCategoryItems, useSyncPendingCategoryUpdates } from "@/utils/categorySync";
 import { setCategories } from "@/store/slices/categorySlice";
 import { setOrder } from "@/store/slices/orderSlice";
+import { initDB } from "@/utils/indexedDB";
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
   updateOrderStatusSync()
@@ -50,17 +51,28 @@ export default function AdminPage() {
 
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
+  console.log(orders)
 
   const handleStatusUpdate = async (orderId: string, status: string) => {
     if (isOnline) {
       await dispatch(updateOrderStatus({ id: orderId, status }));
     } else {
       await saveStatusUpdateOffline(orderId, status);
-    
+
+      // ✅ 2. Immediately reflect in Redux state (optimistic update)
+      dispatch(setOrder(
+        orders.map(order =>
+          order._id === orderId ? { ...order, status } : order
+        )
+      ));
+       const db = await initDB();
+      const offlineOrderStatus = await db.getAll("pendingStatusUpdates");
+      console.log("offlineOrderStatus", offlineOrderStatus);
       toast.success("Status change saved offline and will sync once online.");
     }
   };
 
+  // offline category items
   useEffect(() => {
     const loadOfflineItems = async () => {
       const pendingItems = await getPendingCategoryItems(); // from IndexedDB
@@ -81,12 +93,15 @@ export default function AdminPage() {
     loadOfflineItems();
   }, [categories, showCategoryModal]); // also refetch when modal closes
 
+
+  // offline orders
   useEffect(() => {
     const loadOrders = async () => {
       if (isOnline) {
         dispatch(getOrdersByUser());
       } else {
               const offlineOrderStatus = await getOfflineOrders();
+console.log("offlineOrderStatus", offlineOrderStatus);
 
         dispatch(setOrder([...orders, ...offlineOrderStatus])); // ✅ use actual action
         toast.info("Showing offline categories.");
@@ -95,7 +110,9 @@ export default function AdminPage() {
     };
 
     loadOrders()
-  }, [dispatch]);
+  }, [dispatch,isOnline]);
+
+
   useEffect(() => {
     const loadCategories = async () => {
       if (isOnline) {

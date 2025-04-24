@@ -29,12 +29,11 @@ export default function AdminLogin() {
             toast.error("Please enter both email and password.");
             return;
         }
-        console.log(form);
 
         try {
             const user = await dispatch(adminLogin(form)).unwrap();
-          
-            
+
+
             if (user.data.role !== "admin") {
                 toast.error("Access denied. Only admins can log in.");
                 return;
@@ -42,7 +41,7 @@ export default function AdminLogin() {
             toast.success("Admin logged in successfully!");
             navigate("/admin-panel"); // redirect to admin dashboard
         } catch (err: any) {
-            toast.error( "Invalid email or password.");
+            toast.error("Invalid email or password.");
         }
     };
 
@@ -81,21 +80,21 @@ export default function AdminLogin() {
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
                         </div>
-                         <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
-                                {loading ? (
-                                    <span className="flex items-center justify-center gap-2">
-                                        <Loader2 className="animate-spin w-4 h-4" />
-                                       
+                        <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
+                            {loading ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <Loader2 className="animate-spin w-4 h-4" />
+
                                     <span className="text-sm">Please wait...</span>
-                                    </span>
-                                ) : (
-                                    'Login'
-                                )}
-                            </Button>
+                                </span>
+                            ) : (
+                                'Login'
+                            )}
+                        </Button>
                     </form>
                 </div>
             </div>
         </div>
-      
+
     );
 }

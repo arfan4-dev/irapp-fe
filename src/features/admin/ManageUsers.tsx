@@ -12,6 +12,7 @@ import useThemeMode from "@/hooks/useTheme";
 import UserSetting from "@/common/UserSetting";
 import { useLocation } from "react-router-dom";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
+import UserManageSkeleton from "@/components/skeleton/skeleton";
 
 const departments = [
     "Reception",
@@ -34,7 +35,7 @@ const departments = [
 export default function ManageUsers() {
     const dispatch = useDispatch<AppDispatch>();
     const modalRef = useRef<HTMLDivElement>(null);
-    const users = useSelector((state: RootState) => state?.user?.users || []);
+    const {users,loading} = useSelector((state: RootState) => state?.user || []);
     const [changes, setChanges] = useState<Record<string, { role: string; department: string }>>({});
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const [showSettings, setShowSettings] = useState(false);
@@ -42,6 +43,7 @@ export default function ManageUsers() {
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const [serviceName] = useState("Manage Users");
 
+    console.log(loading)
     useEffect(() => {
         dispatch(fetchAllUsers());
     }, [dispatch]);
@@ -96,8 +98,11 @@ export default function ManageUsers() {
             />
             <div className="max-w-4xl mx-auto p-4 space-y-4">
                 <h2 className="text-2xl font-semibold mb-6">Manage Users</h2>
-
-                {users?.map((user: any) => (
+                
+                {
+                
+                    loading ? <UserManageSkeleton/> :
+                users?.map((user: any) => (
                     <Card key={user._id}>
                         <CardContent className="p-4 space-y-3">
                             <p className="font-semibold">{user.username} <span className="text-sm text-muted-foreground">({user.email})</span></p>
@@ -146,6 +151,8 @@ export default function ManageUsers() {
                         </CardContent>
                     </Card>
                 ))}
+
+                
             </div>
 
 

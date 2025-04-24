@@ -17,9 +17,10 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
         username: "",
         password: ""
     });
-
     const [image, setImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [isVerified, setIsVerified] = useState(false);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -51,8 +52,6 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
     };
 
 
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [isVerified, setIsVerified] = useState(false);
 
     // Add this above the form return
     const handleVerifyPassword = async () => {
@@ -124,9 +123,7 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
             });
     };
 
-    console.log("formData:", formData);
-    console.log("currentPassword:", currentPassword);
-
+  
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <Card
@@ -135,7 +132,7 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
             >
                 <button
                     onClick={() => {
-                        console.log("close");
+                       
 
                         setShowSettings(false)
                     }}

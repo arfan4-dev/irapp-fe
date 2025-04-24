@@ -13,12 +13,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const location = useLocation();
+    // console.log("ProtectedRoute.....", user.id);
 
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                await api.get("/refresh-token", { withCredentials: true });
-                setIsAuthenticated(true);
+                // await api.get("/refresh-token", { withCredentials: true });
+                if (user.id) {
+                    setIsAuthenticated(true);
+                }
             } catch (error) {
                 setIsAuthenticated(false);
             }

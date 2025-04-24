@@ -142,6 +142,8 @@ export default function UserPage() {
     setItemQuantities(items);
   }, [cart])
 
+  console.log(itemQuantities, "itemQuantities");
+  
 
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
@@ -227,19 +229,24 @@ export default function UserPage() {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
-                  <h2 className="text-lg font-semibold">Your Cart</h2>
-                  {itemQuantities.length === 0 ? (
+                  {/*  */}
+                  {/* {itemQuantities.length === 0 ? (
                     <p className="text-gray-500 italic">Cart is empty.</p>
                   ) : (
                     <ul className="space-y-2">
+                        <h2 className="text-md font-semibold italic">Your Cart</h2>
                         {itemQuantities.map((item:any, index:any) => (
-                        <li key={index} className="flex justify-between border-b pb-1">
-                          <span className='font-light italic text-[14px]'>{item.name}</span>
-                            <span className="text-sm text-gray-600 font-light italic">Qty: {item.quantity}</span>
-                        </li>
+                          <div>
+                           
+                            <li key={index} className="flex justify-between border-b pb-1">
+                              <span className='font-light italic text-[14px]'>{item.name}</span>
+                              <span className="text-sm text-gray-600 font-light italic">Qty: {item.quantity}</span>
+                            </li>
+                          </div>
+                     
                       ))}
                     </ul>
-                  )}
+                  )} */}
                 </CardContent>
               </Card>
             ) : null}

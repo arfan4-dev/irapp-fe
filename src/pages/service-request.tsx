@@ -222,8 +222,20 @@ export default function UserPage() {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
-                  {/*  */}
-                 
+                  {/* here show the item */}
+                  {/* ✅ Show cart summary */}
+                  {Object.keys(cart).length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      <h3 className="text-lg font-medium">🛒 Cart Summary</h3>
+                      <ul className="list-disc list-inside text-sm">
+                        {Object.entries(cart).map(([itemName, { quantity }]) => (
+                          <li key={itemName} className='italic text-gray-500'>
+                            {quantity} × {itemName}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ) : null}

@@ -38,7 +38,7 @@ export default function AdminLogin() {
                 toast.error("Access denied. Only admins can log in.");
                 return;
             }
-            toast.success("Admin logged in successfully!");
+            toast.success("Admin logged in successfully.");
             navigate("/admin-panel"); // redirect to admin dashboard
         } catch (err: any) {
             toast.error("Invalid email or password.");

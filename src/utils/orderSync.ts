@@ -15,7 +15,6 @@ export const useOrderSync = () => {
       try {
         const offlineOrders = await getOfflineOrders();
         if (offlineOrders.length === 0) return;
-        console.log("Offline orders found:", offlineOrders);
         for (const order of offlineOrders) {
             try {
                  const { id, ...cleanOrder } = order;

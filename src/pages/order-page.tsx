@@ -26,7 +26,7 @@ export default function OrderPage() {
   const location = useLocation()
   const modalRef = useRef<HTMLDivElement>(null);
   const orders = useSelector((state: RootState) => state.orders.orders);
- 
+
   const filteredOrders = orders.filter((order) => {
     const isMine = order.person === user.username;
     if (filter === 'Pending') return isMine && order.status === 'Pending';
@@ -35,9 +35,10 @@ export default function OrderPage() {
     return false;
   });
 
-   useEffect(() => {  
-      dispatch(getOrdersByUser(user.id))
-    }, [dispatch])
+  useEffect(() => {
+    dispatch(getOrdersByUser(user.id))
+  }, [dispatch])
+
   useEffect(() => {
     getUserIdFromLocalStorage()
     const handleClickOutside = (e: MouseEvent) => {
@@ -108,9 +109,9 @@ export default function OrderPage() {
           </Card>
         </div>
       </div>
-        {showSettings && (
-              <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={''} />
-            )}
+      {showSettings && (
+        <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={''} />
+      )}
     </div>
   );
 }

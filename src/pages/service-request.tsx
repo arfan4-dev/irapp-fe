@@ -14,6 +14,7 @@ import { createOrder } from '@/store/features/order/order';
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { saveOrderOffline } from "@/utils/orderStorage";
 import { OfflineOrder } from '@/types/indexedDB';
+import { toast } from 'sonner';
 
 export default function UserPage() {
   const [selectedRequest, setSelectedRequest] = useState('');
@@ -104,6 +105,7 @@ export default function UserPage() {
       try {
         await saveOrderOffline(order);
         setShowSuccessPopup(true);
+        toast.success("Order saved offline and will sync once online.");
         setTimeout(() => setShowSuccessPopup(false), 3000);
       } catch (error) {
         console.error("Failed to save order offline:");

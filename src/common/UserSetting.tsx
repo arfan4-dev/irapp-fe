@@ -17,6 +17,8 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
         username: "",
         password: ""
     });
+    const [loading, setLoading] = useState(false); // ✅ add this at the top with useState
+
     const [image, setImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [currentPassword, setCurrentPassword] = useState("");
@@ -108,22 +110,25 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
 
             data.append("password", formData.password);
         }
-        
-        
+
+        setLoading(true); // ✅ start loading
         // Proceed to update
         dispatch(updateUser({ data, id: user.id }))
             .unwrap()
             .then(() => {
                 dispatch(fetchUserById(user.id));
+                setLoading(false); // ✅ start loading
                 toast.success("User updated successfully!");
+
                 setShowSettings(false);
             })
             .catch((err) => {
                 toast.error("Update failed: " + err);
+                setLoading(false); // ✅ start loading
             });
     };
 
-  
+
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <Card
@@ -132,7 +137,7 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
             >
                 <button
                     onClick={() => {
-                       
+
 
                         setShowSettings(false)
                     }}
@@ -236,7 +241,14 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
                                     </button>
                                 </div> */}
 
-                        <Button onClick={handleSave} className='cursor-pointer hover:opacity-75'>Save</Button>
+                        {/* <Button onClick={handleSave} className='cursor-pointer hover:opacity-75'>Save</Button> */}
+                        <Button
+                            onClick={handleSave}
+                            disabled={loading}
+                            className='cursor-pointer hover:opacity-75'
+                        >
+                            {loading ? "Updating..." : "Save"}
+                        </Button>
                     </>
                     {/* )} */}
 

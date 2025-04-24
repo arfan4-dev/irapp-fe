@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Header from "@/common/Header";
@@ -20,7 +19,7 @@ import { getOfflineCategories, getPendingCategoryItems, savePendingCategoryItem,
 import { useSyncPendingCategoryItems, useSyncPendingCategoryUpdates } from "@/utils/categorySync";
 import { setCategories } from "@/store/slices/categorySlice";
 import { setOrder } from "@/store/slices/orderSlice";
-import { initDB } from "@/utils/indexedDB";
+import useViewMode from "@/hooks/useViewMode";
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
   updateOrderStatusSync()
@@ -29,14 +28,12 @@ export default function AdminPage() {
   const [showSettings, setShowSettings] = useState(false);
   const [showAdminSettings, setShowAdminSettings] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  // const sensors = useSensors(useSensor(PointerSensor));
   const [editingItem, setEditingItem] = useState<{ categoryId: string; name: string } | null>(null);
   const [editedItemName, setEditedItemName] = useState('');
   const [editedAllowMultiple, setEditedAllowMultiple] = useState(false);
   const [offlineCategoryItems, setOfflineCategoryItems] = useState<Record<string, { name: string; allowMultiple: boolean }[]>>({});
-
   const [serviceName] = useState("IntraServe Admin Panel");
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>("grid");
+  const { viewMode, toggleViewMode }= useViewMode();
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [editedLabel, setEditedLabel] = useState("");
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -51,7 +48,6 @@ export default function AdminPage() {
 
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
-  console.log(orders)
 
   const handleStatusUpdate = async (orderId: string, status: string) => {
     if (isOnline) {
@@ -65,9 +61,7 @@ export default function AdminPage() {
           order._id === orderId ? { ...order, status } : order
         )
       ));
-       const db = await initDB();
-      const offlineOrderStatus = await db.getAll("pendingStatusUpdates");
-      console.log("offlineOrderStatus", offlineOrderStatus);
+           
       toast.success("Status change saved offline and will sync once online.");
     }
   };
@@ -76,9 +70,7 @@ export default function AdminPage() {
   useEffect(() => {
     const loadOfflineItems = async () => {
       const pendingItems = await getPendingCategoryItems(); // from IndexedDB
-
       const map: Record<string, { name: string; allowMultiple: boolean }[]> = {};
-
       pendingItems.forEach(item => {
         if (!map[item.categoryId]) map[item.categoryId] = [];
         map[item.categoryId].push({
@@ -100,9 +92,7 @@ export default function AdminPage() {
       if (isOnline) {
         dispatch(getOrdersByUser());
       } else {
-              const offlineOrderStatus = await getOfflineOrders();
-console.log("offlineOrderStatus", offlineOrderStatus);
-
+         const offlineOrderStatus = await getOfflineOrders();
         dispatch(setOrder([...orders, ...offlineOrderStatus])); // ✅ use actual action
         toast.info("Showing offline categories.");
       }
@@ -134,13 +124,6 @@ console.log("offlineOrderStatus", offlineOrderStatus);
     loadCategories();
   }, [dispatch, isOnline, showCategoryModal]);
 
-
-
-  // useEffect(() => {
-  //   dispatch(fetchCategories())
-  //   dispatch(getOrdersByUser())
-  // }, [dispatch])
-
   useEffect(() => {
     getUserIdFromLocalStorage()
     const handleClickOutside = (e: MouseEvent) => {
@@ -166,23 +149,21 @@ console.log("offlineOrderStatus", offlineOrderStatus);
       />
 
       <div className="max-w-5xl mx-auto space-y-6 p-4">
-
         <div className="flex justify-end">
           <Button
             className="text-black dark:bg-black dark:text-white"
             variant="outline"
-            onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
+            onClick={toggleViewMode}
           >
             Switch to {viewMode === "grid" ? "List" : "Grid"} View
           </Button>
         </div>
 
-
-        <Card>
+        <Card className="overflow-x-auto">
           <CardContent className="p-4 md:p-6">
             <h2 className="text-xl font-semibold mb-4">Pending Requests</h2>
             {viewMode === "list" ? (
-              <table className="w-full text-left">
+              <table className="w-full text-left ">
                 <thead>
                   <tr className="bg-gray-200 dark:bg-gray-700">
                     <th className="p-2">Type & Items</th>
@@ -231,13 +212,13 @@ console.log("offlineOrderStatus", offlineOrderStatus);
                           Accept
                         </Button>
 
-                        <Button
+                        {/* <Button
                           size="sm"
                           variant="outline"
                           onClick={() => handleStatusUpdate(req._id!, "Answered")}
                         >
                           Answered
-                        </Button>
+                        </Button> */}
 
                       </td>
                     </tr>
@@ -275,13 +256,13 @@ console.log("offlineOrderStatus", offlineOrderStatus);
                             Accept
                           </Button>
 
-                          <Button
+                          {/* <Button
                             size="sm"
                             variant="outline"
                             onClick={() => handleStatusUpdate(req._id!, "Answered")}
                           >
                             Answered
-                          </Button>
+                          </Button> */}
                         </div>
                       </CardContent>
                     </Card>
@@ -291,8 +272,7 @@ console.log("offlineOrderStatus", offlineOrderStatus);
           </CardContent>
         </Card>
 
-
-        <Card>
+        <Card className="overflow-x-auto">
           <CardContent className="p-4 md:p-6">
             <h2 className="text-xl font-semibold mb-4">In Progress Requests</h2>
             {inProgressOrders.length === 0 ? (
@@ -380,7 +360,6 @@ console.log("offlineOrderStatus", offlineOrderStatus);
           </CardContent>
         </Card>
 
-
         <Card>
           <CardContent className="p-4 md:p-6 space-y-6">
             <h2 className="text-xl font-semibold mb-4 ">Manage Categories </h2>
@@ -395,7 +374,7 @@ console.log("offlineOrderStatus", offlineOrderStatus);
             <div className="flex gap-4 flex-wrap items-start">
               {categories && categories.length > 0 ? (
                 categories?.map((cat) => (
-                  <div key={cat._id} className="rounded-lg  border p-4 basis-[48%]  bg-white dark:bg-zinc-800 shadow-sm space-y-3">
+                  <div key={cat._id} className="rounded-lg  border p-4 basis-[100%]  md:basis-[48%]  bg-white dark:bg-zinc-800 shadow-sm space-y-3">
                     <div className="flex justify-between items-center">
                       {editingCategoryId === cat._id ? (
                         <input
@@ -628,37 +607,16 @@ console.log("offlineOrderStatus", offlineOrderStatus);
           </CardContent>
         </Card>
 
-
         {showCategoryModal && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
             <Card className="w-full max-w-md bg-white dark:bg-zinc-900 text-black dark:text-white rounded-lg shadow-lg">
               <CardContent className="px-6 space-y-4">
                 <h3 className="text-lg font-semibold">Add New Category</h3>
                 <form
-                  // onSubmit={(e) => {
-                  //   e.preventDefault();
-                  //   const form = e.target as any;
-                  //   const label = form.catLabel.value.trim();
-
-                  //   // Disallow special characters except space, dash, underscore
-                  //   const isValid = /^[a-zA-Z0-9 _-]+$/.test(label);
-
-                  //   if (!label || !isValid) {
-                  //     toast.error("Category name should not contain special characters.");
-                  //     return;
-                  //   }
-                  //   if (categories.some(cat => cat.label === label)) {
-                  //     toast.error("Category already exists.");
-                  //     return;
-                  //   }
-                  //   dispatch(createCategory({ label }));
-                  //   setShowCategoryModal(false);
-                  // }}
                   onSubmit={(e) => {
                     e.preventDefault();
                     const form = e.target as any;
                     const label = form.catLabel.value.trim();
-
                     // Disallow special characters except space, dash, underscore
                     const isValid = /^[a-zA-Z0-9 _-]+$/.test(label);
 

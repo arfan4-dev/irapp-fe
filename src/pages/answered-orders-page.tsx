@@ -8,11 +8,12 @@ import useThemeMode from "@/hooks/useTheme";
 import { useLocation } from "react-router-dom";
 import UserSetting from "@/common/UserSetting";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
+import useViewMode from "@/hooks/useViewMode";
 
 export default function AnsweredOrdersPage() {
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const [showSettings, setShowSettings] = useState(false);
-    const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
+    const { viewMode, toggleViewMode } = useViewMode();
     const [serviceName] = useState("Answered Requests");
     const location = useLocation()
     const modalRef = useRef<HTMLDivElement>(null);
@@ -51,7 +52,7 @@ export default function AnsweredOrdersPage() {
                     <Button
                         className="text-black dark:bg-black dark:text-white"
                         variant="outline"
-                        onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                        onClick={toggleViewMode}
                     >
                         Switch to {viewMode === 'grid' ? 'List' : 'Grid'} View
                     </Button>

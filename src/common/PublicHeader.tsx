@@ -24,9 +24,9 @@ const PublicHeader: React.FC<PublicHeaderProps> = ({ theme, setTheme, serviceNam
                         {serviceName}
                     </span>
                 </Link>
-                <NavLink to="/admin" className="flex items-center gap-2">
-                    <ul>
-                        <li>Admin Login</li>
+                <NavLink to="/admin" className="flex items-center gap-2 ">
+                    <ul >
+                        <li className="hover:underline">Admin Login</li>
                     </ul>
                 </NavLink>
             </div>

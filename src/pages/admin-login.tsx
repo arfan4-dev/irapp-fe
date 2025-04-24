@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { adminLogin } from "@/store/features/user/user";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +17,7 @@ export default function AdminLogin() {
     const [form, setForm] = useState({ email: "", password: "" });
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const [serviceName] = useState("IntraServe Admin ");
+    const { loading } = useSelector((state: RootState) => state?.user);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -80,9 +81,17 @@ export default function AdminLogin() {
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
                         </div>
-                        <Button type="submit" className="w-full cursor-pointer">
-                            Log In
-                        </Button>
+                         <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
+                                {loading ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <Loader2 className="animate-spin w-4 h-4" />
+                                       
+                                    <span className="text-sm">Please wait...</span>
+                                    </span>
+                                ) : (
+                                    'Login'
+                                )}
+                            </Button>
                     </form>
                 </div>
             </div>

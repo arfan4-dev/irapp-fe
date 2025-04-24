@@ -16,7 +16,6 @@ import { fetchUserById } from "@/store/features/user/user";
 // import { getImageUrl } from "@/utils";
 import { LogOut } from "lucide-react";
 import { AvatarImage } from "@radix-ui/react-avatar";
-import { getImageUrl } from "@/utils";
 
 interface HeaderProps {
   theme: 'light' | 'dark';
@@ -62,6 +61,9 @@ const Header: React.FC<HeaderProps> = ({
   const getInitials = (name: string) => {
     return name?.charAt(0).toUpperCase() || "U";
   };
+
+  console.log("Header user", user);
+  
   return (
     <header className="sticky top-0 bg-inherit border-b z-10 dark:bg-gray-900 dark:text-white flex justify-between items-center px-4 ">
       <div className="flex items-center gap-2">
@@ -169,7 +171,7 @@ const Header: React.FC<HeaderProps> = ({
                { user?.image ?
                 <AvatarImage
                   // src={'/logo.png'}
-                  src={getImageUrl(user?.image)}
+                  src={user?.image}
                   alt={user?.name || "User"}
                 />
                 :<AvatarFallback>{getInitials(user?.username || "U")}</AvatarFallback>}

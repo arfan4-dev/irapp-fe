@@ -222,7 +222,7 @@ export default function UserPage() {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
-                  {/* here show the item */}
+                
                   {/* ✅ Show cart summary */}
                   {Object.keys(cart).length > 0 && (
                     <div className="mt-4 space-y-2">

@@ -10,6 +10,7 @@ import { useLocation } from "react-router-dom";
 import UserSetting from "@/common/UserSetting";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import useViewMode from "@/hooks/useViewMode";
+import useUsername from "@/hooks/useUsername";
 
 export default function AnsweredOrdersPage() {
     const { theme, setTheme } = useThemeMode();
@@ -24,19 +25,31 @@ export default function AnsweredOrdersPage() {
         (state.orders as RootState['orders']).orders.filter(order => order.status === 'Answered')
     );
 
+    const { userIdToUsername } =useUsername(allOrders); // Assuming this is a custom hook to fetch usernames
+
     // Filters
     const [searchItem, setSearchItem] = useState("");
     const [searchPerson, setSearchPerson] = useState("");
     const [searchDate, setSearchDate] = useState("");
 
+    
     // Sort
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); // Default Descending
 
     const filteredOrders = allOrders
         .filter(order => {
-            const itemMatch = order.items.some(item => item.name.toLowerCase().includes(searchItem.toLowerCase()));
-            const personMatch = order.person.toLowerCase().includes(searchPerson.toLowerCase());
-            const dateMatch = searchDate ? new Date(order.timestamp!).toISOString().split("T")[0] === searchDate : true;
+            const itemMatch = order.items.some(item =>
+                item.name.toLowerCase().includes(searchItem.toLowerCase())
+            );
+
+            const personMatch = searchPerson
+                ? (userIdToUsername[order.userId]?.toLowerCase().includes(searchPerson.toLowerCase()) ?? false)
+                : true;
+
+            const dateMatch = searchDate
+                ? new Date(order.timestamp!).toISOString().split("T")[0] === searchDate
+                : true;
+
             return itemMatch && personMatch && dateMatch;
         })
         .sort((a, b) => {
@@ -45,6 +58,7 @@ export default function AnsweredOrdersPage() {
             const dateB = new Date(b.timestamp).getTime();
             return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
         });
+
 
     useEffect(() => {
         getUserIdFromLocalStorage();
@@ -147,7 +161,7 @@ export default function AnsweredOrdersPage() {
                                             <div className="font-semibold italic">{order.type}</div>
                                             <div className="text-sm italic">{order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}</div>
                                         </td>
-                                        <td className="p-2">{order.person}</td>
+                                        <td className="p-2">{userIdToUsername[order.userId] || "Loading..."}</td>
                                         <td className="p-2">{order.timestamp ? new Date(order.timestamp).toISOString().split("T")[0] : "No date"}</td>
                                         <td className="p-2">{order.timestamp ? new Date(order.timestamp).toTimeString().split(" ")[0] : "No time"}</td>
                                         <td className="p-2">{order.status}</td>
@@ -163,7 +177,7 @@ export default function AnsweredOrdersPage() {
                                 <CardContent className="p-4 space-y-2">
                                     <div><strong>Type:</strong> {order.type}</div>
                                     <div><strong>Items:</strong> {order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}</div>
-                                    <div><strong>By:</strong> {order.person}</div>
+                                    <div><strong>By:</strong> {userIdToUsername[order.userId] || "Loading..."}</div>
                                     {order.timestamp && (
                                         <>
                                             <div><strong>Date:</strong> {new Date(order.timestamp).toISOString().split("T")[0]}</div>

@@ -198,7 +198,7 @@ export default function UserPage() {
                       {categories.find(r => r._id === selectedRequest)?.items.map(item => {
                         const quantity = itemQuantities[item.name] || 1;
                         return (
-                          <Card key={item.name} className="p-[12px] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <Card key={item.name} className="p-[13px] flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <span className="text-[14px] font-medium w-[19%] ">{item.name}</span>
                             {item.allowMultiple ? (
                               <div className="flex items-center gap-3 ">

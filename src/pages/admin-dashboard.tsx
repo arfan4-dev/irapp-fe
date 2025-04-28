@@ -25,6 +25,7 @@ import { FiEdit } from "react-icons/fi";
 import { FiMoreVertical } from "react-icons/fi";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import useUsername from "@/hooks/useUsername";
+import useCategorySortOrder from "@/hooks/useCategorySortOrder";
 
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
@@ -57,6 +58,7 @@ export default function AdminPage() {
   const { userIdToUsername } = useUsername(orders)
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
+  const { categorySortOrder, setCategorySortOrder } = useCategorySortOrder();
 
 
 
@@ -482,15 +484,40 @@ export default function AdminPage() {
             <h2 className="text-xl font-semibold mb-4 ">Manage Categories </h2>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Add New Category</h3>
-              <Button size="lg" type="submit" onClick={() => setShowCategoryModal(true)} className="mt-2 cursor-pointer hover:opacity-75 mr-5">
-                Add
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  size="lg"
+                  type="submit"
+                  onClick={() => setShowCategoryModal(true)}
+                  className="mt-2 cursor-pointer hover:opacity-75"
+                >
+                  Add
+                </Button>
+                <Button
+                  size="lg"
+                  type="button"
+                  onClick={() => setCategorySortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))}
+                  className="mt-2 cursor-pointer hover:opacity-75"
+                >
+                  Sort {categorySortOrder === 'asc' ? 'Descending' : 'Ascending'}
+                </Button>
+              </div>
             </div>
+
 
 
             <div className="flex gap-4 flex-wrap items-start">
               {categories && categories.length > 0 ? (
-                categories?.map((cat) => (
+                [...categories] // create a shallow copy first
+                  .sort((a, b) => {
+                    const nameA = a.label.toLowerCase();
+                    const nameB = b.label.toLowerCase();
+                    if (categorySortOrder === 'asc') {
+                      return nameA.localeCompare(nameB);
+                    } else {
+                      return nameB.localeCompare(nameA);
+                    }
+                  })?.map((cat) => (
                   <div key={cat._id} className="rounded-lg  border p-4 basis-[100%]  md:basis-[48%]  bg-white dark:bg-zinc-800 shadow-sm space-y-3">
                     <div className="flex justify-between items-center">
                       {editingCategoryId === cat._id ? (

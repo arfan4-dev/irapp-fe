@@ -105,10 +105,9 @@ export default function AdminPage() {
     }
   };
 
-  // offline category items
   useEffect(() => {
     const loadOfflineItems = async () => {
-      const pendingItems = await getPendingCategoryItems(); // from IndexedDB
+      const pendingItems = await getPendingCategoryItems();
       const map: Record<string, { name: string; allowMultiple: boolean }[]> = {};
       pendingItems.forEach(item => {
         if (!map[item.categoryId]) map[item.categoryId] = [];
@@ -122,7 +121,16 @@ export default function AdminPage() {
     };
 
     loadOfflineItems();
-  }, [categories, showCategoryModal]); // also refetch when modal closes
+
+    if (isOnline) {
+      dispatch(fetchCategories())
+        .unwrap()
+        .then(() => {
+          toast.success("Categories synced successfully By Arfan");
+        })
+    }
+  }, [isOnline, showCategoryModal]); // ✅
+
 
 
   // offline orders

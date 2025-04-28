@@ -53,7 +53,6 @@ export default function AdminPage() {
   const [pendingFilters, setPendingFilters] = useState({ item: "", person: "", date: "" });
   const [progressFilters, setProgressFilters] = useState({ item: "", person: "", date: "" });
   const [sortOrderAsc, setSortOrderAsc] = useState(true);
-  const [openItemMenu, setOpenItemMenu] = useState<{ categoryId: string; itemName: string } | null>(null);
 
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");

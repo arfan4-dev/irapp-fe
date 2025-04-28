@@ -20,6 +20,11 @@ import { useSyncPendingCategoryItems, useSyncPendingCategoryUpdates } from "@/ut
 import { setCategories } from "@/store/slices/categorySlice";
 import { setOrder } from "@/store/slices/orderSlice";
 import useViewMode from "@/hooks/useViewMode";
+import { Input } from "@/components/ui/input";
+import { FiEdit } from "react-icons/fi";
+import { FiMoreVertical } from "react-icons/fi";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
   updateOrderStatusSync()
@@ -33,7 +38,7 @@ export default function AdminPage() {
   const [editedAllowMultiple, setEditedAllowMultiple] = useState(false);
   const [offlineCategoryItems, setOfflineCategoryItems] = useState<Record<string, { name: string; allowMultiple: boolean }[]>>({});
   const [serviceName] = useState("IntraServe Admin Panel");
-  const { viewMode, toggleViewMode }= useViewMode();
+  const { viewMode, toggleViewMode } = useViewMode();
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [editedLabel, setEditedLabel] = useState("");
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -45,9 +50,39 @@ export default function AdminPage() {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
   const isOnline = useOfflineStatus();
+  const [pendingFilters, setPendingFilters] = useState({ item: "", person: "", date: "" });
+  const [progressFilters, setProgressFilters] = useState({ item: "", person: "", date: "" });
+  const [sortOrderAsc, setSortOrderAsc] = useState(true);
+  const [openItemMenu, setOpenItemMenu] = useState<{ categoryId: string; itemName: string } | null>(null);
 
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
+
+  const applyFiltersAndSort = (orders: typeof pendingOrders, filters: { item: string; person: string; date: string }) => {
+    let filtered = orders.filter(order => {
+      const matchItem = filters.item
+        ? order.items.some(i => i.name.toLowerCase().includes(filters.item.toLowerCase()))
+        : true;
+      const matchPerson = filters.person
+        ? order.person.toLowerCase().includes(filters.person.toLowerCase())
+        : true;
+      const matchDate = filters.date
+        ? new Date(order.timestamp as string).toISOString().split("T")[0] === filters.date
+        : true;
+      return matchItem && matchPerson && matchDate;
+    });
+
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.timestamp as string).getTime();
+      const dateB = new Date(b.timestamp as string).getTime();
+      return sortOrderAsc ? dateA - dateB : dateB - dateA;
+    });
+
+    return filtered;
+  };
+  const filteredPendingOrders = applyFiltersAndSort(pendingOrders, pendingFilters);
+  const filteredInProgressOrders = applyFiltersAndSort(inProgressOrders, progressFilters);
+
 
   const handleStatusUpdate = async (orderId: string, status: string) => {
     if (isOnline) {
@@ -61,7 +96,7 @@ export default function AdminPage() {
           order._id === orderId ? { ...order, status } : order
         )
       ));
-           
+
       toast.success("Status change saved offline and will sync once online.");
     }
   };
@@ -92,7 +127,7 @@ export default function AdminPage() {
       if (isOnline) {
         dispatch(getOrdersByUser());
       } else {
-         const offlineOrderStatus = await getOfflineOrders();
+        const offlineOrderStatus = await getOfflineOrders();
         dispatch(setOrder([...orders, ...offlineOrderStatus])); // ✅ use actual action
         toast.info("Showing offline categories.");
       }
@@ -100,7 +135,7 @@ export default function AdminPage() {
     };
 
     loadOrders()
-  }, [dispatch,isOnline]);
+  }, [dispatch, isOnline]);
 
 
   useEffect(() => {
@@ -110,11 +145,11 @@ export default function AdminPage() {
 
         dispatch(fetchCategories())
           .unwrap()
-          // .then(() => toast.success("Categories synced successfully."))
-          // .catch(() => toast.error("Failed to sync categories."));
+        // .then(() => toast.success("Categories synced successfully."))
+        // .catch(() => toast.error("Failed to sync categories."));
       } else {
         const offlineCats = await getOfflineCategories();
-        
+
         dispatch(setCategories([...categories, ...offlineCats])); // ✅ use actual action
         toast.info("Showing offline categories.");
       }
@@ -157,11 +192,51 @@ export default function AdminPage() {
           >
             Switch to {viewMode === "grid" ? "List" : "Grid"} View
           </Button>
+          <div className="flex justify-end mb-4">
+            <Button
+              className="text-black dark:bg-black dark:text-white"
+              variant="outline"
+              onClick={() => setSortOrderAsc(prev => !prev)}
+            >
+              Sort {sortOrderAsc ? "Descending" : "Ascending"}
+            </Button>
+          </div>
+
         </div>
 
         <Card className="overflow-x-auto">
           <CardContent className="p-4 md:p-6">
             <h2 className="text-xl font-semibold mb-4">Pending Requests</h2>
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Input
+                type="text"
+                placeholder="Search by Item Name"
+                className="w-48"
+                value={pendingFilters.item}
+                onChange={(e) => setPendingFilters(prev => ({ ...prev, item: e.target.value }))}
+              />
+              <Input
+                type="text"
+                placeholder="Search by Requested By"
+                className="w-48"
+                value={pendingFilters.person}
+                onChange={(e) => setPendingFilters(prev => ({ ...prev, person: e.target.value }))}
+              />
+              <Input
+                type="date"
+                className="w-36"
+                value={pendingFilters.date}
+                onChange={(e) => setPendingFilters(prev => ({ ...prev, date: e.target.value }))}
+              />
+              <Button
+               
+                variant="outline"
+                onClick={() => setPendingFilters({ item: "", person: "", date: "" })}
+              >
+                Clear Filters
+              </Button>
+            </div>
+
             {viewMode === "list" ? (
               <table className="w-full text-left ">
                 <thead>
@@ -175,7 +250,7 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {pendingOrders.map(req => (
+                  {filteredPendingOrders.map(req => (
                     <tr key={req._id} className="border-b align-top">
                       <td className="p-2">
                         <div className="font-semibold italic">{req.type}</div>
@@ -229,7 +304,7 @@ export default function AdminPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 {
-                  pendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>) : (pendingOrders.map(req => (
+                  filteredPendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>) : (filteredPendingOrders.map(req => (
                     <Card key={req._id}>
                       <CardContent className="space-y-2 p-4">
                         {/* <div><strong>Type:</strong> {req.type}</div> */}
@@ -275,7 +350,36 @@ export default function AdminPage() {
         <Card className="overflow-x-auto">
           <CardContent className="p-4 md:p-6">
             <h2 className="text-xl font-semibold mb-4">In Progress Requests</h2>
-            {inProgressOrders.length === 0 ? (
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Input
+                type="text"
+                placeholder="Search by Item Name"
+                className="w-48"
+                value={progressFilters.item}
+                onChange={(e) => setProgressFilters(prev => ({ ...prev, item: e.target.value }))}
+              />
+              <Input
+                type="text"
+                placeholder="Search by Requested By"
+                className="w-48"
+                value={progressFilters.person}
+                onChange={(e) => setProgressFilters(prev => ({ ...prev, person: e.target.value }))}
+              />
+              <Input
+                type="date"
+                className="w-36"
+                value={progressFilters.date}
+                onChange={(e) => setProgressFilters(prev => ({ ...prev, date: e.target.value }))}
+              />
+              <Button
+
+                variant="outline"
+                onClick={() => setProgressFilters({ item: "", person: "", date: "" })}
+              >
+                Clear Filters
+              </Button>
+            </div>
+            {filteredInProgressOrders.length === 0 ? (
               <div className="text-gray-500">No requests in progress.</div>
             ) : viewMode === "list" ? (
               <table className="w-full text-left">
@@ -290,7 +394,7 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {inProgressOrders.map(req => (
+                  {filteredInProgressOrders.map(req => (
                     <tr key={req._id} className="border-b align-top">
                       <td className="p-2">
                         <div className="font-semibold italic">{req.type}</div>
@@ -333,7 +437,7 @@ export default function AdminPage() {
               </table>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {inProgressOrders.map(req => (
+                {filteredInProgressOrders.map(req => (
                   <Card key={req._id}>
                     <CardContent className="space-y-2 p-4">
                       <div><strong>Type:</strong> {req.type}</div>
@@ -391,21 +495,37 @@ export default function AdminPage() {
                         <div className="flex justify-between w-full items-center">
                           <h3
                             className="text-lg font-semibold cursor-pointer"
-                            onClick={() => {
-                              setEditedLabel(cat.label);
-                              setEditingCategoryId(cat._id);
-                            }}
+                            // onClick={() => {
+                            //   setEditedLabel(cat.label);
+                            //   setEditingCategoryId(cat._id);
+                            // }}
                           >
                             {cat.label}
                           </h3>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="text-red-600 hover:text-red-800"
-                            onClick={() => dispatch(deleteCategory(cat._id))}
-                          >
-                            <FaTrashCan />
-                          </Button>
+                          <div> 
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="text-blue-600 hover:text-blue-800"
+                                onClick={() => {
+                                  setEditedLabel(cat.label);
+                                  setEditingCategoryId(cat._id);
+                                }}
+                              >
+                                <FiEdit />
+
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="text-red-600 hover:text-red-800"
+                                onClick={() => dispatch(deleteCategory(cat._id))}
+                              >
+                                <FaTrashCan />
+                              </Button>
+                          </div>
+                         
+                          
                         </div>
                       )}
                     </div>
@@ -435,7 +555,7 @@ export default function AdminPage() {
                                     size="sm"
                                     className="cursor-pointer hover:opacity-75"
                                     onClick={() => {
-                                      
+
                                       dispatch(updateItemInCategory({
                                         categoryId: cat._id,
                                         oldItemName: item.name,
@@ -464,9 +584,9 @@ export default function AdminPage() {
                                 </div>
                               </>
                             ) : (
-                              <div className="flex justify-between items-center">
-                                <span>{item.name}</span>
-                                <div className="flex">
+                              <div className="">
+                                {/* <span>{item.name}</span> */}
+                                {/* <div className="flex">
                                   <Button
                                     size="sm"
                                     className="text-blue-600 hover:text-blue-800 cursor-pointer"
@@ -491,7 +611,45 @@ export default function AdminPage() {
                                   >
                                     Remove
                                   </Button>
-                                </div>
+                                </div> */}
+                                  <div className="flex justify-between items-center">
+                                    <span>{item.name}</span>
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button
+                                          size="icon"
+                                          variant="ghost"
+                                          className="text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                                        >
+                                          <FiMoreVertical size={18} />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end" className="w-32">
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            setEditingItem({ categoryId: cat._id, name: item.name });
+                                            setEditedItemName(item.name);
+                                            setEditedAllowMultiple(item.allowMultiple);
+                                          }}
+                                        >
+                                          Update
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }))
+                                              .unwrap()
+                                              .then(() => dispatch(fetchCategories()));
+                                          }}
+                                          className="text-red-600 focus:text-red-600"
+                                        >
+                                          Remove
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </div>
+
+
+
                               </div>
                             )}
                           </li>

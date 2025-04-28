@@ -110,8 +110,20 @@ export default function AnsweredOrdersPage() {
                         type="date"
                         value={searchDate}
                         onChange={(e) => setSearchDate(e.target.value)}
-                        className="w-48"
+                        className="w-36"
                     />
+                    <Button
+                        variant="outline"
+                        onClick={() => {
+                            setSearchItem('');
+                            setSearchPerson('');
+                            setSearchDate('');
+                            setSortOrder('desc'); // (optional) Sort reset bhi chahte ho to ye line
+                        }}
+                        className="w-48 cursor-pointer text-black dark:bg-black dark:text-white"
+                    >
+                        Clear Filters
+                    </Button>
                 </div>
 
                 {filteredOrders.length === 0 ? (

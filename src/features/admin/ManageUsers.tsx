@@ -13,6 +13,7 @@ import UserSetting from "@/common/UserSetting";
 import { useLocation } from "react-router-dom";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import UserManageSkeleton from "@/components/skeleton/skeleton";
+import { Input } from "@/components/ui/input";
 
 const departments = [
     "Reception",
@@ -42,11 +43,16 @@ export default function ManageUsers() {
     const location = useLocation()
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const [serviceName] = useState("Manage Users");
+    const [searchName, setSearchName] = useState('');
+    const [searchEmail, setSearchEmail] = useState('');
 
-    console.log(loading)
-    useEffect(() => {
-        dispatch(fetchAllUsers());
-    }, [dispatch]);
+    const filteredUsers = users?.filter((user: any) => {
+        const nameMatch = user.username.toLowerCase().includes(searchName.toLowerCase());
+        const emailMatch = user.email.toLowerCase().includes(searchEmail.toLowerCase());
+        return nameMatch && emailMatch;
+    });
+
+
 
     const handleChange = (userId: string, field: 'role' | 'department', value: string) => {
         setChanges(prev => ({
@@ -70,6 +76,12 @@ export default function ManageUsers() {
             })
             .catch(() => toast.error("Failed to update user."));
     };
+
+
+    useEffect(() => {
+        dispatch(fetchAllUsers());
+    }, [dispatch]);
+
 
     useEffect(() => {
         getUserIdFromLocalStorage()
@@ -98,12 +110,41 @@ export default function ManageUsers() {
             />
             <div className="max-w-4xl mx-auto p-4 space-y-4">
                 <h2 className="text-2xl font-semibold mb-6">Manage Users</h2>
-                
+                <div className="flex flex-wrap gap-4 mb-4">
+                    <Input
+                        type="text"
+                        placeholder="Search by Name"
+                        value={searchName}
+                        onChange={(e) => setSearchName(e.target.value)}
+                        className="w-48"
+                    />
+                    <Input
+                        type="text"
+                        placeholder="Search by Email"
+                        value={searchEmail}
+                        onChange={(e) => setSearchEmail(e.target.value)}
+                        className=" w-48"
+                    />
+                     
+
+                    {/* ✅ Clear Filter Button */}
+                    <Button
+                        variant="outline"
+                        onClick={() => {
+                            setSearchName('');
+                            setSearchEmail('');
+                        }}
+                        className="w-32"
+                    >
+                        Clear Filters
+                    </Button>
+                </div>
+
                 {
                     loading ? (
                         <UserManageSkeleton />
                     ) : users && users.length > 0 ? (
-                        users.map((user: any) => (
+                            filteredUsers.map((user: any) => (
                             <Card key={user._id}>
                                 <CardContent className="p-4 space-y-3">
                                     <p className="font-semibold">

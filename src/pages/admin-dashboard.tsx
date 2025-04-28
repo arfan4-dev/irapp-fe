@@ -24,6 +24,8 @@ import { Input } from "@/components/ui/input";
 import { FiEdit } from "react-icons/fi";
 import { FiMoreVertical } from "react-icons/fi";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import useUsername from "@/hooks/useUsername";
+import api from "@/api/api";
 
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
@@ -53,9 +55,33 @@ export default function AdminPage() {
   const [pendingFilters, setPendingFilters] = useState({ item: "", person: "", date: "" });
   const [progressFilters, setProgressFilters] = useState({ item: "", person: "", date: "" });
   const [sortOrderAsc, setSortOrderAsc] = useState(true);
-
+  const { userIdToUsername,setUserIdToUsername }=useUsername()
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
+
+  
+  // const applyFiltersAndSort = (orders: typeof pendingOrders, filters: { item: string; person: string; date: string }) => {
+  //   let filtered = orders.filter(order => {
+  //     const matchItem = filters.item
+  //       ? order.items.some(i => i.name.toLowerCase().includes(filters.item.toLowerCase()))
+  //       : true;
+  //     const matchPerson = filters.person
+  //       ? order.person.toLowerCase().includes(filters.person.toLowerCase())
+  //       : true;
+  //     const matchDate = filters.date
+  //       ? new Date(order.timestamp as string).toISOString().split("T")[0] === filters.date
+  //       : true;
+  //     return matchItem && matchPerson && matchDate;
+  //   });
+
+  //   filtered.sort((a, b) => {
+  //     const dateA = new Date(a.timestamp as string).getTime();
+  //     const dateB = new Date(b.timestamp as string).getTime();
+  //     return sortOrderAsc ? dateA - dateB : dateB - dateA;
+  //   });
+
+  //   return filtered;
+  // };
 
   const applyFiltersAndSort = (orders: typeof pendingOrders, filters: { item: string; person: string; date: string }) => {
     let filtered = orders.filter(order => {
@@ -63,7 +89,7 @@ export default function AdminPage() {
         ? order.items.some(i => i.name.toLowerCase().includes(filters.item.toLowerCase()))
         : true;
       const matchPerson = filters.person
-        ? order.person.toLowerCase().includes(filters.person.toLowerCase())
+        ? (userIdToUsername[order.userId]?.toLowerCase().includes(filters.person.toLowerCase()) ?? false)
         : true;
       const matchDate = filters.date
         ? new Date(order.timestamp as string).toISOString().split("T")[0] === filters.date
@@ -79,10 +105,22 @@ export default function AdminPage() {
 
     return filtered;
   };
+
+
   const filteredPendingOrders = applyFiltersAndSort(pendingOrders, pendingFilters);
   const filteredInProgressOrders = applyFiltersAndSort(inProgressOrders, progressFilters);
 
-
+  const fetchUsername = async (userId: string) => {
+    
+    try {
+      const response = await api.get(`/${userId}`); // your actual API route
+   
+      return response.data.data.username; // Adjust if your API response is different
+    } catch (error) {
+      console.error("Failed to fetch username", error);
+      return "Unknown User"; // fallback
+    }
+  };
   const handleStatusUpdate = async (orderId: string, status: string) => {
     if (isOnline) {
       await dispatch(updateOrderStatus({ id: orderId, status }));
@@ -171,6 +209,27 @@ export default function AdminPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSettings, setShowSettings]);
 
+  useEffect(() => {
+    const uniqueUserIds = Array.from(new Set(orders.map(order => order.userId)));
+
+    const fetchAllUsernames = async () => {
+      const newMapping: Record<string, string> = {};
+
+      for (const userId of uniqueUserIds) {
+        if (!userIdToUsername[userId]) {
+          const username = await fetchUsername(userId);
+          newMapping[userId] = username;
+        }
+      }
+
+      setUserIdToUsername(prev => ({ ...prev, ...newMapping }));
+    };
+
+    if (orders.length > 0) {
+      fetchAllUsernames();
+    }
+  }, [orders]);
+
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
       <Header
@@ -183,7 +242,7 @@ export default function AdminPage() {
       />
 
       <div className="max-w-5xl mx-auto space-y-6 p-4">
-        <div className="flex justify-end">
+        <div className="flex gap-5 justify-end">
           <Button
             className="text-black dark:bg-black dark:text-white"
             variant="outline"
@@ -257,7 +316,7 @@ export default function AdminPage() {
                           {req.items.map(item => `${item.quantity} × ${item.name}`).join(", ")}
                         </div>
                       </td>
-                      <td className="p-2">{req.person}</td>
+                      <td className="p-2"> {userIdToUsername[req.userId] || "Loading..."}</td>
                       <td className="p-2">{req.timestamp ? (
 
                         <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>
@@ -308,7 +367,7 @@ export default function AdminPage() {
                       <CardContent className="space-y-2 p-4">
                         {/* <div><strong>Type:</strong> {req.type}</div> */}
                         <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
-                        <div><strong>By:</strong> {req.person}</div>
+                        <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
                         {req.timestamp ? (
                           <>
                             <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
@@ -401,7 +460,7 @@ export default function AdminPage() {
                           {req.items.map(item => `${item.quantity} × ${item.name}`).join(", ")}
                         </div>
                       </td>
-                      <td className="p-2">{req.person}</td>
+                      <td className="p-2">{userIdToUsername[req.userId] || "Loading..."}</td>
                       <td className="p-2">{req.timestamp ? (
 
                         <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>
@@ -441,7 +500,7 @@ export default function AdminPage() {
                     <CardContent className="space-y-2 p-4">
                       <div><strong>Type:</strong> {req.type}</div>
                       <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
-                      <div><strong>By:</strong> {req.person}</div>
+                      <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
                       {req.timestamp ? (
                         <>
                           <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>

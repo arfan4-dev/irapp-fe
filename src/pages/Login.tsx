@@ -42,7 +42,7 @@ export default function Login() {
     try {
         const res = await dispatch(loginUser(formData)).unwrap();
 
-        toast.success("Login successfully");
+        toast.success("Login successfully.");
 
         // ✅ Now do role-based navigation here
         if (res.data.changePassword) return ;

@@ -47,13 +47,13 @@ export const useOrderSync = () => {
 
 export const updateOrderStatusSync=()=>{
     const dispatch = useDispatch<AppDispatch>();
-console.log("updateOrderStatusSync.....");
+// console.log("updateOrderStatusSync.....");
   useEffect(() => {
     const handlePendingStatusUpdatesSync = async () => {
       const db = await initDB();
       const updates = await db.getAll("pendingStatusUpdates");
       if (updates.length === 0) return;
-      console.log("Pending status updates found:", updates);
+      // console.log("Pending status updates found:", updates);
       for (const update of updates) {
         try {
                 await dispatch(
@@ -61,7 +61,7 @@ console.log("updateOrderStatusSync.....");
                 );
           toast.success(` Synced status for order ${update.id}`);
           await db.delete("pendingStatusUpdates", update.id);
-          console.log(`✅ Synced status for order ${update.id}`);
+          // console.log(`✅ Synced status for order ${update.id}`);
         } catch (err) {
           console.error(
             `❌ Failed to sync status for order ${update.id}`,

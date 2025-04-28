@@ -62,7 +62,6 @@ const Header: React.FC<HeaderProps> = ({
     return name?.charAt(0).toUpperCase() || "U";
   };
 
-  console.log("Header user", user);
   
   return (
     <header className="sticky top-0 bg-inherit border-b z-10 dark:bg-gray-900 dark:text-white flex justify-between items-center px-4 ">

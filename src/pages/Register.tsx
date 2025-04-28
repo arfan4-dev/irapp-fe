@@ -3,13 +3,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectTrigger,
-    SelectValue,
-    SelectContent,
-    SelectItem
-} from "@/components/ui/select";
+// import {
+//     Select,
+//     SelectTrigger,
+//     SelectValue,
+//     SelectContent,
+//     SelectItem
+// } from "@/components/ui/select";
 import { Loader2 } from "lucide-react"; // using lucide-react icons
 import { Eye, EyeOff } from "lucide-react";
 import PublicHeader from "@/common/PublicHeader";
@@ -65,9 +65,9 @@ export default function Register() {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
-    const handleRoleChange = (value: string) => {
-        setFormData(prev => ({ ...prev, role: value }));
-    };
+    // const handleRoleChange = (value: string) => {
+    //     setFormData(prev => ({ ...prev, role: value }));
+    // };
 
 
     const dispatch = useDispatch<AppDispatch>();
@@ -174,18 +174,18 @@ export default function Register() {
                                 </button>
                             </div>
 
-                            <div className="space-y-2">
+                            {/* <div className="space-y-2">
                                 <Label>Role</Label>
                                 <Select value={formData.role} onValueChange={handleRoleChange}>
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select role" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {/* <SelectItem value="admin">Admin</SelectItem> */}
+                                        <SelectItem value="admin">Admin</SelectItem>
                                         <SelectItem value="user">User</SelectItem>
                                     </SelectContent>
                                 </Select>
-                            </div>
+                            </div> */}
 
                             <div className="space-y-2">
                                 <Label>Profile Picture</Label>

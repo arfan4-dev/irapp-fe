@@ -59,37 +59,38 @@ export default function AdminPage() {
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
   const { categorySortOrder, setCategorySortOrder } = useCategorySortOrder();
+  const { config } = useSelector((state: RootState) => state.siteConfig);
 
 
 
   const applyFiltersAndSort = (orders: typeof pendingOrders, filters: { item: string; person: string; date: string }) => {
-  let filtered = orders.filter(order => {
-    const matchItem = filters.item
-      ? order.items.some(i => i.name.toLowerCase().includes(filters.item.toLowerCase()))
-      : true;
-    const matchPerson = filters.person
-      ? (userIdToUsername[order.userId]?.toLowerCase().includes(filters.person.toLowerCase()) ?? false)
-      : true;
-    const matchDate = filters.date
-      ? new Date(order.timestamp as string).toISOString().split("T")[0] === filters.date
-      : true;
-    return matchItem && matchPerson && matchDate;
-  });
+    let filtered = orders.filter(order => {
+      const matchItem = filters.item
+        ? order.items.some(i => i.name.toLowerCase().includes(filters.item.toLowerCase()))
+        : true;
+      const matchPerson = filters.person
+        ? (userIdToUsername[order.userId]?.toLowerCase().includes(filters.person.toLowerCase()) ?? false)
+        : true;
+      const matchDate = filters.date
+        ? new Date(order.timestamp as string).toISOString().split("T")[0] === filters.date
+        : true;
+      return matchItem && matchPerson && matchDate;
+    });
 
-  filtered.sort((a, b) => {
-    const dateA = new Date(a.timestamp as string).getTime();
-    const dateB = new Date(b.timestamp as string).getTime();
-    return sortOrderAsc ? dateA - dateB : dateB - dateA;
-  });
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.timestamp as string).getTime();
+      const dateB = new Date(b.timestamp as string).getTime();
+      return sortOrderAsc ? dateA - dateB : dateB - dateA;
+    });
 
-  return filtered;
-};
+    return filtered;
+  };
 
 
   const filteredPendingOrders = applyFiltersAndSort(pendingOrders, pendingFilters);
   const filteredInProgressOrders = applyFiltersAndSort(inProgressOrders, progressFilters);
 
- 
+
   const handleStatusUpdate = async (orderId: string, status: string) => {
     if (isOnline) {
       await dispatch(updateOrderStatus({ id: orderId, status }));
@@ -192,7 +193,7 @@ export default function AdminPage() {
       <Header
         location={location.pathname}
         theme={theme}
-        serviceName={serviceName}
+        serviceName={config.brandName || serviceName}
         setTheme={setTheme}
         setShowSettings={setShowAdminSettings}
         showSettings={showAdminSettings}
@@ -244,7 +245,7 @@ export default function AdminPage() {
                 onChange={(e) => setPendingFilters(prev => ({ ...prev, date: e.target.value }))}
               />
               <Button
-               
+
                 variant="outline"
                 onClick={() => setPendingFilters({ item: "", person: "", date: "" })}
               >
@@ -518,31 +519,31 @@ export default function AdminPage() {
                       return nameB.localeCompare(nameA);
                     }
                   })?.map((cat) => (
-                  <div key={cat._id} className="rounded-lg  border p-4 basis-[100%]  md:basis-[48%]  bg-white dark:bg-zinc-800 shadow-sm space-y-3">
-                    <div className="flex justify-between items-center">
-                      {editingCategoryId === cat._id ? (
-                        <input
-                          value={editedLabel}
-                          onChange={(e) => setEditedLabel(e.target.value)}
-                          onBlur={() => {
-                            dispatch(updateCategory({ id: cat._id, newLabel: editedLabel }));
-                            setEditingCategoryId(null);
-                          }}
-                          className="text-lg font-semibold border-b w-full dark:bg-zinc-800"
-                          autoFocus
-                        />
-                      ) : (
-                        <div className="flex justify-between w-full items-center">
-                          <h3
-                            className="text-lg font-semibold cursor-pointer"
+                    <div key={cat._id} className="rounded-lg  border p-4 basis-[100%]  md:basis-[48%]  bg-white dark:bg-zinc-800 shadow-sm space-y-3">
+                      <div className="flex justify-between items-center">
+                        {editingCategoryId === cat._id ? (
+                          <input
+                            value={editedLabel}
+                            onChange={(e) => setEditedLabel(e.target.value)}
+                            onBlur={() => {
+                              dispatch(updateCategory({ id: cat._id, newLabel: editedLabel }));
+                              setEditingCategoryId(null);
+                            }}
+                            className="text-lg font-semibold border-b w-full dark:bg-zinc-800"
+                            autoFocus
+                          />
+                        ) : (
+                          <div className="flex justify-between w-full items-center">
+                            <h3
+                              className="text-lg font-semibold cursor-pointer"
                             // onClick={() => {
                             //   setEditedLabel(cat.label);
                             //   setEditingCategoryId(cat._id);
                             // }}
-                          >
-                            {cat.label}
-                          </h3>
-                          <div> 
+                            >
+                              {cat.label}
+                            </h3>
+                            <div>
                               <Button
                                 size="sm"
                                 variant="ghost"
@@ -563,70 +564,70 @@ export default function AdminPage() {
                               >
                                 <FaTrashCan />
                               </Button>
+                            </div>
+
+
                           </div>
-                         
-                          
-                        </div>
-                      )}
-                    </div>
+                        )}
+                      </div>
 
-                    <ul className="space-y-2  ">
-                      {cat?.items?.map(item => {
-                        const isEditingItem = editingItem?.categoryId === cat._id && editingItem?.name === item.name;
-                        return (
-                          <li key={item.name} className="flex flex-col gap-2 text-sm border-b pb-2">
-                            {isEditingItem ? (
-                              <>
-                                <input
-                                  value={editedItemName}
-                                  onChange={(e) => setEditedItemName(e.target.value)}
-                                  className="px-2 py-1 border rounded dark:bg-zinc-900"
-                                />
-                                <label className="flex items-center gap-2 text-xs">
+                      <ul className="space-y-2  ">
+                        {cat?.items?.map(item => {
+                          const isEditingItem = editingItem?.categoryId === cat._id && editingItem?.name === item.name;
+                          return (
+                            <li key={item.name} className="flex flex-col gap-2 text-sm border-b pb-2">
+                              {isEditingItem ? (
+                                <>
                                   <input
-                                    type="checkbox"
-                                    checked={editedAllowMultiple}
-                                    onChange={(e) => setEditedAllowMultiple(e.target.checked)}
+                                    value={editedItemName}
+                                    onChange={(e) => setEditedItemName(e.target.value)}
+                                    className="px-2 py-1 border rounded dark:bg-zinc-900"
                                   />
-                                  Allow Quantity Selection
-                                </label>
-                                <div className="flex gap-2 mt-1">
-                                  <Button
-                                    size="sm"
-                                    className="cursor-pointer hover:opacity-75"
-                                    onClick={() => {
+                                  <label className="flex items-center gap-2 text-xs">
+                                    <input
+                                      type="checkbox"
+                                      checked={editedAllowMultiple}
+                                      onChange={(e) => setEditedAllowMultiple(e.target.checked)}
+                                    />
+                                    Allow Quantity Selection
+                                  </label>
+                                  <div className="flex gap-2 mt-1">
+                                    <Button
+                                      size="sm"
+                                      className="cursor-pointer hover:opacity-75"
+                                      onClick={() => {
 
-                                      dispatch(updateItemInCategory({
-                                        categoryId: cat._id,
-                                        oldItemName: item.name,
-                                        newItem: {
-                                          name: editedItemName.trim(),
-                                          allowMultiple: editedAllowMultiple,
-                                        }
-                                      }))
-                                        .unwrap()
-                                        .then(() => {
-                                          dispatch(fetchCategories());
-                                          setEditingItem(null);
-                                        });
-                                    }}
-                                  >
-                                    Save
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="cursor-pointer hover:opacity-90"
-                                    onClick={() => setEditingItem(null)}
-                                  >
-                                    Cancel
-                                  </Button>
-                                </div>
-                              </>
-                            ) : (
-                              <div className="">
-                                {/* <span>{item.name}</span> */}
-                                {/* <div className="flex">
+                                        dispatch(updateItemInCategory({
+                                          categoryId: cat._id,
+                                          oldItemName: item.name,
+                                          newItem: {
+                                            name: editedItemName.trim(),
+                                            allowMultiple: editedAllowMultiple,
+                                          }
+                                        }))
+                                          .unwrap()
+                                          .then(() => {
+                                            dispatch(fetchCategories());
+                                            setEditingItem(null);
+                                          });
+                                      }}
+                                    >
+                                      Save
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="cursor-pointer hover:opacity-90"
+                                      onClick={() => setEditingItem(null)}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="">
+                                  {/* <span>{item.name}</span> */}
+                                  {/* <div className="flex">
                                   <Button
                                     size="sm"
                                     className="text-blue-600 hover:text-blue-800 cursor-pointer"
@@ -690,111 +691,111 @@ export default function AdminPage() {
 
 
 
-                              </div>
-                            )}
-                          </li>
-                        );
-                      })}
-                      {!isOnline &&
-                        offlineCategoryItems?.[cat._id]
-                          ?.filter(offlineItem =>
-                            !cat.items.some(dbItem =>
-                              dbItem.name.trim().toLowerCase() === offlineItem.name.trim().toLowerCase()
-                            )
-                          )
-                          ?.map((item, index) => (
-                            <li
-                              key={`offline-${item.name}-${index}`}
-                              className="flex justify-between text-sm border-b pb-1 italic opacity-70"
-                            >
-                              <div>
-                                {item.name}
-                                <span className="ml-1 text-xs text-yellow-600">(Offline)</span>
-                              </div>
-                              <div className="text-xs">
-                                Quantity: {item.allowMultiple ? "Yes" : "No"}
-                              </div>
+                                </div>
+                              )}
                             </li>
-                          ))}
+                          );
+                        })}
+                        {!isOnline &&
+                          offlineCategoryItems?.[cat._id]
+                            ?.filter(offlineItem =>
+                              !cat.items.some(dbItem =>
+                                dbItem.name.trim().toLowerCase() === offlineItem.name.trim().toLowerCase()
+                              )
+                            )
+                            ?.map((item, index) => (
+                              <li
+                                key={`offline-${item.name}-${index}`}
+                                className="flex justify-between text-sm border-b pb-1 italic opacity-70"
+                              >
+                                <div>
+                                  {item.name}
+                                  <span className="ml-1 text-xs text-yellow-600">(Offline)</span>
+                                </div>
+                                <div className="text-xs">
+                                  Quantity: {item.allowMultiple ? "Yes" : "No"}
+                                </div>
+                              </li>
+                            ))}
 
-                    </ul>
+                      </ul>
 
 
 
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        const itemName = newItems[cat._id]?.trim();
-                        if (itemName) {
-                          const allowMultiple = itemOptions[cat._id] ?? false;
-                          if (isOnline) {
-                            dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple }))
-                              .unwrap()
-                              .then(() => dispatch(fetchCategories()));
-                          } else {
-                            const alreadyExistsInState =
-                              cat.items.some(item => item.name === itemName) || // from MongoDB
-                              (offlineCategoryItems[cat._id]?.some(item => item.name === itemName) ?? false); // from offline state
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          const itemName = newItems[cat._id]?.trim();
+                          if (itemName) {
+                            const allowMultiple = itemOptions[cat._id] ?? false;
+                            if (isOnline) {
+                              dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple }))
+                                .unwrap()
+                                .then(() => dispatch(fetchCategories()));
+                            } else {
+                              const alreadyExistsInState =
+                                cat.items.some(item => item.name === itemName) || // from MongoDB
+                                (offlineCategoryItems[cat._id]?.some(item => item.name === itemName) ?? false); // from offline state
 
-                            if (alreadyExistsInState) {
-                              toast.error("Item already exists in this category.");
-                              return;
+                              if (alreadyExistsInState) {
+                                toast.error("Item already exists in this category.");
+                                return;
+                              }
+
+                              savePendingCategoryItem({ categoryId: cat._id, itemName, allowMultiple })
+                                .then(() => {
+                                  setOfflineCategoryItems(prev => {
+                                    const updated = { ...prev };
+
+                                    // Prevent duplicates
+                                    const alreadyExists = updated[cat._id]?.some(
+                                      item => item.name.trim().toLowerCase() === itemName.trim().toLowerCase()
+                                    );
+
+                                    if (alreadyExists) return updated;
+
+                                    if (!updated[cat._id]) updated[cat._id] = [];
+                                    updated[cat._id].push({ name: itemName, allowMultiple });
+
+                                    return updated;
+                                  });
+
+                                  toast.success("Saved offline. Will sync later.");
+                                });
                             }
 
-                            savePendingCategoryItem({ categoryId: cat._id, itemName, allowMultiple })
-                              .then(() => {
-                                setOfflineCategoryItems(prev => {
-                                  const updated = { ...prev };
 
-                                  // Prevent duplicates
-                                  const alreadyExists = updated[cat._id]?.some(
-                                    item => item.name.trim().toLowerCase() === itemName.trim().toLowerCase()
-                                  );
+                            // dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple })).unwrap().then(() => {
+                            //   dispatch(fetchCategories())
+                            // }).catch(() => { })
 
-                                  if (alreadyExists) return updated;
-
-                                  if (!updated[cat._id]) updated[cat._id] = [];
-                                  updated[cat._id].push({ name: itemName, allowMultiple });
-
-                                  return updated;
-                                });
-
-                                toast.success("Saved offline. Will sync later.");
-                              });
+                            setNewItems(prev => ({ ...prev, [cat._id]: "" }));
+                            setItemOptions(prev => ({ ...prev, [cat._id]: false }));
                           }
-
-
-                          // dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple })).unwrap().then(() => {
-                          //   dispatch(fetchCategories())
-                          // }).catch(() => { })
-
-                          setNewItems(prev => ({ ...prev, [cat._id]: "" }));
-                          setItemOptions(prev => ({ ...prev, [cat._id]: false }));
-                        }
-                      }}
-                      className="flex flex-col gap-2 pt-2"
-                    >
-                      <input
-                        name="itemName"
-                        value={newItems[cat._id] || ""}
-                        onChange={(e) => setNewItems(prev => ({ ...prev, [cat._id]: e.target.value }))}
-                        placeholder="New item"
-                        className="px-3 py-1.5 border rounded text-sm dark:bg-zinc-900"
-                      />
-                      <label className="flex items-center gap-2 text-sm">
+                        }}
+                        className="flex flex-col gap-2 pt-2"
+                      >
                         <input
-                          type="checkbox"
-                          checked={itemOptions[cat._id] || false}
-                          onChange={(e) => setItemOptions(prev => ({ ...prev, [cat._id]: e.target.checked }))}
+                          name="itemName"
+                          value={newItems[cat._id] || ""}
+                          onChange={(e) => setNewItems(prev => ({ ...prev, [cat._id]: e.target.value }))}
+                          placeholder="New item"
+                          className="px-3 py-1.5 border rounded text-sm dark:bg-zinc-900"
                         />
-                        Allow Quantity Selection (+ / -)
-                      </label>
-                      <Button size="sm" type="submit" className="cursor-pointer hover:opacity-75" disabled={!newItems[cat._id]?.trim()}>
-                        Add
-                      </Button>
-                    </form>
-                  </div>
-                ))
+                        <label className="flex items-center gap-2 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={itemOptions[cat._id] || false}
+                            onChange={(e) => setItemOptions(prev => ({ ...prev, [cat._id]: e.target.checked }))}
+                          />
+                          Allow Quantity Selection (+ / -)
+                        </label>
+                        <Button size="sm" type="submit" className="cursor-pointer hover:opacity-75" disabled={!newItems[cat._id]?.trim()}>
+                          Add
+                        </Button>
+                      </form>
+                    </div>
+                  ))
               ) : (
                 <p className="text-gray-500 italic text-sm col-span-2 text-center">
                   No categories available. Please create a new category to get started.

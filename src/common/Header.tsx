@@ -69,9 +69,9 @@ const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center gap-2">
         {
           user?.role === "user" ?
- <Link to="/service-request">
+          <Link to="/service-request">
           <img
-                src={theme === "dark" ? "/assets/logo-white.png" : "/assets/logo.png"}
+                src={theme === "dark" ? `${config?.logoUrl || '/assets/logo-white.png'}` : `${config?.logoUrl || '/assets/logo.png'}`}
             alt="Logo"
             className="h-[60px] w-[60px]"
           />
@@ -79,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({
 :
             <Link to="/admin-panel">
           <img
-                src={theme === "dark" ? "/assets/logo-white.png" : "/assets/logo.png"}
+                src={theme === "dark" ? `${config?.logoUrl || '/assets/logo-white.png'}` : `${config?.logoUrl || '/assets/logo.png'}`}
             alt="Logo"
             className="h-[60px] w-[60px]"
           />

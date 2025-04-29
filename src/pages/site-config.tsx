@@ -12,14 +12,14 @@ import { fetchSiteConfig, updateSiteConfig } from "@/store/features/siteConfig/s
 export default function SiteConfig() {
     const [siteTitle, setSiteTitle] = useState("");
     const [tagline, setTagline] = useState("");
+    const [brandName, setBrandName] = useState("");
+
     const [logoPreview, setLogoPreview] = useState<string>("/assets/logo.png");
     const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
     const [tabs, setTabs] = useState({ T1: '', T2: '', T3: '',T4:'' });
     const dispatch = useDispatch<AppDispatch>();
-    const { loading, config } = useSelector((state:RootState) => state.siteConfig);
-   
-    console.log(config)
-    const logoInputRef = useRef<HTMLInputElement>(null);
+    const { loading } = useSelector((state:RootState) => state.siteConfig);
+       const logoInputRef = useRef<HTMLInputElement>(null);
     const faviconInputRef = useRef<HTMLInputElement>(null);
 
     const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +49,7 @@ export default function SiteConfig() {
         formData.append('siteTitle', siteTitle);
         formData.append('tagline', tagline);
         formData.append('tabs', JSON.stringify(tabs));
-
+        formData.append('brandName',brandName)
         if (logoInputRef.current?.files?.[0]) {
             formData.append('logo', logoInputRef.current.files[0]);
         }
@@ -59,7 +59,7 @@ export default function SiteConfig() {
         if (
             siteTitle.trim() === "" &&
             tagline.trim() === "" &&
-         
+            brandName.trim() === "" &&
             !faviconInputRef.current?.files?.[0] &&
             tabs.T1.trim() === "" &&
             tabs.T2.trim() === "" &&
@@ -71,10 +71,11 @@ export default function SiteConfig() {
 
         dispatch(updateSiteConfig(formData)).unwrap().then(()=>{
             toast.success("Settings submitted successfully.")
-            setTabs({ T1: '', T2: '', T3: '', T4:'' })
-            setTagline('')
-            setSiteTitle('')
-            setLogoPreview('/assets/logo.png')
+            setTabs({ T1: '', T2: '', T3: '', T4:'' });
+            setTagline('');
+            setSiteTitle('');
+            setBrandName('');
+            setLogoPreview('/assets/logo.png');
             setFaviconPreview('');
             if (faviconInputRef.current) {
                 faviconInputRef.current.value = ""; // ✅ reset the actual file input
@@ -131,6 +132,20 @@ export default function SiteConfig() {
                                 <p className="text-xs text-gray-500 mt-1">
                                     In a few words, explain what this site is about.
                                 </p>
+                            </div>
+                        </div>
+                        {/* Brand Name */}
+                        <div className="flex flex-col md:flex-row items-start gap-4">
+                            <Label className="w-40">Brand Name</Label>
+                            <div className="w-full md:w-1/2">
+                                <Input
+                                    placeholder="Brand Name"
+                                    value={brandName}
+                                    onChange={(e) => setBrandName(e.target.value)}
+                                />
+                                {/* <p className="text-xs text-gray-500 mt-1">
+                                    In a few words, explain what this site is about.
+                                </p> */}
                             </div>
                         </div>
 

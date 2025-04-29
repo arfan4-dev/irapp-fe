@@ -14,7 +14,7 @@ import { useLocation } from "react-router-dom";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import UserManageSkeleton from "@/components/skeleton/skeleton";
 import { Input } from "@/components/ui/input";
-
+// import AddUserModal from "@/components/modal/AddUserModal";
 const departments = [
     "Reception",
     "Kitchen",
@@ -109,7 +109,11 @@ export default function ManageUsers() {
                 location={location.pathname}
             />
             <div className="max-w-4xl mx-auto p-4 space-y-4">
-                <h2 className="text-2xl font-semibold mb-6">Manage Users</h2>
+                <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-semibold mb-6">Manage Users</h2>
+                    <Button  className="cursor-pointer hover:opacity-75">Add Users</Button>
+                </div>
+              
                 <div className="flex flex-wrap gap-4 mb-4">
                     <Input
                         type="text"
@@ -219,6 +223,16 @@ export default function ManageUsers() {
             {showSettings && (
                 <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={""} />
             )}
+
+            {/* <AddUserModal
+                open={showEditModal}
+                onClose={() => setShowEditModal(false)}
+                initialData={user} // optional
+                onSubmit={(formData) => {
+                    dispatch(updateUserThunk({ id: user.id, data: formData }));
+                }}
+            /> */}
+
         </div>
     );
 }

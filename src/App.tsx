@@ -12,6 +12,7 @@ import OrderPage from "./pages/order-page";
 import EmailVerification from "./pages/verify-email";
 import AdminLogin from "./pages/admin-login";
 import Register from "./pages/Register";
+import SiteConfig from "./pages/site-config";
 
 function App() {
   useOrderSync();
@@ -23,10 +24,11 @@ function App() {
         <Route path="/" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
-        {/* Login Route */}
+        {/* Private Route */}
         <Route path="/service-request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
         <Route path="/admin-panel" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
         <Route path="/manage-users" element={<ProtectedRoute><ManageUsers /></ProtectedRoute>} />
+        <Route path="/site-config" element={<ProtectedRoute><SiteConfig /></ProtectedRoute>} />
 
         <Route path="/answered-order" element={<ProtectedRoute><AnsweredOrdersPage /></ProtectedRoute>} />
         <Route path="/order-status" element={<ProtectedRoute><OrderPage /> </ProtectedRoute>} />

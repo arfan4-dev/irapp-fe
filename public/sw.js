@@ -3,9 +3,9 @@ const urlsToCache = [
     '/',
     '/index.html',
     '/manifest.json',
-    '/favicon.ico',
-    '/logo.png',
-    '/logo.png'
+    '/assets/favicon.ico',
+    '/assets/logo.png',
+    '/assets/logo.png'
 ];
 
 // ✅ Install and pre-cache assets

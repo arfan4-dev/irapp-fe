@@ -5,7 +5,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import orderReducer from "./slices/orderSlice";
 import categoryReducer from "./slices/categorySlice";
 import userReducer from "./slices/userSlice";
-
+import siteConfig from './slices/siteConfigSlice'
 // ✅ Nested persist config for user slice (exclude loading)
 const userPersistConfig = {
   key: "user",
@@ -23,6 +23,7 @@ const rootPersistConfig = {
 const rootReducer = combineReducers({
   orders: orderReducer,
   categories: categoryReducer,
+  siteConfig,
   user: persistReducer(userPersistConfig, userReducer), // 👈 nested config
 });
 

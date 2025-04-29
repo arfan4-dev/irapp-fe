@@ -16,7 +16,7 @@ const PublicHeader: React.FC<PublicHeaderProps> = ({ theme, setTheme, serviceNam
             <div className="flex items-center gap-7">
                 <Link to="/" className="flex items-center gap-2">
                     <img
-                        src={theme === "dark" ? "/logo-white.png" : "/logo.png"}
+                        src={theme === "dark" ? "/assets/logo-white.png" : "/assets/logo.png"}
                         alt="Logo"
                         className="h-10 w-10"
                     />

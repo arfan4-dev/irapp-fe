@@ -70,7 +70,7 @@ const Header: React.FC<HeaderProps> = ({
           user?.role === "user" ?
  <Link to="/service-request">
           <img
-            src={theme === "dark" ? "/logo-white.png" : "/logo.png"}
+                src={theme === "dark" ? "/assets/logo-white.png" : "/assets/logo.png"}
             alt="Logo"
             className="h-[60px] w-[60px]"
           />
@@ -78,7 +78,7 @@ const Header: React.FC<HeaderProps> = ({
 :
             <Link to="/admin-panel">
           <img
-            src={theme === "dark" ? "/logo-white.png" : "/logo.png"}
+                src={theme === "dark" ? "/assets/logo-white.png" : "/assets/logo.png"}
             alt="Logo"
             className="h-[60px] w-[60px]"
           />

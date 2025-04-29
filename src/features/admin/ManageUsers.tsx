@@ -14,7 +14,7 @@ import { useLocation } from "react-router-dom";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import UserManageSkeleton from "@/components/skeleton/skeleton";
 import { Input } from "@/components/ui/input";
-// import AddUserModal from "@/components/modal/AddUserModal";
+import AddUserModal from "@/components/modal/AddUserModal";
 const departments = [
     "Reception",
     "Kitchen",
@@ -45,13 +45,12 @@ export default function ManageUsers() {
     const [serviceName] = useState("Manage Users");
     const [searchName, setSearchName] = useState('');
     const [searchEmail, setSearchEmail] = useState('');
-
     const filteredUsers = users?.filter((user: any) => {
         const nameMatch = user.username.toLowerCase().includes(searchName.toLowerCase());
         const emailMatch = user.email.toLowerCase().includes(searchEmail.toLowerCase());
         return nameMatch && emailMatch;
     });
-
+const [addUserModal,setAddUserModal]=useState(false)
 
 
     const handleChange = (userId: string, field: 'role' | 'department', value: string) => {
@@ -111,7 +110,7 @@ export default function ManageUsers() {
             <div className="max-w-4xl mx-auto p-4 space-y-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-semibold mb-6">Manage Users</h2>
-                    <Button  className="cursor-pointer hover:opacity-75">Add Users</Button>
+                    <Button className="cursor-pointer hover:opacity-75" onClick={() => setAddUserModal(true)}>Add User</Button>
                 </div>
               
                 <div className="flex flex-wrap gap-4 mb-4">
@@ -224,14 +223,11 @@ export default function ManageUsers() {
                 <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={""} />
             )}
 
-            {/* <AddUserModal
-                open={showEditModal}
-                onClose={() => setShowEditModal(false)}
-                initialData={user} // optional
-                onSubmit={(formData) => {
-                    dispatch(updateUserThunk({ id: user.id, data: formData }));
-                }}
-            /> */}
+            {addUserModal && <AddUserModal
+                open={addUserModal}
+                onClose={() => setAddUserModal(false)}
+                
+            />}
 
         </div>
     );

@@ -21,6 +21,23 @@ export const registerUser = createAsyncThunk(
   }
 );
 
+export const createUserByAdmin = createAsyncThunk(
+  "user/createUserByAdmin",
+  async (formData: FormData, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/admin/create-user", formData,{
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }});
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Failed to create user"
+      );
+    }
+  }
+);
+
 export const loginUser = createAsyncThunk(
   "user/login",
   async (data: LoginData, { rejectWithValue }) => {

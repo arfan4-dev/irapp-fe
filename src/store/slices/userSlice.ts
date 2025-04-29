@@ -1,6 +1,6 @@
 // store/slices/userSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { adminLogin, fetchAllUsers, fetchUserById, loginUser, registerUser, updateUserRole } from "../features/user/user";
+import { adminLogin, createUserByAdmin, fetchAllUsers, fetchUserById, loginUser, registerUser, updateUserRole } from "../features/user/user";
 
 interface UserState {
   loading: boolean;
@@ -8,6 +8,7 @@ interface UserState {
   error: string | null;
   currentUser: any;
   users: [];
+  success:boolean
 }
 
 const initialState: UserState = {
@@ -16,6 +17,7 @@ const initialState: UserState = {
   error: null,
   currentUser: null,
   users: [],
+  success:false
 };
 
 const userSlice = createSlice({
@@ -24,6 +26,11 @@ const userSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.currentUser = null;
+    },
+     resetUserStatus: (state) => {
+      state.loading = false;
+      state.error = null;
+      state.success = false;
     },
   },
   extraReducers: (builder) => {
@@ -52,6 +59,21 @@ const userSlice = createSlice({
       .addCase(registerUser.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+       .addCase(createUserByAdmin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+      })
+      .addCase(createUserByAdmin.fulfilled, (state) => {
+        state.loading = false;
+        state.success = true;
+      })
+      .addCase(createUserByAdmin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+        state.success = false;
       })
 
       // 🔹 LOGIN USER
@@ -115,5 +137,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { logout } = userSlice.actions;
+export const { logout, resetUserStatus } = userSlice.actions;
 export default userSlice.reducer;

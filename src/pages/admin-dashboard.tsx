@@ -214,7 +214,7 @@ export default function AdminPage() {
               variant="outline"
               onClick={() => setSortOrderAsc(prev => !prev)}
             >
-              Sort {sortOrderAsc ? "Descending" : "Ascending"}
+              Sort {sortOrderAsc ? "Ascending" : " Descending"}
             </Button>
           </div>
 
@@ -483,7 +483,7 @@ export default function AdminPage() {
         <Card>
           <CardContent className="p-4 md:p-6 space-y-6">
             <h2 className="text-xl font-semibold mb-4 ">Manage Categories </h2>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center  justify-between ">
               <h3 className="text-lg font-semibold">Add New Category</h3>
               <div className="flex gap-3">
                 <Button
@@ -498,7 +498,7 @@ export default function AdminPage() {
                   size="lg"
                   type="button"
                   onClick={() => setCategorySortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))}
-                  className="mt-2 cursor-pointer hover:opacity-75"
+                  className="mt-2 cursor-pointer hover:opacity-75 mr-[22px]"
                 >
                   Sort {categorySortOrder === 'asc' ? 'Descending' : 'Ascending'}
                 </Button>

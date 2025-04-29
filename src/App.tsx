@@ -14,14 +14,22 @@ import AdminLogin from "./pages/admin-login";
 import Register from "./pages/Register";
 import SiteConfig from "./pages/site-config";
 import useDynamicSiteMeta from "./hooks/useDynamicSiteMeta";
-import { useSelector } from "react-redux";
-import { RootState } from "./store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "./store";
+import { useEffect } from "react";
+import { fetchSiteConfig } from "./store/features/siteConfig/siteConfig";
 
 function App() {
   const { config } = useSelector((state: RootState) => state.siteConfig);
+  const dispatch = useDispatch<AppDispatch>();
 
   useOrderSync();
-  useDynamicSiteMeta({ faviconUrl: config.faviconUrl, title: config.siteTitle })
+    useEffect(() => {
+      dispatch(fetchSiteConfig()).unwrap().then(()=>{
+        useDynamicSiteMeta({ faviconUrl: config.faviconUrl, title: config.siteTitle })
+
+      })
+    }, [])
   return (
     <ErrorBoundary>
       <Routes>

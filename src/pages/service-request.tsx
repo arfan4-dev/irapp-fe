@@ -15,6 +15,7 @@ import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { saveOrderOffline } from "@/utils/orderStorage";
 import { OfflineOrder } from '@/types/indexedDB';
 import { toast } from 'sonner';
+import { fetchSiteConfig } from '@/store/features/siteConfig/siteConfig';
 
 export default function UserPage() {
   const [selectedRequest, setSelectedRequest] = useState('');
@@ -145,7 +146,9 @@ export default function UserPage() {
   }, []);
 
 
-
+  useEffect(() => {
+    dispatch(fetchSiteConfig()).unwrap()
+  }, [])
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
       <Header

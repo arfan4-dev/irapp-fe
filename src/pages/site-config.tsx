@@ -91,11 +91,7 @@ export default function SiteConfig() {
         })
     };
 
-    // console.log(` siteTitle :${siteTitle},
-    //         tagline:${tagline},
-    //     logoPreview:${logoPreview},
-    //     faviconUrl:${faviconPreview},
-    //     tabs:${tabs}`);
+
 
     useEffect(()=>{
         dispatch(fetchSiteConfig()).unwrap()

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 
 import { fetchUserById } from "@/store/features/user/user";
+import { Link } from "react-router-dom";
 
 interface HeaderProps {
     theme?: 'light' | 'dark';
@@ -25,10 +26,7 @@ const PreviewHeader: React.FC<HeaderProps> = ({
 }) => {
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const dispatch = useDispatch<AppDispatch>(); // ✅ typed dispatch
-
-
-
-  
+    const { config } = useSelector((state: RootState) => state.siteConfig || []);
 
     useEffect(() => {
 
@@ -37,20 +35,17 @@ const PreviewHeader: React.FC<HeaderProps> = ({
         }
     }, [dispatch, user?.id]);
 
-
-
-
-
     return (
         <header className="sticky top-0 bg-inherit border-b z-10 dark:bg-gray-900 dark:text-white flex justify-between items-center px-4 ">
             <div className="flex items-center gap-2">
                    
-                       
-                            <img
-                    src={logoPreview}
-                                alt="Logo"
-                                className="h-[60px] w-[60px]"
-                            />
+                       <Link to='/admin-panel'>
+                    <img
+                        src={config.logoUrl || logoPreview}
+                        alt="Logo"
+                        className="h-[60px] w-[60px]"
+                    /></Link>
+                          
 
 
                 <h1 className="text-[14px] md:text-xl font-semibold">{serviceName}</h1>
@@ -64,7 +59,7 @@ const PreviewHeader: React.FC<HeaderProps> = ({
                                       
                                         className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                                     >
-                                        {tabs.T1 ||' Home'}
+                                        {tabs.T1 || config.tabs.T1  || ' Home'}
                                     </p>
                                 </li>
                                 <li>
@@ -72,7 +67,7 @@ const PreviewHeader: React.FC<HeaderProps> = ({
                                       
                                         className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                                     >
-                                        {tabs.T2 || 'User Management'}
+                                        {tabs.T2 || config.tabs.T2 || 'User Management'}
                                     </p>
                                 </li>
                                 <li>
@@ -80,7 +75,7 @@ const PreviewHeader: React.FC<HeaderProps> = ({
                                 
                                         className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                                     >
-                                        {tabs.T3 || 'Answered order'}
+                                        {tabs.T3 || config.tabs.T3 || 'Answered order'}
                                     </p>
                                 </li>
                             </ul>

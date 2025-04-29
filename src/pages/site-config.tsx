@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,17 +7,18 @@ import { toast } from "sonner";
 import PreviewHeader from "@/components/preview-header/preview-header";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { updateSiteConfig } from "@/store/features/siteConfig/siteConfig";
+import { fetchSiteConfig, updateSiteConfig } from "@/store/features/siteConfig/siteConfig";
 
 export default function SiteConfig() {
     const [siteTitle, setSiteTitle] = useState("");
     const [tagline, setTagline] = useState("");
     const [logoPreview, setLogoPreview] = useState<string>("/assets/logo.png");
     const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
-    const [tabs, setTabs] = useState({ T1: '', T2: '', T3: '' });
+    const [tabs, setTabs] = useState({ T1: '', T2: '', T3: '',T4:'' });
     const dispatch = useDispatch<AppDispatch>();
-    const {loading} = useSelector((state:RootState) => state.siteConfig);
-    
+    const { loading, config } = useSelector((state:RootState) => state.siteConfig);
+   
+    console.log(config)
     const logoInputRef = useRef<HTMLInputElement>(null);
     const faviconInputRef = useRef<HTMLInputElement>(null);
 
@@ -55,14 +56,35 @@ export default function SiteConfig() {
         if (faviconInputRef.current?.files?.[0]) {
             formData.append('favicon', faviconInputRef.current.files[0]);
         }
+        if (
+            siteTitle.trim() === "" &&
+            tagline.trim() === "" &&
+         
+            !faviconInputRef.current?.files?.[0] &&
+            tabs.T1.trim() === "" &&
+            tabs.T2.trim() === "" &&
+            tabs.T3.trim() === "" &&
+            tabs.T4?.trim?.() === "" // optional check if T4 exists
+        ) {
+            return toast.error("Update at least one field before submitting.");
+        }
 
         dispatch(updateSiteConfig(formData)).unwrap().then(()=>{
             toast.success("Settings submitted successfully.")
-            setTabs({ T1: '', T2: '', T3: '' })
+            setTabs({ T1: '', T2: '', T3: '', T4:'' })
             setTagline('')
             setSiteTitle('')
             setLogoPreview('/assets/logo.png')
-            setFaviconPreview('')
+            setFaviconPreview('');
+            if (faviconInputRef.current) {
+                faviconInputRef.current.value = ""; // ✅ reset the actual file input
+            }
+
+            if (logoInputRef.current) {
+                logoInputRef.current.value = ""; // ✅ also reset logo input if needed
+            }
+            dispatch(fetchSiteConfig()).unwrap()
+
         }).catch(e=>{
             toast.error("Settings submitting Failed.");
             console.log(e)
@@ -75,6 +97,9 @@ export default function SiteConfig() {
     //     faviconUrl:${faviconPreview},
     //     tabs:${tabs}`);
 
+    useEffect(()=>{
+        dispatch(fetchSiteConfig()).unwrap()
+    },[])
 
 
     return (
@@ -115,7 +140,7 @@ export default function SiteConfig() {
 
                         {/* Tabs Input */}
                         <div className="flex flex-col md:flex-row items-start gap-4">
-                            <Label className="w-40">Tabs Name</Label>
+                            <Label className="w-40">Admin Tabs</Label>
                             <div className="w-full md:w-1/2 space-y-2">
                                 <Input
                                     placeholder="Tab 1 Name"
@@ -132,6 +157,27 @@ export default function SiteConfig() {
                                     value={tabs.T3}
                                     onChange={(e) => setTabs(prev => ({ ...prev, T3: e.target.value }))}
                                 />
+                            </div>
+                        </div>
+                        {/* Tabs Input */}
+                        <div className="flex flex-col md:flex-row items-start gap-4">
+                            <Label className="w-40">User Tabs</Label>
+                            <div className="w-full md:w-1/2 space-y-2">
+                                <Input
+                                    placeholder="Tab 1 Name"
+                                    value={tabs.T4}
+                                    onChange={(e) => setTabs(prev => ({ ...prev, T4: e.target.value }))}
+                                />
+                                {/* <Input
+                                    placeholder="Tab 2 Name"
+                                    value={tabs.T2}
+                                    onChange={(e) => setTabs(prev => ({ ...prev, T2: e.target.value }))}
+                                />
+                                <Input
+                                    placeholder="Tab 3 Name"
+                                    value={tabs.T3}
+                                    onChange={(e) => setTabs(prev => ({ ...prev, T3: e.target.value }))}
+                                /> */}
                             </div>
                         </div>
 

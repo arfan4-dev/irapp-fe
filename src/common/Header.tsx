@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import api from "@/api/api";
 import { fetchUserById } from "@/store/features/user/user";
 // import { getImageUrl } from "@/utils";
-import { LogOut } from "lucide-react";
+import { LogOut, MonitorCog } from "lucide-react";
 import { AvatarImage } from "@radix-ui/react-avatar";
 
 interface HeaderProps {
@@ -36,7 +36,8 @@ const Header: React.FC<HeaderProps> = ({
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>(); // ✅ typed dispatch
-
+  const { config } = useSelector((state: RootState) => state.siteConfig);
+  const tabs = config?.tabs || {};
 
 
   const handleLogout = async () => {
@@ -98,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({
                   to="/service-request"
                   className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                 >
-                  Home
+                      {tabs?.T1 || "Home"}
                 </NavLink>
               </li>
             </ul>
@@ -112,7 +113,7 @@ const Header: React.FC<HeaderProps> = ({
                   to="/order-status"
                   className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                 >
-                  Orders
+                    {tabs?.T4 || "Orders"}
                 </NavLink>
               </li>
             </ul>
@@ -127,7 +128,7 @@ const Header: React.FC<HeaderProps> = ({
                   to="/admin-panel"
                   className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                 >
-                  Home
+                    {tabs?.T1 || "Home"}
                 </NavLink>
               </li>
               <li>
@@ -135,7 +136,7 @@ const Header: React.FC<HeaderProps> = ({
                   to="/manage-users"
                   className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                 >
-                  User Management
+                    {tabs?.T2 || "User Management "}
                 </NavLink>
               </li>
               <li>
@@ -143,7 +144,7 @@ const Header: React.FC<HeaderProps> = ({
                   to="/answered-order"
                   className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                 >
-                  Answered order
+                    {tabs?.T3 || "Answered order"}
                 </NavLink>
               </li>
             </ul>
@@ -197,7 +198,7 @@ const Header: React.FC<HeaderProps> = ({
                           to="/service-request"
                           className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                         >
-                          Home
+                          {tabs?.T1 || "Home"}
                         </NavLink>
                       </li>
                     </ul>
@@ -211,7 +212,7 @@ const Header: React.FC<HeaderProps> = ({
                           to="/order-status"
                           className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                         >
-                          Orders
+                           {tabs?.T4 || "Orders"}
                         </NavLink>
                       </li>
                     </ul>
@@ -226,7 +227,8 @@ const Header: React.FC<HeaderProps> = ({
                           to="/admin-panel"
                           className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                         >
-                          Home
+                          {tabs?.T1 || "Home"}
+                          
                         </NavLink>
                       </li>
                       <li>
@@ -234,7 +236,7 @@ const Header: React.FC<HeaderProps> = ({
                           to="/manage-users"
                           className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                         >
-                          User Management
+                          {tabs?.T2 || "  User Management "}
                         </NavLink>
                       </li>
                       <li>
@@ -242,7 +244,8 @@ const Header: React.FC<HeaderProps> = ({
                           to="/answered-order"
                           className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                         >
-                          Answered order
+                          {tabs?.T3 || "Answered order"}
+                         
                         </NavLink>
                       </li>
                     </ul>
@@ -250,6 +253,12 @@ const Header: React.FC<HeaderProps> = ({
                 )}
               </div>
             </DropdownMenuItem>
+            {user.role=='admin' && <NavLink to='/admin-panel/site-config'>
+              <DropdownMenuItem  className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
+                <MonitorCog/>  Site Configuration
+              </DropdownMenuItem>
+            </NavLink>}
+           
             <DropdownMenuItem onClick={() => setShowSettings(true)} className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
               ⚙️ User Setting
             </DropdownMenuItem>

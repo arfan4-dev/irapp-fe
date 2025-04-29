@@ -6,7 +6,7 @@ export const fetchSiteConfig = createAsyncThunk(
   "siteConfig/fetch",
   async (_, { dispatch }) => {
     try {
-      const res = await api.get("/site-config");
+      const res = await api.get("/site-config/get");
       dispatch(setConfig(res.data.data));
     } catch (error: any) {
       

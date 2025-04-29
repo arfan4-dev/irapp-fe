@@ -100,7 +100,7 @@ export default function SiteConfig() {
 
 
     return (
-        <div>
+        <div className={`min-h-screen  bg-gray-50 text-black`}>
             <PreviewHeader tabs={tabs} logoPreview={logoPreview} />
 
             <div className="space-y-10 max-w-[1200px] mx-auto p-4">

@@ -121,7 +121,7 @@ export default function SiteConfig() {
                         </div>
 
                         {/* Tagline */}
-                        <div className="flex flex-col md:flex-row items-start gap-4">
+                        {/* <div className="flex flex-col md:flex-row items-start gap-4">
                             <Label className="w-40">Tagline</Label>
                             <div className="w-full md:w-1/2">
                                 <Input
@@ -133,7 +133,7 @@ export default function SiteConfig() {
                                     In a few words, explain what this site is about.
                                 </p>
                             </div>
-                        </div>
+                        </div> */}
                         {/* Brand Name */}
                         <div className="flex flex-col md:flex-row items-start gap-4">
                             <Label className="w-40">Brand Name</Label>

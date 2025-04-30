@@ -59,10 +59,14 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
 
     const handleSubmit = () => {
         const usernameRegex = /^[a-zA-Z0-9 ]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
 
         if (!usernameRegex.test(formState.username)) {
             return toast.error("Username must not contain special characters.");
+        }
+        if (!emailRegex.test(formState.email)) {
+            return toast.error("Please enter a valid email address.");
         }
 
         if (formState.password && !passwordRegex.test(formState.password)) {
@@ -83,7 +87,14 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
         if (fileInputRef.current?.files?.[0]) {
             formData.append("image", fileInputRef.current.files[0]);
         }
-
+        if (formState.username.trim() == ""||
+            formState.email.trim() == ""||
+            formState.password.trim() == ""||
+            formState.role.trim() == ""||
+            formState.location.trim() == "" ||
+            formState.department.trim() == ""||
+            !fileInputRef.current?.files?.[0]
+        ) return toast.info("Please Fill All the Fields.")
         dispatch(createUserByAdmin(formData))
             .unwrap()
             .then(() => {

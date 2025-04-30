@@ -45,6 +45,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
         email: "",
         password: "",
         role: "user",
+        location:"",
         department: "Kitchen",
     });
       const dispatch = useDispatch<AppDispatch>();
@@ -71,6 +72,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
         formData.append("username", formState.username);
         formData.append("email", formState.email);
         formData.append("role", formState.role);
+        formData.append("location", formState.location);
         if (formState.role === "staff") {
             formData.append("department", formState.department);
         }
@@ -133,6 +135,10 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
                         />
                     </div>
 
+                    <div className="grid gap-1">
+                                <Label>Location</Label>
+                        <Input placeholder="Enter Location"  name="location" maxLength={20} value={formState.location} onChange={(e) => handleChange("location", e.target.value)} required />
+                            </div>
                     <div className="grid gap-1">
                         <Label>Role</Label>
                         <Select value={formState.role} onValueChange={(value) => handleChange("role", value)}>

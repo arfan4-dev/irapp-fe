@@ -31,6 +31,7 @@ export default function Register() {
         email: "",
         password: "",
         role: "user",
+        location:"",
         image: null as File | null,
     });
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -107,6 +108,7 @@ export default function Register() {
         payload.append("email", formData.email);
         payload.append("password", formData.password);
         payload.append("role", formData.role);
+        payload.append("location", formData.location);
         if (formData.image) {
             payload.append("image", formData.image);
         }
@@ -118,6 +120,7 @@ export default function Register() {
                     email: "",
                     password: "",
                     role: "user",
+                    location:"",
                     image: null,
                 });
                 toast.success("Registration successfully. Please check your email for verification.");
@@ -186,6 +189,11 @@ export default function Register() {
                                     </SelectContent>
                                 </Select>
                             </div> */}
+
+                            <div className="space-y-2">
+                                <Label>Location</Label>
+                                <Input placeholder="Enter Location" name="location" maxLength={20} value={formData.location} onChange={handleChange} required />
+                            </div>
 
                             <div className="space-y-2">
                                 <Label>Profile Picture</Label>

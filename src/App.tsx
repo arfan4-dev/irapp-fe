@@ -20,15 +20,12 @@ import { useEffect } from "react";
 import { fetchSiteConfig } from "./store/features/siteConfig/siteConfig";
 
 function App() {
+  useOrderSync();
   const { config } = useSelector((state: RootState) => state.siteConfig);
   const dispatch = useDispatch<AppDispatch>();
-
-  useOrderSync();
+  useDynamicSiteMeta({ faviconUrl: config.faviconUrl || '/assets/favicon.ico', title: config.siteTitle || 'Internal Service Management System' })
     useEffect(() => {
-      dispatch(fetchSiteConfig()).unwrap().then(()=>{
-        useDynamicSiteMeta({ faviconUrl: config.faviconUrl, title: config.siteTitle })
-
-      })
+      dispatch(fetchSiteConfig()).unwrap()
     }, [])
   return (
     <ErrorBoundary>

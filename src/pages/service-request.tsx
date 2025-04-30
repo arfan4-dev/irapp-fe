@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,10 +32,15 @@ export default function UserPage() {
 
   const isOnline = useOfflineStatus();
   const dispatch = useDispatch<AppDispatch>();
-  const categories = useSelector((state: RootState) => state?.categories?.categories || []);
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
-  
-  console.log(user)
+  const allCategories = useSelector((state: RootState) => state.categories.categories || []);
+
+  const categories = useMemo(() => {
+    if (!user?.department) return [];
+
+    return allCategories.filter(category => category.department === user.department);
+  }, [allCategories, user?.department]);  
+
   const order: OfflineOrder = {
     userId: user.id,
     person: user.username,
@@ -150,6 +155,7 @@ export default function UserPage() {
     fetchData();
   }, []);
 
+  console.log("categories:", categories);
 
   useEffect(() => {
     dispatch(fetchSiteConfig()).unwrap()

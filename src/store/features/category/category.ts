@@ -29,11 +29,9 @@ export const fetchCategories = createAsyncThunk(
 
 export const createCategory = createAsyncThunk(
   "categories/create",
-  async ({ label }: { label: string }, { rejectWithValue }) => {
+  async ({ label, dept }: { label: string; dept:string }, { rejectWithValue }) => {
     try {
-      console.log("label:", label);
-
-      const res = await api.post("/categories", { label });
+      const res = await api.post("/categories", { label, department: dept });
       return res.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || "Creation failed");

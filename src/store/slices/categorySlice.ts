@@ -9,6 +9,7 @@ interface CategoryItem {
 interface Category {
   _id: string;
   label: string;
+  department:string;
   items: CategoryItem[];
   userId: string;
 }

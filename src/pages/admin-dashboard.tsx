@@ -26,6 +26,11 @@ import { FiMoreVertical } from "react-icons/fi";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import useUsername from "@/hooks/useUsername";
 import useCategorySortOrder from "@/hooks/useCategorySortOrder";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { departments } from "@/lib/departments";
+
+
 
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
@@ -57,6 +62,7 @@ export default function AdminPage() {
   const [pendingFilters, setPendingFilters] = useState({ item: "", person: "", date: "" });
   const [progressFilters, setProgressFilters] = useState({ item: "", person: "", date: "" });
   const [sortOrderAsc, setSortOrderAsc] = useState(true);
+
 
   const orders = useMemo(() => {
     if (!user) return [];
@@ -847,6 +853,7 @@ export default function AdminPage() {
                     e.preventDefault();
                     const form = e.target as any;
                     const label = form.catLabel.value.trim();
+                    const dept = form.department.value.trim();
                     // Disallow special characters except space, dash, underscore
                     const isValid = /^[a-zA-Z0-9 _-]+$/.test(label);
 
@@ -859,8 +866,8 @@ export default function AdminPage() {
                       return;
                     }
 
-                    const newCategory = { label };
-
+                    const newCategory = { label, dept };
+                  
                     if (isOnline) {
                       dispatch(createCategory(newCategory))
                         .unwrap()
@@ -884,12 +891,30 @@ export default function AdminPage() {
 
                   className="space-y-4"
                 >
-                  <input
+                  <Label className="mb-2.5">Cateogry Name</Label>
+                  <Input
                     name="catLabel"
                     placeholder="Category Name"
                     className="w-full px-3 py-2 border rounded text-sm dark:bg-zinc-800"
                     required
                   />
+                  <div className="grid">
+                    <Label className="mb-2.5">Department</Label>
+                    <Select
+                      name="department"
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {departments.map((dep) => (
+                          <SelectItem key={dep} value={dep}>
+                            {dep}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="flex justify-end gap-2">
                     <Button variant="outline" onClick={() => setShowCategoryModal(false)} type="button">Cancel</Button>
                     <Button type="submit" className="cursor-pointer">Add</Button>

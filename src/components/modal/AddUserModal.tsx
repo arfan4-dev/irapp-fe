@@ -73,7 +73,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
         formData.append("email", formState.email);
         formData.append("role", formState.role);
         formData.append("location", formState.location);
-        if (formState.role === "staff") {
+        if (formState.department) {
             formData.append("department", formState.department);
         }
         if (formState.password) {
@@ -160,7 +160,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
                         <Select
                             value={formState.department}
                             onValueChange={(value) => handleChange("department", value)}
-                            disabled={formState.role !== "staff"}
+                            disabled={formState.role === "admin"}
                         >
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select department" />

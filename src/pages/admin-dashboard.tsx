@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,19 +48,34 @@ export default function AdminPage() {
   const [itemOptions, setItemOptions] = useState<Record<string, boolean>>({});
   const location = useLocation()
   const categories = useSelector((state: RootState) => state.categories.categories);
-  const orders = useSelector((state: RootState) => state.orders.orders);
+  const allOrders = useSelector((state: RootState) => state.orders.orders);
+
+
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
   const isOnline = useOfflineStatus();
   const [pendingFilters, setPendingFilters] = useState({ item: "", person: "", date: "" });
   const [progressFilters, setProgressFilters] = useState({ item: "", person: "", date: "" });
   const [sortOrderAsc, setSortOrderAsc] = useState(true);
+
+  const orders = useMemo(() => {
+    if (!user) return [];
+
+    if (user.role === "admin") {
+      return allOrders; // admin sees all
+    }
+
+    if (user.role === "staff" && user.department) {
+      return allOrders.filter(order => order.department === user.department); // staff sees only department-specific orders
+    }
+
+    return []; // default fallback
+  }, [allOrders, user]);  
   const { userIdToUsername } = useUsername(orders)
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
   const { categorySortOrder, setCategorySortOrder } = useCategorySortOrder();
   const { config } = useSelector((state: RootState) => state.siteConfig);
-
 
 
   const applyFiltersAndSort = (orders: typeof pendingOrders, filters: { item: string; person: string; date: string }) => {
@@ -108,6 +123,7 @@ export default function AdminPage() {
     }
   };
 
+  
   useEffect(() => {
     const loadOfflineItems = async () => {
       const pendingItems = await getPendingCategoryItems();
@@ -259,10 +275,11 @@ export default function AdminPage() {
                   <tr className="bg-gray-200 dark:bg-gray-700">
                     <th className="p-2">Type & Items</th>
                     <th className="p-2">Requested By</th>
+                    <th className="p-2">Department</th>
                     <th className="p-2">Date</th>
                     <th className="p-2">Time</th>
                     <th className="p-2">Status</th>
-                    <th className="p-2">Actions</th>
+                    {user.role === 'staff' ? <th className="p-2">Actions</th>: <th></th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -275,6 +292,7 @@ export default function AdminPage() {
                         </div>
                       </td>
                       <td className="p-2"> {userIdToUsername[req.userId] || "Loading..."}</td>
+                      <td className="p-2">{req.department}</td>
                       <td className="p-2">{req.timestamp ? (
 
                         <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>
@@ -296,12 +314,12 @@ export default function AdminPage() {
                       <td className="p-2">{req.status}</td>
                       <td className="p-2 space-x-2">
 
-                        <Button
+                        {user.role === 'staff' && <Button
                           size="sm"
                           onClick={() => handleStatusUpdate(req._id!, "In Progress")}
                         >
                           Accept
-                        </Button>
+                        </Button>}
 
                         {/* <Button
                           size="sm"
@@ -322,10 +340,11 @@ export default function AdminPage() {
                 {
                   filteredPendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>) : (filteredPendingOrders.map(req => (
                     <Card key={req._id}>
-                      <CardContent className="space-y-2 p-4">
-                        {/* <div><strong>Type:</strong> {req.type}</div> */}
+                      <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" :"px-4"}`}>
+                        <div><strong>Type:</strong> {req.type}</div>
                         <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
                         <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
+                        <div><strong>Department:</strong> {req.department}</div>
                         {req.timestamp ? (
                           <>
                             <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
@@ -337,7 +356,7 @@ export default function AdminPage() {
 
 
                         <div><strong>Status:</strong> {req.status}</div>
-                        <div className="space-x-2 pt-2">
+                        {user.role === 'staff' &&  <div className="space-x-2 pt-2">
                           {/* <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "In Progress" }))}>Accept</Button>
                           <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>Answered</Button> */}
                           <Button
@@ -345,7 +364,7 @@ export default function AdminPage() {
                             onClick={() => handleStatusUpdate(req._id!, "In Progress")}
                           >
                             Accept
-                          </Button>
+                          </Button></div>}
 
                           {/* <Button
                             size="sm"
@@ -354,7 +373,7 @@ export default function AdminPage() {
                           >
                             Answered
                           </Button> */}
-                        </div>
+                        
                       </CardContent>
                     </Card>
                   )))}
@@ -403,10 +422,11 @@ export default function AdminPage() {
                   <tr className="bg-gray-200 dark:bg-gray-700">
                     <th className="p-2">Type & Items</th>
                     <th className="p-2">Requested By</th>
+                      <th className="p-2">Department</th>
                     <th className="p-2">Date</th>
                     <th className="p-2">Time</th>
                     <th className="p-2">Status</th>
-                    <th className="p-2">Actions</th>
+                      {user.role === 'staff' ?  <th className="p-2">Actions</th>: <th></th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -417,7 +437,9 @@ export default function AdminPage() {
                         <div className="text-sm italic">
                           {req.items.map(item => `${item.quantity} × ${item.name}`).join(", ")}
                         </div>
+
                       </td>
+                      <td> <div className="p-2">{req.department}</div></td>
                       <td className="p-2">{userIdToUsername[req.userId] || "Loading..."}</td>
                       <td className="p-2">{req.timestamp ? (
 
@@ -442,10 +464,10 @@ export default function AdminPage() {
                         {/* <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>
                           Mark as Answered
                         </Button> */}
-                        <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}
+                        {user.role === 'staff' && <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}
                         >
                           Mark as Answered
-                        </Button>
+                        </Button>}
                       </td>
                     </tr>
                   ))}
@@ -455,10 +477,12 @@ export default function AdminPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredInProgressOrders.map(req => (
                   <Card key={req._id}>
-                    <CardContent className="space-y-2 p-4">
+                    <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
                       <div><strong>Type:</strong> {req.type}</div>
                       <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
                       <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
+                      <div><strong>Department:</strong> {req.department}</div>
+
                       {req.timestamp ? (
                         <>
                           <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
@@ -469,9 +493,9 @@ export default function AdminPage() {
                       )}
 
                       <div><strong>Status:</strong> {req.status}</div>
-                      <div className="pt-2">
+                      {user.role === 'staff' && <div className="pt-2">
                         <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}>Mark as Answered</Button>
-                      </div>
+                      </div>}
                     </CardContent>
                   </Card>
                 ))}
@@ -480,7 +504,7 @@ export default function AdminPage() {
           </CardContent>
         </Card>
 
-        <Card>
+     {  user.role==='admin' && <Card>
           <CardContent className="p-4 md:p-6 space-y-6">
             <h2 className="text-xl font-semibold mb-4 ">Manage Categories </h2>
             <div className="flex items-center  justify-between ">
@@ -805,6 +829,7 @@ export default function AdminPage() {
 
           </CardContent>
         </Card>
+        }
 
         {showCategoryModal && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">

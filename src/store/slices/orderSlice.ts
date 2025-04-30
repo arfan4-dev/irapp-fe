@@ -15,6 +15,7 @@ interface Order {
   _id?: string;
   userId: string;
   person: string;
+  department: string;
   type: string;
   status: "Pending" | "In Progress" | "Answered";
   items: OrderItem[];

@@ -4,6 +4,7 @@ export interface OfflineOrder {
   userId: string;
   person: string;
   type: string;
+  department:string;
   items: { name: string; quantity: number }[];
   status: "Pending" | "In Progress" | "Answered";
 }

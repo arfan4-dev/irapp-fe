@@ -169,6 +169,7 @@ const [addUserModal,setAddUserModal]=useState(false)
                                                 </SelectTrigger>
                                                 <SelectContent >
                                                     <SelectItem value="user">User</SelectItem>
+                                                        <SelectItem value="staff">Staff</SelectItem>
                                                     <SelectItem value="admin">Admin</SelectItem>
                                                 </SelectContent>
                                             </Select>

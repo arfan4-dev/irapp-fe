@@ -39,6 +39,7 @@ export default function UserPage() {
   const order: OfflineOrder = {
     userId: user.id,
     person: user.username,
+    department:user.department,
     type: selectedRequest,
     items: Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity })),
     status: 'Pending',
@@ -60,6 +61,7 @@ export default function UserPage() {
       type: selectedRequest,
       userId: user.id,
       person: user.username,
+      department: user.department,
       items: orderItems,
       status: 'Pending',
     });

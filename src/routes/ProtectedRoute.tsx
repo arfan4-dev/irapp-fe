@@ -14,6 +14,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const location = useLocation();
     // console.log("ProtectedRoute.....", user.id);
 
+
     useEffect(() => {
         const checkAuth = async () => {
             try {
@@ -46,12 +47,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
     // ✅ Redirect '/' based on role
     if (isAuthenticated && location.pathname === "/") {
-        if (user?.role === "admin") return <Navigate to="/admin-panel" replace />;
+        if (user?.role === "admin" || user?.role == "staff") return <Navigate to="/admin-panel" replace />;
         if (user?.role === "user") return <Navigate to="/service-request" replace />;
     }
 
     // ❌ Prevent admin from accessing user dashboard
-    if (user?.role === "admin" && (location.pathname.startsWith("/service-request") || location.pathname.startsWith("/order-status"))) {
+    if ((user?.role === "admin" || user?.role === "staff") && (location.pathname.startsWith("/service-request") || location.pathname.startsWith("/order-status"))) {
         return <Navigate to="/admin-panel" replace />;
     }
 

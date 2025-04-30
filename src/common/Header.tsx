@@ -131,22 +131,23 @@ const Header: React.FC<HeaderProps> = ({
                     {tabs?.T1 || "Home"}
                 </NavLink>
               </li>
-              <li>
-                <NavLink
-                  to="/manage-users"
-                  className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
-                >
+                {user?.role === "admin" && (<><li>
+                  <NavLink
+                    to="/manage-users"
+                    className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                  >
                     {tabs?.T2 || "User Management "}
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/answered-order"
-                  className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
-                >
+                  </NavLink>
+                </li>
+                 </>)}
+                <li>
+                  <NavLink
+                    to="/answered-order"
+                    className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                  >
                     {tabs?.T3 || "Answered order"}
-                </NavLink>
-              </li>
+                  </NavLink>
+                </li>
             </ul>
           </nav>
         )}

@@ -276,6 +276,8 @@ export default function AdminPage() {
                     <th className="p-2">Type & Items</th>
                     <th className="p-2">Requested By</th>
                     <th className="p-2">Department</th>
+                    <th className="p-2">Location</th>
+                    
                     <th className="p-2">Date</th>
                     <th className="p-2">Time</th>
                     <th className="p-2">Status</th>
@@ -293,6 +295,7 @@ export default function AdminPage() {
                       </td>
                       <td className="p-2"> {userIdToUsername[req.userId] || "Loading..."}</td>
                       <td className="p-2">{req.department}</td>
+                      <td className="p-2">{req.location}</td>
                       <td className="p-2">{req.timestamp ? (
 
                         <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>
@@ -345,6 +348,7 @@ export default function AdminPage() {
                         <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
                         <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
                         <div><strong>Department:</strong> {req.department}</div>
+                        <div><strong>Location:</strong> {req.location}</div>
                         {req.timestamp ? (
                           <>
                             <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
@@ -423,6 +427,7 @@ export default function AdminPage() {
                     <th className="p-2">Type & Items</th>
                     <th className="p-2">Requested By</th>
                       <th className="p-2">Department</th>
+                      <th className="p-2">Location</th>
                     <th className="p-2">Date</th>
                     <th className="p-2">Time</th>
                     <th className="p-2">Status</th>
@@ -440,6 +445,7 @@ export default function AdminPage() {
 
                       </td>
                       <td> <div className="p-2">{req.department}</div></td>
+                      <td> <div className="p-2">{req.location}</div></td>
                       <td className="p-2">{userIdToUsername[req.userId] || "Loading..."}</td>
                       <td className="p-2">{req.timestamp ? (
 
@@ -482,7 +488,7 @@ export default function AdminPage() {
                       <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
                       <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
                       <div><strong>Department:</strong> {req.department}</div>
-
+                      <div><strong>Location:</strong> {req.location}</div>
                       {req.timestamp ? (
                         <>
                           <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>

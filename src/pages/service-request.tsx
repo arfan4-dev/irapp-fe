@@ -40,6 +40,7 @@ export default function UserPage() {
     userId: user.id,
     person: user.username,
     department:user.department,
+    location: user.location,
     type: selectedRequest,
     items: Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity })),
     status: 'Pending',
@@ -62,6 +63,7 @@ export default function UserPage() {
       userId: user.id,
       person: user.username,
       department: user.department,
+      location: user.location ,
       items: orderItems,
       status: 'Pending',
     });

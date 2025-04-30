@@ -221,7 +221,7 @@ export default function AdminPage() {
         showSettings={showAdminSettings}
       />
 
-      <div className="max-w-6xl mx-auto space-y-6 p-4">
+      <div className="max-w-7xl mx-auto space-y-6 p-4">
         <div className="flex gap-5 justify-end">
           <Button
             className="text-black dark:bg-black dark:text-white"
@@ -245,7 +245,7 @@ export default function AdminPage() {
 
 
           <Card className="overflow-x-auto ">
-            <div className={` ${viewMode === "grid" ? "flex gap-5" : "space-y-5"} `}>
+            <div className={` ${viewMode === "grid" ? "sm:flex gap-5" : "space-y-5"} `}>
 
 
               <div>
@@ -256,24 +256,25 @@ export default function AdminPage() {
                     <Input
                       type="text"
                       placeholder="Search by Item Name"
-                      className="w-48"
+                      className="w-48 placeholder:text-[12px] placeholder:md:text-[14px]"
                       value={pendingFilters.item}
                       onChange={(e) => setPendingFilters(prev => ({ ...prev, item: e.target.value }))}
                     />
                     <Input
                       type="text"
                       placeholder="Search by Requested By"
-                      className="w-48"
+                      className="w-48 placeholder:text-[12px] placeholder:md:text-[14px]"
                       value={pendingFilters.person}
                       onChange={(e) => setPendingFilters(prev => ({ ...prev, person: e.target.value }))}
                     />
                     <Input
                       type="date"
-                      className="w-36"
+                      className="w-40 md:w-36 placeholder:text-[12px] placeholder:md:text-[14px]"
                       value={pendingFilters.date}
                       onChange={(e) => setPendingFilters(prev => ({ ...prev, date: e.target.value }))}
                     />
                     <Button
+                      className="cursor-pointer text-[14px] md:text-[16px]"
 
                       variant="outline"
                       onClick={() => setPendingFilters({ item: "", person: "", date: "" })}
@@ -331,6 +332,7 @@ export default function AdminPage() {
                             <td className="p-2 space-x-2">
 
                               {user.role === 'staff' && <Button
+                                className="cursor-pointer hover:opacity-75"
                                 size="sm"
                                 onClick={() => handleStatusUpdate(req._id!, "In Progress")}
                               >
@@ -351,7 +353,7 @@ export default function AdminPage() {
                       </tbody>
                     </table>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
 
                       {
                         filteredPendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>) : (filteredPendingOrders.map(req => (
@@ -379,6 +381,7 @@ export default function AdminPage() {
                                 <Button
                                   size="sm"
                                   onClick={() => handleStatusUpdate(req._id!, "In Progress")}
+                                  className="cursor-pointer hover:opacity-75"
                                 >
                                   Accept
                                 </Button></div>}
@@ -398,7 +401,7 @@ export default function AdminPage() {
                   )}
                 </CardContent>
               </div>
-              <div className="border border-l mx-5" />
+              <div className={`border border-l mx-2 sm:mx-0  ${viewMode !== "grid" && "mx-5"} `} />
               <div>
                 <CardContent className="p-4 md:p-6">
                   <h2 className="text-xl font-semibold mb-4">In Progress Requests</h2>
@@ -406,25 +409,25 @@ export default function AdminPage() {
                     <Input
                       type="text"
                       placeholder="Search by Item Name"
-                      className="w-48"
+                      className="w-48 placeholder:text-[12px] placeholder:md:text-[14px]"
                       value={progressFilters.item}
                       onChange={(e) => setProgressFilters(prev => ({ ...prev, item: e.target.value }))}
                     />
                     <Input
                       type="text"
                       placeholder="Search by Requested By"
-                      className="w-48"
+                      className="w-48 placeholder:text-[12px] placeholder:md:text-[14px]"
                       value={progressFilters.person}
                       onChange={(e) => setProgressFilters(prev => ({ ...prev, person: e.target.value }))}
                     />
                     <Input
                       type="date"
-                      className="w-36"
+                      className="w-40 md:w-36 "
                       value={progressFilters.date}
                       onChange={(e) => setProgressFilters(prev => ({ ...prev, date: e.target.value }))}
                     />
                     <Button
-
+                      className="cursor-pointer text-[14px] md:text-[16px]"
                       variant="outline"
                       onClick={() => setProgressFilters({ item: "", person: "", date: "" })}
                     >
@@ -483,7 +486,7 @@ export default function AdminPage() {
                               {/* <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>
                           Mark as Answered
                         </Button> */}
-                              {user.role === 'staff' && <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}
+                              {user.role === 'staff' && <Button className="cursor-pointer hover:opacity-75" size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}
                               >
                                 Mark as Answered
                               </Button>}
@@ -493,7 +496,7 @@ export default function AdminPage() {
                       </tbody>
                     </table>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                       {filteredInProgressOrders.map(req => (
                         <Card key={req._id}>
                           <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
@@ -513,7 +516,7 @@ export default function AdminPage() {
 
                             <div><strong>Status:</strong> {req.status}</div>
                             {user.role === 'staff' && <div className="pt-2">
-                              <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}>Mark as Answered</Button>
+                              <Button className="cursor-pointer hover:opacity-75" size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}>Mark as Answered</Button>
                             </div>}
                           </CardContent>
                         </Card>
@@ -928,7 +931,7 @@ export default function AdminPage() {
                   </div>
                   <div className="flex justify-end gap-2">
                     <Button variant="outline" onClick={() => setShowCategoryModal(false)} type="button">Cancel</Button>
-                    <Button type="submit" className="cursor-pointer">Add</Button>
+                    <Button type="submit" className="cursor-pointer hover:opacity-75">Add</Button>
                   </div>
                 </form>
               </CardContent>

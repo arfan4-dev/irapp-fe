@@ -21,9 +21,9 @@ import { fetchSiteConfig } from "./store/features/siteConfig/siteConfig";
 
 function App() {
   useOrderSync();
-  const { config } = useSelector((state: RootState) => state.siteConfig);
+  const { config } = useSelector((state: RootState) => state?.siteConfig);
   const dispatch = useDispatch<AppDispatch>();
-  useDynamicSiteMeta({ faviconUrl: config.faviconUrl || '/assets/favicon.ico', title: config.siteTitle || 'Internal Service Management System' })
+  useDynamicSiteMeta({ faviconUrl:( config?.faviconUrl || '/assets/favicon.ico'), title: (config?.siteTitle || 'Internal Service Management System') })
     useEffect(() => {
       dispatch(fetchSiteConfig()).unwrap()
     }, [])

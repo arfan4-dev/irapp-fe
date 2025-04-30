@@ -35,6 +35,7 @@ export default function UserPage() {
   const categories = useSelector((state: RootState) => state?.categories?.categories || []);
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
   
+  console.log(user)
   const order: OfflineOrder = {
     userId: user.id,
     person: user.username,

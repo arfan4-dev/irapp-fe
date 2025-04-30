@@ -6,7 +6,6 @@ type SiteMetaOptions = {
 };
 
 const useDynamicSiteMeta = ({ title, faviconUrl }: SiteMetaOptions) => {
-  console.log(title, faviconUrl);
   
   // Set page title
   useEffect(() => {

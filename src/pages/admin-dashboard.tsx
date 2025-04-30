@@ -528,7 +528,7 @@ export default function AdminPage() {
 
         </div>
         {user.role === 'admin' && <Card>
-          <CardContent className="p-4 md:p-6 space-y-6">
+          <CardContent className="p-4 md:px-6  space-y-6">
             <h2 className="text-xl font-semibold mb-4 ">Manage Categories </h2>
             <div className="flex items-center  justify-between ">
               <h3 className="text-lg font-semibold">Add New Category</h3>

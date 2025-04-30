@@ -148,6 +148,7 @@ export default function AnsweredOrdersPage() {
                                 <tr className="bg-gray-200 dark:bg-gray-700">
                                     <th className="p-2">Type & Items</th>
                                     <th className="p-2">Requested By</th>
+                                        <th className="p-2">Department</th>
                                     <th className="p-2">Date</th>
                                     <th className="p-2">Time</th>
                                     <th className="p-2">Status</th>
@@ -161,6 +162,7 @@ export default function AnsweredOrdersPage() {
                                             <div className="text-sm italic">{order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}</div>
                                         </td>
                                         <td className="p-2">{userIdToUsername[order.userId] || "Loading..."}</td>
+                                        <td className="p-2">{order.department}</td>
                                         <td className="p-2">{order.timestamp ? new Date(order.timestamp).toISOString().split("T")[0] : "No date"}</td>
                                         <td className="p-2">{order.timestamp ? new Date(order.timestamp).toTimeString().split(" ")[0] : "No time"}</td>
                                         <td className="p-2">{order.status}</td>
@@ -177,6 +179,7 @@ export default function AnsweredOrdersPage() {
                                     <div><strong>Type:</strong> {order.type}</div>
                                     <div><strong>Items:</strong> {order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}</div>
                                     <div><strong>By:</strong> {userIdToUsername[order.userId] || "Loading..."}</div>
+                                    <div><strong>Department:</strong> {order.department}</div>
                                     {order.timestamp && (
                                         <>
                                             <div><strong>Date:</strong> {new Date(order.timestamp).toISOString().split("T")[0]}</div>
@@ -205,6 +208,7 @@ export default function AnsweredOrdersPage() {
                                                 <tr className="bg-gray-200 dark:bg-gray-700">
                                                     <th className="p-2">Type & Items</th>
                                                     <th className="p-2">Requested By</th>
+                                                    <th className="p-2">Department</th>
                                                     <th className="p-2">Date</th>
                                                     <th className="p-2">Time</th>
                                                     <th className="p-2">Status</th>
@@ -222,6 +226,7 @@ export default function AnsweredOrdersPage() {
                                                                 </div>
                                                             </td>
                                                             <td className="p-2">{userIdToUsername[order.userId] || "Loading..."}</td>
+                                                            <td className="p-2">{order.department}</td>
                                                             <td className="p-2">
                                                                 {order.timestamp ? new Date(order.timestamp).toISOString().split("T")[0] : "No date"}
                                                             </td>
@@ -250,6 +255,7 @@ export default function AnsweredOrdersPage() {
                                                                 <div><strong>Time:</strong> {new Date(order.timestamp).toTimeString().split(" ")[0]}</div>
                                                             </>
                                                         )}
+                                                        <div><strong>Department:</strong> {order.department}</div>
                                                         <div><strong>Status:</strong> {order.status}</div>
                                                     </CardContent>
                                                 </Card>

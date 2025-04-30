@@ -20,24 +20,11 @@ import { toast } from "sonner";
 import { createUserByAdmin } from "@/store/features/user/user";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
+import { Eye, EyeOff } from "lucide-react";
+import { departments, roles } from "@/lib/constant";
 
-const departments = ["Reception",
-    "Kitchen",
-    "Housekeeping",
-    "Maintenance",
-    "Security",
-    "IT Support",
-    "Accounts / Finance",
-    "HR (Human Resources)",
-    "Front Desk",
-    "Customer Service",
-    "Logistics",
-    "Cleaning Crew",
-    "Operations",
-    "Managerial Staff",
-    "Laundry"
-];
-const roles = ["user", "admin", "staff"];
+
+
 
 export default function AddUserModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     const [formState, setFormState] = useState({
@@ -45,16 +32,19 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
         email: "",
         password: "",
         role: "user",
-        location:"",
+        location: "",
         department: "Kitchen",
     });
-      const dispatch = useDispatch<AppDispatch>();
-    
+    const [showPassword, setShowPassword] = useState(false);
+
+    const dispatch = useDispatch<AppDispatch>();
+
 
     const [preview, setPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const {loading} = useSelector((state: RootState) => state?.user);
+    const { loading } = useSelector((state: RootState) => state?.user);
     const handleChange = (key: string, value: string) => {
+
         setFormState((prev) => ({ ...prev, [key]: value }));
     };
 
@@ -68,6 +58,17 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
     };
 
     const handleSubmit = () => {
+        const usernameRegex = /^[a-zA-Z0-9 ]+$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
+
+        if (!usernameRegex.test(formState.username)) {
+            return toast.error("Username must not contain special characters.");
+        }
+
+        if (formState.password && !passwordRegex.test(formState.password)) {
+            return toast.error("Password must be at least 6 characters and include uppercase, lowercase, digit, and special character.");
+        }
+
         const formData = new FormData();
         formData.append("username", formState.username);
         formData.append("email", formState.email);
@@ -83,19 +84,19 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
             formData.append("image", fileInputRef.current.files[0]);
         }
 
-        dispatch(createUserByAdmin(formData)).unwrap().then(()=>{
-            toast.success('New User Created Successfully.')
-            onClose();
-        }).catch(err=>{
-            toast.error('Failed to Create User.')
-            console.log(err)
-        })
-
-        // Submit formData here
-       
+        dispatch(createUserByAdmin(formData))
+            .unwrap()
+            .then(() => {
+                toast.success("New User Created Successfully.");
+                onClose();
+            })
+            .catch((err) => {
+                toast.error("Failed to Create User.");
+                console.error(err);
+            });
     };
-    console.log(formState);
-    
+
+
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -118,27 +119,36 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
                     <div className="grid gap-1">
                         <Label>Email</Label>
                         <Input
-                        type='email'
+                            type='email'
                             value={formState.email}
                             onChange={(e) => handleChange("email", e.target.value)}
                             placeholder="Enter Email"
                         />
                     </div>
 
-                    <div className="grid gap-1">
-                        <Label> Password</Label>
+                    <div className="grid gap-1 relative">
+                        <Label>Password</Label>
                         <Input
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             placeholder="Enter Password"
                             value={formState.password}
                             onChange={(e) => handleChange("password", e.target.value)}
+                            className="pr-10"
                         />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute right-3 top-[28px] text-gray-500 dark:text-gray-400"
+                        >
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
                     </div>
 
+
                     <div className="grid gap-1">
-                                <Label>Location</Label>
-                        <Input placeholder="Enter Location"  name="location" maxLength={20} value={formState.location} onChange={(e) => handleChange("location", e.target.value)} required />
-                            </div>
+                        <Label>Location</Label>
+                        <Input placeholder="Enter Location" name="location" maxLength={20} value={formState.location} onChange={(e) => handleChange("location", e.target.value)} required />
+                    </div>
                     <div className="grid gap-1">
                         <Label>Role</Label>
                         <Select value={formState.role} onValueChange={(value) => handleChange("role", value)}>
@@ -201,7 +211,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
                         Cancel
                     </Button>
                     <Button disabled={loading} onClick={handleSubmit} className="cursor-pointer hover:opacity-75">
-                        {loading?"Saving...":'Add'}
+                        {loading ? "Saving..." : 'Add'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

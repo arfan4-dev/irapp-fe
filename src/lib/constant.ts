@@ -15,3 +15,5 @@ export const departments = [
   "Managerial Staff",
   "Laundry",
 ];
+
+export const roles = ["user", "admin", "staff"];

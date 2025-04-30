@@ -49,7 +49,7 @@ export default function Register() {
                 e.target.value = ""; // reset the input
                 return;
             }
-
+ 
             setFormData(prev => ({ ...prev, image: file }));
             setPreviewUrl(URL.createObjectURL(file));
         } else if (name === "email") {

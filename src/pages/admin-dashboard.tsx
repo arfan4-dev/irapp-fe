@@ -28,7 +28,7 @@ import useUsername from "@/hooks/useUsername";
 import useCategorySortOrder from "@/hooks/useCategorySortOrder";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { departments } from "@/lib/departments";
+import { departments } from "@/lib/constant";
 
 
 
@@ -76,7 +76,7 @@ export default function AdminPage() {
     }
 
     return []; // default fallback
-  }, [allOrders, user]);  
+  }, [allOrders, user]);
   const { userIdToUsername } = useUsername(orders)
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
@@ -129,7 +129,7 @@ export default function AdminPage() {
     }
   };
 
-  
+
   useEffect(() => {
     const loadOfflineItems = async () => {
       const pendingItems = await getPendingCategoryItems();
@@ -221,7 +221,7 @@ export default function AdminPage() {
         showSettings={showAdminSettings}
       />
 
-      <div className="max-w-5xl mx-auto space-y-6 p-4">
+      <div className="max-w-6xl mx-auto space-y-6 p-4">
         <div className="flex gap-5 justify-end">
           <Button
             className="text-black dark:bg-black dark:text-white"
@@ -241,96 +241,103 @@ export default function AdminPage() {
           </div>
 
         </div>
-
-        <Card className="overflow-x-auto">
-          <CardContent className="p-4 md:p-6">
-            <h2 className="text-xl font-semibold mb-4">Pending Requests</h2>
-            <div className="flex flex-wrap gap-2 mb-4">
-              <Input
-                type="text"
-                placeholder="Search by Item Name"
-                className="w-48"
-                value={pendingFilters.item}
-                onChange={(e) => setPendingFilters(prev => ({ ...prev, item: e.target.value }))}
-              />
-              <Input
-                type="text"
-                placeholder="Search by Requested By"
-                className="w-48"
-                value={pendingFilters.person}
-                onChange={(e) => setPendingFilters(prev => ({ ...prev, person: e.target.value }))}
-              />
-              <Input
-                type="date"
-                className="w-36"
-                value={pendingFilters.date}
-                onChange={(e) => setPendingFilters(prev => ({ ...prev, date: e.target.value }))}
-              />
-              <Button
-
-                variant="outline"
-                onClick={() => setPendingFilters({ item: "", person: "", date: "" })}
-              >
-                Clear Filters
-              </Button>
-            </div>
-
-            {viewMode === "list" ? (
-              <table className="w-full text-left ">
-                <thead>
-                  <tr className="bg-gray-200 dark:bg-gray-700">
-                    <th className="p-2">Type & Items</th>
-                    <th className="p-2">Requested By</th>
-                    <th className="p-2">Department</th>
-                    <th className="p-2">Location</th>
-                    
-                    <th className="p-2">Date</th>
-                    <th className="p-2">Time</th>
-                    <th className="p-2">Status</th>
-                    {user.role === 'staff' ? <th className="p-2">Actions</th>: <th></th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPendingOrders.map(req => (
-                    <tr key={req._id} className="border-b align-top">
-                      <td className="p-2">
-                        <div className="font-semibold italic">{req.type}</div>
-                        <div className="text-sm italic">
-                          {req.items.map(item => `${item.quantity} × ${item.name}`).join(", ")}
-                        </div>
-                      </td>
-                      <td className="p-2"> {userIdToUsername[req.userId] || "Loading..."}</td>
-                      <td className="p-2">{req.department}</td>
-                      <td className="p-2">{req.location}</td>
-                      <td className="p-2">{req.timestamp ? (
-
-                        <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>
+        <div >
 
 
-                      ) : (
-                        <div><em>No timestamp available</em></div>
-                      )}
-                      </td>
-                      <td className="p-2">{req.timestamp ? (
+          <Card className="overflow-x-auto ">
+            <div className={` ${viewMode === "grid" ? "flex gap-5" : "space-y-5"} `}>
 
 
-                        <> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</>
+              <div>
+                <CardContent className="p-4 md:p-6 ">
 
-                      ) : (
-                        <div><em>No timestamp available</em></div>
-                      )}
-                      </td>
-                      <td className="p-2">{req.status}</td>
-                      <td className="p-2 space-x-2">
+                  <h2 className="text-xl font-semibold mb-4">Pending Requests</h2>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <Input
+                      type="text"
+                      placeholder="Search by Item Name"
+                      className="w-48"
+                      value={pendingFilters.item}
+                      onChange={(e) => setPendingFilters(prev => ({ ...prev, item: e.target.value }))}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Search by Requested By"
+                      className="w-48"
+                      value={pendingFilters.person}
+                      onChange={(e) => setPendingFilters(prev => ({ ...prev, person: e.target.value }))}
+                    />
+                    <Input
+                      type="date"
+                      className="w-36"
+                      value={pendingFilters.date}
+                      onChange={(e) => setPendingFilters(prev => ({ ...prev, date: e.target.value }))}
+                    />
+                    <Button
 
-                        {user.role === 'staff' && <Button
-                          size="sm"
-                          onClick={() => handleStatusUpdate(req._id!, "In Progress")}
-                        >
-                          Accept
-                        </Button>}
+                      variant="outline"
+                      onClick={() => setPendingFilters({ item: "", person: "", date: "" })}
+                    >
+                      Clear Filters
+                    </Button>
+                  </div>
 
-                        {/* <Button
+                  {viewMode === "list" ? (
+                    <table className="w-full text-left ">
+                      <thead>
+                        <tr className="bg-gray-200 dark:bg-gray-700">
+                          <th className="p-2">Type & Items</th>
+                          <th className="p-2">Requested By</th>
+                          <th className="p-2">Department</th>
+                          <th className="p-2">Location</th>
+
+                          <th className="p-2">Date</th>
+                          <th className="p-2">Time</th>
+                          <th className="p-2">Status</th>
+                          {user.role === 'staff' ? <th className="p-2">Actions</th> : <th></th>}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredPendingOrders.map(req => (
+                          <tr key={req._id} className="border-b align-top">
+                            <td className="p-2">
+                              <div className="font-semibold italic">{req.type}</div>
+                              <div className="text-sm italic">
+                                {req.items.map(item => `${item.quantity} × ${item.name}`).join(", ")}
+                              </div>
+                            </td>
+                            <td className="p-2"> {userIdToUsername[req.userId] || "Loading..."}</td>
+                            <td className="p-2">{req.department}</td>
+                            <td className="p-2">{req.location}</td>
+                            <td className="p-2">{req.timestamp ? (
+
+                              <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>
+
+
+                            ) : (
+                              <div><em>No timestamp available</em></div>
+                            )}
+                            </td>
+                            <td className="p-2">{req.timestamp ? (
+
+
+                              <> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</>
+
+                            ) : (
+                              <div><em>No timestamp available</em></div>
+                            )}
+                            </td>
+                            <td className="p-2">{req.status}</td>
+                            <td className="p-2 space-x-2">
+
+                              {user.role === 'staff' && <Button
+                                size="sm"
+                                onClick={() => handleStatusUpdate(req._id!, "In Progress")}
+                              >
+                                Accept
+                              </Button>}
+
+                              {/* <Button
                           size="sm"
                           variant="outline"
                           onClick={() => handleStatusUpdate(req._id!, "Answered")}
@@ -338,185 +345,189 @@ export default function AdminPage() {
                           Answered
                         </Button> */}
 
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                {
-                  filteredPendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>) : (filteredPendingOrders.map(req => (
-                    <Card key={req._id}>
-                      <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" :"px-4"}`}>
-                        <div><strong>Type:</strong> {req.type}</div>
-                        <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
-                        <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
-                        <div><strong>Department:</strong> {req.department}</div>
-                        <div><strong>Location:</strong> {req.location}</div>
-                        {req.timestamp ? (
-                          <>
-                            <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
-                            <div><strong>Time:</strong> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</div>
-                          </>
-                        ) : (
-                          <div><em>No timestamp available</em></div>
-                        )}
+                      {
+                        filteredPendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>) : (filteredPendingOrders.map(req => (
+                          <Card key={req._id}>
+                            <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
+                              {/* <div><strong>Type:</strong> {req.type}</div> */}
+                              <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
+                              <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
+                              <div><strong>Department:</strong> {req.department}</div>
+                              <div><strong>Location:</strong> {req.location}</div>
+                              {req.timestamp ? (
+                                <>
+                                  <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
+                                  <div><strong>Time:</strong> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</div>
+                                </>
+                              ) : (
+                                <div><em>No timestamp available</em></div>
+                              )}
 
 
-                        <div><strong>Status:</strong> {req.status}</div>
-                        {user.role === 'staff' &&  <div className="space-x-2 pt-2">
-                          {/* <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "In Progress" }))}>Accept</Button>
+                              <div><strong>Status:</strong> {req.status}</div>
+                              {user.role === 'staff' && <div className="space-x-2 pt-2">
+                                {/* <Button size="sm" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "In Progress" }))}>Accept</Button>
                           <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>Answered</Button> */}
-                          <Button
-                            size="sm"
-                            onClick={() => handleStatusUpdate(req._id!, "In Progress")}
-                          >
-                            Accept
-                          </Button></div>}
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleStatusUpdate(req._id!, "In Progress")}
+                                >
+                                  Accept
+                                </Button></div>}
 
-                          {/* <Button
+                              {/* <Button
                             size="sm"
                             variant="outline"
                             onClick={() => handleStatusUpdate(req._id!, "Answered")}
                           >
                             Answered
                           </Button> */}
-                        
-                      </CardContent>
-                    </Card>
-                  )))}
+
+                            </CardContent>
+                          </Card>
+                        )))}
+                    </div>
+                  )}
+                </CardContent>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <div className="border border-l mx-5" />
+              <div>
+                <CardContent className="p-4 md:p-6">
+                  <h2 className="text-xl font-semibold mb-4">In Progress Requests</h2>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <Input
+                      type="text"
+                      placeholder="Search by Item Name"
+                      className="w-48"
+                      value={progressFilters.item}
+                      onChange={(e) => setProgressFilters(prev => ({ ...prev, item: e.target.value }))}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Search by Requested By"
+                      className="w-48"
+                      value={progressFilters.person}
+                      onChange={(e) => setProgressFilters(prev => ({ ...prev, person: e.target.value }))}
+                    />
+                    <Input
+                      type="date"
+                      className="w-36"
+                      value={progressFilters.date}
+                      onChange={(e) => setProgressFilters(prev => ({ ...prev, date: e.target.value }))}
+                    />
+                    <Button
 
-        <Card className="overflow-x-auto">
-          <CardContent className="p-4 md:p-6">
-            <h2 className="text-xl font-semibold mb-4">In Progress Requests</h2>
-            <div className="flex flex-wrap gap-2 mb-4">
-              <Input
-                type="text"
-                placeholder="Search by Item Name"
-                className="w-48"
-                value={progressFilters.item}
-                onChange={(e) => setProgressFilters(prev => ({ ...prev, item: e.target.value }))}
-              />
-              <Input
-                type="text"
-                placeholder="Search by Requested By"
-                className="w-48"
-                value={progressFilters.person}
-                onChange={(e) => setProgressFilters(prev => ({ ...prev, person: e.target.value }))}
-              />
-              <Input
-                type="date"
-                className="w-36"
-                value={progressFilters.date}
-                onChange={(e) => setProgressFilters(prev => ({ ...prev, date: e.target.value }))}
-              />
-              <Button
+                      variant="outline"
+                      onClick={() => setProgressFilters({ item: "", person: "", date: "" })}
+                    >
+                      Clear Filters
+                    </Button>
+                  </div>
+                  {filteredInProgressOrders.length === 0 ? (
+                    <div className="text-gray-500">No requests in progress.</div>
+                  ) : viewMode === "list" ? (
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="bg-gray-200 dark:bg-gray-700">
+                          <th className="p-2">Type & Items</th>
+                          <th className="p-2">Requested By</th>
+                          <th className="p-2">Department</th>
+                          <th className="p-2">Location</th>
+                          <th className="p-2">Date</th>
+                          <th className="p-2">Time</th>
+                          <th className="p-2">Status</th>
+                          {user.role === 'staff' ? <th className="p-2">Actions</th> : <th></th>}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredInProgressOrders.map(req => (
+                          <tr key={req._id} className="border-b align-top">
+                            <td className="p-2">
+                              <div className="font-semibold italic">{req.type}</div>
+                              <div className="text-sm italic">
+                                {req.items.map(item => `${item.quantity} × ${item.name}`).join(", ")}
+                              </div>
 
-                variant="outline"
-                onClick={() => setProgressFilters({ item: "", person: "", date: "" })}
-              >
-                Clear Filters
-              </Button>
-            </div>
-            {filteredInProgressOrders.length === 0 ? (
-              <div className="text-gray-500">No requests in progress.</div>
-            ) : viewMode === "list" ? (
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="bg-gray-200 dark:bg-gray-700">
-                    <th className="p-2">Type & Items</th>
-                    <th className="p-2">Requested By</th>
-                      <th className="p-2">Department</th>
-                      <th className="p-2">Location</th>
-                    <th className="p-2">Date</th>
-                    <th className="p-2">Time</th>
-                    <th className="p-2">Status</th>
-                      {user.role === 'staff' ?  <th className="p-2">Actions</th>: <th></th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredInProgressOrders.map(req => (
-                    <tr key={req._id} className="border-b align-top">
-                      <td className="p-2">
-                        <div className="font-semibold italic">{req.type}</div>
-                        <div className="text-sm italic">
-                          {req.items.map(item => `${item.quantity} × ${item.name}`).join(", ")}
-                        </div>
+                            </td>
+                            <td> <div className="p-2">{req.department}</div></td>
+                            <td> <div className="p-2">{req.location}</div></td>
+                            <td className="p-2">{userIdToUsername[req.userId] || "Loading..."}</td>
+                            <td className="p-2">{req.timestamp ? (
 
-                      </td>
-                      <td> <div className="p-2">{req.department}</div></td>
-                      <td> <div className="p-2">{req.location}</div></td>
-                      <td className="p-2">{userIdToUsername[req.userId] || "Loading..."}</td>
-                      <td className="p-2">{req.timestamp ? (
-
-                        <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>
+                              <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>
 
 
-                      ) : (
-                        <div><em>No timestamp available</em></div>
-                      )}
-                      </td>
-                      <td className="p-2">{req.timestamp ? (
+                            ) : (
+                              <div><em>No timestamp available</em></div>
+                            )}
+                            </td>
+                            <td className="p-2">{req.timestamp ? (
 
 
-                        <> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</>
+                              <> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</>
 
-                      ) : (
-                        <div><em>No timestamp available</em></div>
-                      )}
-                      </td>
-                      <td className="p-2">{req.status}</td>
-                      <td className="p-2">
-                        {/* <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>
+                            ) : (
+                              <div><em>No timestamp available</em></div>
+                            )}
+                            </td>
+                            <td className="p-2">{req.status}</td>
+                            <td className="p-2">
+                              {/* <Button size="sm" variant="outline" onClick={() => dispatch(updateOrderStatus({ id: req._id, status: "Answered" }))}>
                           Mark as Answered
                         </Button> */}
-                        {user.role === 'staff' && <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}
-                        >
-                          Mark as Answered
-                        </Button>}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredInProgressOrders.map(req => (
-                  <Card key={req._id}>
-                    <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
-                      <div><strong>Type:</strong> {req.type}</div>
-                      <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
-                      <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
-                      <div><strong>Department:</strong> {req.department}</div>
-                      <div><strong>Location:</strong> {req.location}</div>
-                      {req.timestamp ? (
-                        <>
-                          <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
-                          <div><strong>Time:</strong> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</div>
-                        </>
-                      ) : (
-                        <div><em>No timestamp available</em></div>
-                      )}
+                              {user.role === 'staff' && <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}
+                              >
+                                Mark as Answered
+                              </Button>}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {filteredInProgressOrders.map(req => (
+                        <Card key={req._id}>
+                          <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
+                            {/* <div><strong>Type:</strong> {req.type}</div> */}
+                            <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
+                            <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
+                            <div><strong>Department:</strong> {req.department}</div>
+                            <div><strong>Location:</strong> {req.location}</div>
+                            {req.timestamp ? (
+                              <>
+                                <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
+                                <div><strong>Time:</strong> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</div>
+                              </>
+                            ) : (
+                              <div><em>No timestamp available</em></div>
+                            )}
 
-                      <div><strong>Status:</strong> {req.status}</div>
-                      {user.role === 'staff' && <div className="pt-2">
-                        <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}>Mark as Answered</Button>
-                      </div>}
-                    </CardContent>
-                  </Card>
-                ))}
+                            <div><strong>Status:</strong> {req.status}</div>
+                            {user.role === 'staff' && <div className="pt-2">
+                              <Button size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}>Mark as Answered</Button>
+                            </div>}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          </Card>
 
-     {  user.role==='admin' && <Card>
+
+        </div>
+        {user.role === 'admin' && <Card>
           <CardContent className="p-4 md:p-6 space-y-6">
             <h2 className="text-xl font-semibold mb-4 ">Manage Categories </h2>
             <div className="flex items-center  justify-between ">
@@ -867,7 +878,7 @@ export default function AdminPage() {
                     }
 
                     const newCategory = { label, dept };
-                  
+
                     if (isOnline) {
                       dispatch(createCategory(newCategory))
                         .unwrap()

@@ -15,23 +15,8 @@ import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import UserManageSkeleton from "@/components/skeleton/skeleton";
 import { Input } from "@/components/ui/input";
 import AddUserModal from "@/components/modal/AddUserModal";
-const departments = [
-    "Reception",
-    "Kitchen",
-    "Housekeeping",
-    "Maintenance",
-    "Security",
-    "IT Support",
-    "Accounts / Finance",
-    "HR (Human Resources)",
-    "Front Desk",
-    "Customer Service",
-    "Logistics",
-    "Cleaning Crew",
-    "Operations",
-    "Managerial Staff",
-    "Laundry"
-];
+import { departments } from "@/lib/constant";
+
 
 export default function ManageUsers() {
     const dispatch = useDispatch<AppDispatch>();

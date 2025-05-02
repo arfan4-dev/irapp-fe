@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "./store";
 import { useEffect } from "react";
 import { fetchSiteConfig } from "./store/features/siteConfig/siteConfig";
+import DepartmentManagementPage from "./pages/department";
 
 function App() {
   useOrderSync();
@@ -39,6 +40,7 @@ function App() {
         <Route path="/admin-panel" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
         <Route path="/manage-users" element={<ProtectedRoute><ManageUsers /></ProtectedRoute>} />
         <Route path="/admin-panel/site-config" element={<ProtectedRoute><SiteConfig /></ProtectedRoute>} />
+        <Route path="/admin-panel/departments" element={<ProtectedRoute><DepartmentManagementPage /></ProtectedRoute>} />
 
         <Route path="/answered-order" element={<ProtectedRoute><AnsweredOrdersPage /></ProtectedRoute>} />
         <Route path="/order-status" element={<ProtectedRoute><OrderPage /> </ProtectedRoute>} />

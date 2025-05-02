@@ -41,7 +41,10 @@ export const createCategory = createAsyncThunk(
 
 export const updateCategory = createAsyncThunk(
   "categories/update",
-  async (payload: { id: string; newLabel: string }, { rejectWithValue }) => {
+  async (
+    payload: { id: string; newLabel: string; newDepartment:string },
+    { rejectWithValue }
+  ) => {
     try {
       const res = await api.put(`/categories/${payload.id}`, payload);
       return res.data.data;

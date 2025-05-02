@@ -57,6 +57,7 @@ export default function AdminLogin() {
                             <Input
                                 type="text"
                                 name="email"
+                                placeholder="Enter Username / Email"
                                 value={form.email}
                                 onChange={handleChange}
                                 required
@@ -67,6 +68,7 @@ export default function AdminLogin() {
                             <Input
                                 type={showPassword ? "text" : "password"}
                                 name="password"
+                                placeholder="Enter Password"
                                 value={form.password}
                                 onChange={handleChange}
                                 required

@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import api from "@/api/api";
 import { fetchUserById } from "@/store/features/user/user";
 // import { getImageUrl } from "@/utils";
-import { LogOut, MonitorCog } from "lucide-react";
+import { Building2, LogOut, MonitorCog } from "lucide-react";
 import { AvatarImage } from "@radix-ui/react-avatar";
 
 interface HeaderProps {
@@ -52,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   useEffect(() => {
-    
+
     if (user?.id) {
       dispatch(fetchUserById(user.id));
     }
@@ -63,74 +63,74 @@ const Header: React.FC<HeaderProps> = ({
     return name?.charAt(0).toUpperCase() || "U";
   };
 
-  
+  console.log(location)
   return (
     <header className="sticky top-0 bg-inherit border-b z-10 dark:bg-gray-900 dark:text-white flex justify-between items-center px-4 ">
       <div className="flex items-center gap-2">
         {
           user?.role === "user" ?
-          <Link to="/service-request">
-          <img
+            <Link to="/service-request">
+              <img
                 src={theme === "dark" ? `${config?.logoUrl || '/assets/logo-white.png'}` : `${config?.logoUrl || '/assets/logo.png'}`}
-            alt="Logo"
-            className="h-[60px] w-[60px]"
-          />
-        </Link>
-:
+                alt="Logo"
+                className="h-[60px] w-[60px]"
+              />
+            </Link>
+            :
             <Link to="/admin-panel">
-          <img
+              <img
                 src={theme === "dark" ? `${config?.logoUrl || '/assets/logo-white.png'}` : `${config?.logoUrl || '/assets/logo.png'}`}
-            alt="Logo"
-            className="h-[60px] w-[60px]"
-          />
-        </Link>
+                alt="Logo"
+                className="h-[60px] w-[60px]"
+              />
+            </Link>
         }
-       
+
 
         <h1 className="text-[14px] md:text-xl font-semibold">{serviceName}</h1>
         <div className="hidden lg:flex items-center gap-4 ml-6">
 
-       
-        {location == "/order-status" && (
-          <nav>
-            <ul className="flex items-center ml-6">
-              <li>
-                <NavLink
-                  to="/service-request"
-                  className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
-                >
-                      {tabs?.T1 || "Home"}
-                </NavLink>
-              </li>
-            </ul>
-          </nav>
-        )}
-        {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users") && (
-          <nav>
-            <ul className="flex items-center ml-6">
-              <li>
-                <NavLink
-                  to="/order-status"
-                  className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
-                >
-                    {tabs?.T4 || "Orders"}
-                </NavLink>
-              </li>
-            </ul>
-          </nav>
-        )}
 
-        {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users') && (
-          <nav>
-            <ul className="flex items-center gap-10 ml-6">
-              <li>
-                <NavLink
-                  to="/admin-panel"
-                  className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
-                >
+          {location == "/order-status" && (
+            <nav>
+              <ul className="flex items-center ml-6">
+                <li>
+                  <NavLink
+                    to="/service-request"
+                    className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                  >
                     {tabs?.T1 || "Home"}
-                </NavLink>
-              </li>
+                  </NavLink>
+                </li>
+              </ul>
+            </nav>
+          )}
+          {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users" && location !== "/admin-panel/departments") && (
+            <nav>
+              <ul className="flex items-center ml-6">
+                <li>
+                  <NavLink
+                    to="/order-status"
+                    className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                  >
+                    {tabs?.T4 || "Orders"}
+                  </NavLink>
+                </li>
+              </ul>
+            </nav>
+          )}
+
+          {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users' || location == '/admin-panel/departments') && (
+            <nav>
+              <ul className="flex items-center gap-10 ml-6">
+                <li>
+                  <NavLink
+                    to="/admin-panel"
+                    className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                  >
+                    {tabs?.T1 || "Home"}
+                  </NavLink>
+                </li>
                 {user?.role === "admin" && (<><li>
                   <NavLink
                     to="/manage-users"
@@ -139,7 +139,7 @@ const Header: React.FC<HeaderProps> = ({
                     {tabs?.T2 || "User Management "}
                   </NavLink>
                 </li>
-                 </>)}
+                </>)}
                 <li>
                   <NavLink
                     to="/answered-order"
@@ -148,11 +148,11 @@ const Header: React.FC<HeaderProps> = ({
                     {tabs?.T3 || "Answered order"}
                   </NavLink>
                 </li>
-            </ul>
-          </nav>
-        )}
+              </ul>
+            </nav>
+          )}
         </div>
-    
+
       </div>
 
       <div className="flex items-center gap-4">
@@ -169,13 +169,13 @@ const Header: React.FC<HeaderProps> = ({
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="p-0 cursor-pointer  rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800">
               <Avatar className="h-9 w-9">
-               { user?.image ?
-                <AvatarImage
-                  // src={'/logo.png'}
-                  src={user?.image}
-                  alt={user?.name || "User"}
-                />
-                :<AvatarFallback>{getInitials(user?.username || "U")}</AvatarFallback>}
+                {user?.image ?
+                  <AvatarImage
+                    // src={'/logo.png'}
+                    src={user?.image}
+                    alt={user?.name || "User"}
+                  />
+                  : <AvatarFallback>{getInitials(user?.username || "U")}</AvatarFallback>}
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
@@ -213,7 +213,7 @@ const Header: React.FC<HeaderProps> = ({
                           to="/order-status"
                           className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                         >
-                           {tabs?.T4 || "Orders"}
+                          {tabs?.T4 || "Orders"}
                         </NavLink>
                       </li>
                     </ul>
@@ -229,7 +229,7 @@ const Header: React.FC<HeaderProps> = ({
                           className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                         >
                           {tabs?.T1 || "Home"}
-                          
+
                         </NavLink>
                       </li>
                       <li>
@@ -246,7 +246,7 @@ const Header: React.FC<HeaderProps> = ({
                           className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                         >
                           {tabs?.T3 || "Answered order"}
-                         
+
                         </NavLink>
                       </li>
                     </ul>
@@ -254,12 +254,17 @@ const Header: React.FC<HeaderProps> = ({
                 )}
               </div>
             </DropdownMenuItem>
-            {user.role=='admin' && <NavLink to='/admin-panel/site-config'>
-              <DropdownMenuItem  className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
-                <MonitorCog/>  Site Configuration
+            {user.role == 'admin' && (<><NavLink to='/admin-panel/site-config'>
+              <DropdownMenuItem className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
+                <MonitorCog />  Site Configuration
               </DropdownMenuItem>
-            </NavLink>}
-           
+            </NavLink>
+              <NavLink to='/admin-panel/departments'>
+                <DropdownMenuItem className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
+                  <Building2 /> Department
+                </DropdownMenuItem>
+              </NavLink></>)}
+
             <DropdownMenuItem onClick={() => setShowSettings(true)} className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
               ⚙️ User Setting
             </DropdownMenuItem>

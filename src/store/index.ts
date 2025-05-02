@@ -6,6 +6,7 @@ import orderReducer from "./slices/orderSlice";
 import categoryReducer from "./slices/categorySlice";
 import userReducer from "./slices/userSlice";
 import siteConfig from './slices/siteConfigSlice'
+import departmentsReducer from './slices/departmentSlice'
 // ✅ Nested persist config for user slice (exclude loading)
 const userPersistConfig = {
   key: "user",
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   orders: orderReducer,
   categories: categoryReducer,
   siteConfig,
+  departments: departmentsReducer,
   user: persistReducer(userPersistConfig, userReducer), // 👈 nested config
 });
 

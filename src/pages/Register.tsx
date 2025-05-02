@@ -31,7 +31,7 @@ export default function Register() {
         email: "",
         password: "",
         role: "user",
-        location:"",
+        location: "",
         image: null as File | null,
     });
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -49,7 +49,7 @@ export default function Register() {
                 e.target.value = ""; // reset the input
                 return;
             }
- 
+
             setFormData(prev => ({ ...prev, image: file }));
             setPreviewUrl(URL.createObjectURL(file));
         } else if (name === "email") {
@@ -120,7 +120,7 @@ export default function Register() {
                     email: "",
                     password: "",
                     role: "user",
-                    location:"",
+                    location: "",
                     image: null,
                 });
                 toast.success("Registration successfully. Please check your email for verification.");
@@ -128,16 +128,16 @@ export default function Register() {
                 if (fileInputRef.current) {
                     fileInputRef.current.value = "";
                 } // Reset preview URL after successful registration
-                
+
             })
             .catch((error) => {
                 console.log(error);
-                
-            toast.error(error);
+
+                toast.error(error);
                 // Handle registration error, e.g., show an error message
             });
     };
-    
+
 
 
     return (
@@ -151,17 +151,18 @@ export default function Register() {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label>Username</Label>
-                                <Input name="username" value={formData.username} onChange={handleChange} required />
+                                <Input placeholder="Enter Username" name="username" value={formData.username} onChange={handleChange} required />
                             </div>
                             <div className="space-y-2">
                                 <Label>Email</Label>
-                                <Input type="email" name="email" value={formData.email} onChange={handleChange} required />
+                                <Input type="email" placeholder="Enter Email" name="email" value={formData.email} onChange={handleChange} required />
                             </div>
                             <div className="space-y-2 relative">
                                 <Label>Password</Label>
                                 <Input
                                     type={showPassword ? "text" : "password"}
                                     name="password"
+                                    placeholder="Enter Password"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required

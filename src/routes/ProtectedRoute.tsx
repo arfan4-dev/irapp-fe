@@ -59,10 +59,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     // ❌ Prevent user from accessing admin dashboard or answered order
     if (
         user?.role === "user" &&
-        (location.pathname.startsWith("/admin-panel") || location.pathname.startsWith("/admin-panel/site-config") || location.pathname.startsWith("/answered-order") || location.pathname.startsWith("/manage-users"))
+        (location.pathname.startsWith("admin-panel/departments") ||location.pathname.startsWith("/admin-panel") || location.pathname.startsWith("/admin-panel/site-config") || location.pathname.startsWith("/answered-order") || location.pathname.startsWith("/manage-users"))
     ) {
         return <Navigate to="/service-request" replace />;
-    }
+    } 
 
 
     // ✅ Authenticated and authorized

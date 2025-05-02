@@ -28,7 +28,9 @@ import useUsername from "@/hooks/useUsername";
 import useCategorySortOrder from "@/hooks/useCategorySortOrder";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { departments } from "@/lib/constant";
+import { PencilLine } from "lucide-react";
+import ActionFeedbackModal from "@/components/modal/ActionFeedbackModal";
+import { fetchDepartments } from "@/store/features/department/department";
 
 
 
@@ -37,6 +39,8 @@ export default function AdminPage() {
   updateOrderStatusSync()
   useSyncPendingCategoryUpdates()
   useSyncPendingCategoryItems()
+  const { departments } = useSelector((state: RootState) => state?.departments || []);
+
   const [showSettings, setShowSettings] = useState(false);
   const [showAdminSettings, setShowAdminSettings] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -52,10 +56,20 @@ export default function AdminPage() {
   const [newItems, setNewItems] = useState<Record<string, string>>({});
   const [itemOptions, setItemOptions] = useState<Record<string, boolean>>({});
   const location = useLocation()
-  const categories = useSelector((state: RootState) => state.categories.categories);
-  const allOrders = useSelector((state: RootState) => state.orders.orders);
-
-
+  const { categories, loading } = useSelector((state: RootState) => state?.categories);
+  const allOrders = useSelector((state: RootState) => state?.orders?.orders);
+  const [editedDepartment, setEditedDepartment] = useState("");
+  const [addItemLoader, setAddItemLoader] = useState<{ [categoryId: string]: boolean }>({});
+  const [feedbackModal, setFeedbackModal] = useState<{
+    open: boolean;
+    type?: any;
+    title?: string;
+    message?: string;
+    onConfirm?: () => void;
+  }>({
+    open: false,
+    type: "add",
+  });
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
   const isOnline = useOfflineStatus();
@@ -114,7 +128,20 @@ export default function AdminPage() {
 
   const handleStatusUpdate = async (orderId: string, status: string) => {
     if (isOnline) {
-      await dispatch(updateOrderStatus({ id: orderId, status }));
+      // await dispatch(updateOrderStatus({ id: orderId, status }));
+      await dispatch(updateOrderStatus({ id: orderId, status }))
+        .unwrap()
+        .then(() => {
+          setFeedbackModal({
+            open: true,
+            type: 'add',
+            title: status === "In Progress" ? "Order Accepted" : "Order Completed",
+            message:
+              status === "In Progress"
+                ? "The order has been accepted and is now being processed."
+                : "The order has been marked as completed successfully.",
+          });
+        });
     } else {
       await saveStatusUpdateOffline(orderId, status);
 
@@ -184,6 +211,8 @@ export default function AdminPage() {
           .unwrap()
         // .then(() => toast.success("Categories synced successfully."))
         // .catch(() => toast.error("Failed to sync categories."));
+        dispatch(fetchDepartments());
+
       } else {
         const offlineCats = await getOfflineCategories();
 
@@ -209,7 +238,7 @@ export default function AdminPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSettings, setShowSettings]);
 
-
+  console.log("departments:", departments)
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
       <Header
@@ -572,16 +601,71 @@ export default function AdminPage() {
                     <div key={cat._id} className="rounded-lg  border p-4 basis-[100%]  md:basis-[48%]  bg-white dark:bg-zinc-800 shadow-sm space-y-3">
                       <div className="flex justify-between items-center">
                         {editingCategoryId === cat._id ? (
-                          <input
-                            value={editedLabel}
-                            onChange={(e) => setEditedLabel(e.target.value)}
-                            onBlur={() => {
-                              dispatch(updateCategory({ id: cat._id, newLabel: editedLabel }));
-                              setEditingCategoryId(null);
-                            }}
-                            className="text-lg font-semibold border-b w-full dark:bg-zinc-800"
-                            autoFocus
-                          />
+                          <div className="flex flex-col gap-2 w-full">
+                            <div className="flex items-center gap-2 mb-1">
+                              <PencilLine className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                              <p className="text-base font-semibold text-gray-800 dark:text-gray-100 tracking-tight">
+                                Edit Category
+                              </p>
+                            </div>
+
+                            <Input
+                              value={editedLabel}
+                              onChange={(e) => setEditedLabel(e.target.value)}
+                              className="text-lg font-semibold border border-gray-300 dark:bg-zinc-900"
+                              placeholder="Edit Category Label"
+                            />
+                            <Select
+                              value={editedDepartment}
+                              onValueChange={(val) => setEditedDepartment(val)}
+                            >
+                              <SelectTrigger className="border">
+                                <SelectValue placeholder="Select Department" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {departments.map((dep) => (
+                                  <SelectItem key={dep._id} value={dep.name}>{dep.name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                size="sm"
+                                disabled={loading}
+                                onClick={() => {
+                                  // dispatch(updateCategory({
+                                  //   id: cat._id,
+                                  //   newLabel: editedLabel,
+                                  //   newDepartment: editedDepartment,
+                                  // })).unwrap().then(() => {
+                                  //   setEditingCategoryId(null);
+                                  // });
+                                  dispatch(updateCategory({ id: cat._id, newLabel: editedLabel, newDepartment: editedDepartment }))
+                                    .unwrap()
+                                    .then(() => {
+                                      setEditingCategoryId(null);
+                                      setFeedbackModal({
+                                        open: true,
+                                        type: "update",
+                                        title: "Category Updated",
+                                        message: `The category "${editedLabel}" was updated successfully.`,
+                                      });
+                                    });
+                                }}
+
+                              >
+                                {loading ? "Saving..." : "Save"}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setEditingCategoryId(null)}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+
                         ) : (
                           <div className="flex justify-between w-full items-center">
                             <h3
@@ -600,6 +684,8 @@ export default function AdminPage() {
                                 className="text-blue-600 hover:text-blue-800"
                                 onClick={() => {
                                   setEditedLabel(cat.label);
+                                  setEditedDepartment(cat.department); // <-- set current department
+
                                   setEditingCategoryId(cat._id);
                                 }}
                               >
@@ -610,7 +696,26 @@ export default function AdminPage() {
                                 size="sm"
                                 variant="ghost"
                                 className="text-red-600 hover:text-red-800"
-                                onClick={() => dispatch(deleteCategory(cat._id))}
+                                // onClick={() => dispatch(deleteCategory(cat._id))}
+                                onClick={() =>
+                                  setFeedbackModal({
+                                    open: true,
+                                    type: "delete",
+                                    title: "Delete Category?",
+                                    message: "Are you sure you want to delete this category? This action cannot be undone.",
+                                    onConfirm: () => {
+                                      dispatch(deleteCategory(cat._id)).then(() => {
+                                        setFeedbackModal({
+                                          open: true,
+                                          type: "delete",
+                                          title: "Deleted Successfully",
+                                          message: `Category "${cat.label}" has been deleted.`,
+                                        });
+                                      });
+                                    },
+                                  })
+                                }
+
                               >
                                 <FaTrashCan />
                               </Button>
@@ -726,11 +831,45 @@ export default function AdminPage() {
                                           Update
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                          onClick={() => {
-                                            dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }))
-                                              .unwrap()
-                                              .then(() => dispatch(fetchCategories()));
-                                          }}
+                                          onClick={() =>
+                                            setFeedbackModal({
+                                              open: true,
+                                              type: "delete",
+                                              title: "Delete Category Item?",
+                                              message: "Are you sure you want to delete this item? This action cannot be undone.",
+                                              onConfirm: () => {
+                                                setFeedbackModal(prev => ({ ...prev, open: false })); // close modal first
+
+                                                dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }))
+                                                  .unwrap()
+                                                  .then(() => {
+                                                    dispatch(fetchCategories());
+
+                                                    setFeedbackModal({
+                                                      open: true,
+                                                      type: "delete",
+                                                      title: "Deleted Successfully",
+                                                      message: `Item "${item.name}" has been deleted.`,
+                                                    });
+                                                  })
+                                                  .catch(() => {
+                                                    setFeedbackModal({
+                                                      open: true,
+                                                      type: "delete",
+                                                      title: "Failed",
+                                                      message: "Something went wrong while deleting the item.",
+                                                    });
+                                                  });
+                                              },
+                                            })
+                                          }
+
+                                          // onClick={() => {
+                                          //   dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }))
+                                          //     .unwrap()
+                                          //     .then(() =>{ 
+                                          //       dispatch(fetchCategories())});
+                                          // }}
                                           className="text-red-600 focus:text-red-600"
                                         >
                                           Remove
@@ -779,9 +918,14 @@ export default function AdminPage() {
                           if (itemName) {
                             const allowMultiple = itemOptions[cat._id] ?? false;
                             if (isOnline) {
+                              setAddItemLoader(prev => ({ ...prev, [cat._id]: true }));
                               dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple }))
                                 .unwrap()
-                                .then(() => dispatch(fetchCategories()));
+                                .then(() => {
+                                  dispatch(fetchCategories()); setAddItemLoader(prev => ({ ...prev, [cat._id]: false }));
+
+
+                                }).catch(error => { setAddItemLoader(prev => ({ ...prev, [cat._id]: false }));; console.log(error) })
                             } else {
                               const alreadyExistsInState =
                                 cat.items.some(item => item.name === itemName) || // from MongoDB
@@ -841,7 +985,7 @@ export default function AdminPage() {
                           Allow Quantity Selection (+ / -)
                         </label>
                         <Button size="sm" type="submit" className="cursor-pointer hover:opacity-75" disabled={!newItems[cat._id]?.trim()}>
-                          Add
+                          {addItemLoader[cat._id] ? "Saving..." : "Add"}
                         </Button>
                       </form>
                     </div>
@@ -922,8 +1066,8 @@ export default function AdminPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {departments.map((dep) => (
-                          <SelectItem key={dep} value={dep}>
-                            {dep}
+                          <SelectItem key={dep._id} value={dep.name}>
+                            {dep.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -931,7 +1075,7 @@ export default function AdminPage() {
                   </div>
                   <div className="flex justify-end gap-2">
                     <Button variant="outline" onClick={() => setShowCategoryModal(false)} type="button">Cancel</Button>
-                    <Button type="submit" className="cursor-pointer hover:opacity-75">Add</Button>
+                    <Button type="submit" className="cursor-pointer hover:opacity-75">{loading ? "Saving..." : "Add"}</Button>
                   </div>
                 </form>
               </CardContent>
@@ -942,6 +1086,14 @@ export default function AdminPage() {
         {showAdminSettings && (
           <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowAdminSettings} userName={user?.username} setUserName={""} />
         )}
+        <ActionFeedbackModal
+          open={feedbackModal.open}
+          type={feedbackModal.type}
+          title={feedbackModal.title}
+          message={feedbackModal.message}
+          onConfirm={feedbackModal.onConfirm}
+          onClose={() => setFeedbackModal({ ...feedbackModal, open: false })} />
+
 
       </div>
     </div>

@@ -95,7 +95,7 @@ export default function DepartmentManagementPage({ }: any) {
         d.name.toLowerCase().includes(search.toLowerCase())
     );
     return (
-        <div>
+        <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
             <Header
                 location={location.pathname}
                 theme={theme}
@@ -118,7 +118,7 @@ export default function DepartmentManagementPage({ }: any) {
                         value={newDept}
                         onChange={(e) => setNewDept(e.target.value)}
                     />
-                    <Button onClick={handleCreate} disabled={loading}>Add</Button>
+                    <Button className='cursor-pointer hover:opacity-75' onClick={handleCreate} disabled={loading}>{loading ? 'Saving...' :"Add"}</Button>
                 </div>
 
                 <Table>

@@ -31,7 +31,7 @@ const departmentSlice = createSlice({
     builder
       // Fetch
       .addCase(fetchDepartments.pending, (state) => {
-        state.loading = true;
+        state.loading = false;
         state.error = null;
       })
       .addCase(
@@ -45,14 +45,23 @@ const departmentSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
+      .addCase(createDepartment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
       // Create
       .addCase(
         createDepartment.fulfilled,
         (state, action: PayloadAction<Department>) => {
+          state.loading = false;
           state.departments.push(action.payload);
         }
       )
+      .addCase(createDepartment.rejected, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
 
       // Update
       .addCase(

@@ -577,7 +577,7 @@ export default function AdminPage() {
                   size="lg"
                   type="button"
                   onClick={() => setCategorySortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))}
-                  className="mt-2 cursor-pointer hover:opacity-75 mr-[22px]"
+                  className="mt-2 cursor-pointer hover:opacity-75 sm:mr-[10px] lg:mr-[31px]"
                 >
                   Sort {categorySortOrder === 'asc' ? 'Descending' : 'Ascending'}
                 </Button>

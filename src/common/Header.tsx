@@ -73,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({
               <img
                 src={theme === "dark" ? `${config?.logoUrl || '/assets/logo-white.png'}` : `${config?.logoUrl || '/assets/logo.png'}`}
                 alt="Logo"
-                className="h-[60px] w-[60px]"
+                className="h-[60px] w-[60px] dark:invert"
               />
             </Link>
             :
@@ -81,7 +81,7 @@ const Header: React.FC<HeaderProps> = ({
               <img
                 src={theme === "dark" ? `${config?.logoUrl || '/assets/logo-white.png'}` : `${config?.logoUrl || '/assets/logo.png'}`}
                 alt="Logo"
-                className="h-[60px] w-[60px]"
+                className="h-[60px] w-[60px] dark:invert"
               />
             </Link>
         }

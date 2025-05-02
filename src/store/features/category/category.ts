@@ -3,6 +3,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/api/api";
 
 import { AxiosError } from "axios";
+import { toast } from "sonner";
 interface RemoveItemPayload {
   categoryId: string;
   itemName: string;
@@ -29,7 +30,10 @@ export const fetchCategories = createAsyncThunk(
 
 export const createCategory = createAsyncThunk(
   "categories/create",
-  async ({ label, dept }: { label: string; dept:string }, { rejectWithValue }) => {
+  async (
+    { label, dept }: { label: string; dept: string },
+    { rejectWithValue }
+  ) => {
     try {
       const res = await api.post("/categories", { label, department: dept });
       return res.data.data;
@@ -42,7 +46,7 @@ export const createCategory = createAsyncThunk(
 export const updateCategory = createAsyncThunk(
   "categories/update",
   async (
-    payload: { id: string; newLabel: string; newDepartment:string },
+    payload: { id: string; newLabel: string; newDepartment: string },
     { rejectWithValue }
   ) => {
     try {
@@ -88,15 +92,13 @@ export const addItemToCategory = createAsyncThunk(
 
 export const updateItemInCategory = createAsyncThunk(
   "category/updateItem",
-  async (
-    { categoryId, oldItemName, newItem }: any,
-    { rejectWithValue }
-  ) => {
+  async ({ categoryId, oldItemName, newItem }: any, { rejectWithValue }) => {
     try {
       const res = await api.put(`/categories/${categoryId}/items`, {
         oldItemName,
         newItem,
       });
+      toast.success("Category Item Updated.");
       return res.data.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -110,9 +112,9 @@ export const removeItemFromCategory = createAsyncThunk(
   "category/removeItem",
   async ({ categoryId, itemName }: RemoveItemPayload, { rejectWithValue }) => {
     try {
-const res = await api.delete(`/categories/${categoryId}/items`, {
-  data: { itemName },
-});
+      const res = await api.delete(`/categories/${categoryId}/items`, {
+        data: { itemName },
+      });
       return res.data.data;
     } catch (error: any) {
       return rejectWithValue(

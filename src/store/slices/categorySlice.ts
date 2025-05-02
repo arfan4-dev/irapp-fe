@@ -9,6 +9,7 @@ import {
 interface CategoryItem {
   name: string;
   allowMultiple: boolean;
+  enabled?: boolean; // ✅ Add this
 }
 
 interface Category {
@@ -17,6 +18,8 @@ interface Category {
   department: string;
   items: CategoryItem[];
   userId: string;
+    enabled?: boolean; // ✅ Add this
+
 }
 
 interface CategoryState {

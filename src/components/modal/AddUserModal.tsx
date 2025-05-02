@@ -21,7 +21,7 @@ import { createUserByAdmin } from "@/store/features/user/user";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { Eye, EyeOff } from "lucide-react";
-import { departments, roles } from "@/lib/constant";
+import { roles } from "@/lib/constant";
 
 
 
@@ -36,6 +36,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
         department: "Kitchen",
     });
     const [showPassword, setShowPassword] = useState(false);
+    const { departments } = useSelector((state: RootState) => state?.departments || []);
 
     const dispatch = useDispatch<AppDispatch>();
 
@@ -87,12 +88,12 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
         if (fileInputRef.current?.files?.[0]) {
             formData.append("image", fileInputRef.current.files[0]);
         }
-        if (formState.username.trim() == ""||
-            formState.email.trim() == ""||
-            formState.password.trim() == ""||
-            formState.role.trim() == ""||
+        if (formState.username.trim() == "" ||
+            formState.email.trim() == "" ||
+            formState.password.trim() == "" ||
+            formState.role.trim() == "" ||
             formState.location.trim() == "" ||
-            formState.department.trim() == ""||
+            formState.department.trim() == "" ||
             !fileInputRef.current?.files?.[0]
         ) return toast.info("Please Fill All the Fields.")
         dispatch(createUserByAdmin(formData))
@@ -188,8 +189,8 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
                             </SelectTrigger>
                             <SelectContent>
                                 {departments.map((dep) => (
-                                    <SelectItem key={dep} value={dep}>
-                                        {dep}
+                                    <SelectItem key={dep._id} value={dep.name}>
+                                        {dep.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

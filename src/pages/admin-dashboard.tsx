@@ -31,6 +31,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PencilLine } from "lucide-react";
 import ActionFeedbackModal from "@/components/modal/ActionFeedbackModal";
 import { fetchDepartments } from "@/store/features/department/department";
+// import { Switch } from "@/components/ui/switch";
 
 
 
@@ -668,7 +669,9 @@ export default function AdminPage() {
 
                         ) : (
                           <div className="flex justify-between w-full items-center">
-                            <h3
+                           
+                            <div className="flex items-center gap-2 mt-1">
+                               <h3
                               className="text-lg font-semibold cursor-pointer"
                             // onClick={() => {
                             //   setEditedLabel(cat.label);
@@ -677,6 +680,19 @@ export default function AdminPage() {
                             >
                               {cat.label}
                             </h3>
+                              {/* <Switch
+                                // checked={cat.enabled}
+                                // onCheckedChange={(checked) => {
+                                //   dispatch(updateCategory({
+                                //     id: cat._id,
+                                //     newLabel: cat.label,
+                                //     newDepartment: cat.department,
+                                //     enabled: checked,
+                                //   }));
+                                // }}
+                              />
+                              <span className="text-xs text-muted-foreground">{true ? "Enabled" : "Disabled"}</span> */}
+                            </div>
                             <div>
                               <Button
                                 size="sm"

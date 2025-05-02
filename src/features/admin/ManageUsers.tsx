@@ -15,7 +15,6 @@ import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import UserManageSkeleton from "@/components/skeleton/skeleton";
 import { Input } from "@/components/ui/input";
 import AddUserModal from "@/components/modal/AddUserModal";
-import { departments } from "@/lib/constant";
 
 
 export default function ManageUsers() {
@@ -26,6 +25,8 @@ export default function ManageUsers() {
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const [showSettings, setShowSettings] = useState(false);
     const location = useLocation()
+      const { departments } = useSelector((state: RootState) => state?.departments || []);
+    
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const [serviceName] = useState("Manage Users");
     const [searchName, setSearchName] = useState('');
@@ -79,7 +80,6 @@ const [addUserModal,setAddUserModal]=useState(false)
         }
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [showSettings, setShowSettings]);
-
 
 
     return (
@@ -174,8 +174,8 @@ const [addUserModal,setAddUserModal]=useState(false)
                                                 <SelectContent>
                                                     <SelectItem value="none">No Department</SelectItem>
                                                     {departments.map((dep) => (
-                                                        <SelectItem key={dep} value={dep}>
-                                                            {dep}
+                                                        <SelectItem key={dep._id} value={dep.name}>
+                                                            {dep.name}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>

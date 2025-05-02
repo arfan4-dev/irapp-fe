@@ -31,7 +31,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PencilLine } from "lucide-react";
 import ActionFeedbackModal from "@/components/modal/ActionFeedbackModal";
 import { fetchDepartments } from "@/store/features/department/department";
-// import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/components/ui/switch";
 
 
 
@@ -41,6 +41,7 @@ export default function AdminPage() {
   useSyncPendingCategoryUpdates()
   useSyncPendingCategoryItems()
   const { departments } = useSelector((state: RootState) => state?.departments || []);
+  const [_, setEditedEnabled] = useState(true);
 
   const [showSettings, setShowSettings] = useState(false);
   const [showAdminSettings, setShowAdminSettings] = useState(false);
@@ -239,6 +240,7 @@ export default function AdminPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSettings, setShowSettings]);
 
+  console.log("editedDepartment:", editedDepartment)
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
       <Header
@@ -598,7 +600,8 @@ export default function AdminPage() {
                       return nameB.localeCompare(nameA);
                     }
                   })?.map((cat) => (
-                    <div key={cat._id} className="rounded-lg  border p-4 basis-[100%]  md:basis-[48%]  bg-white dark:bg-zinc-800 shadow-sm space-y-3">
+                    <div key={cat._id} className={`rounded-lg border p-4 basis-[100%] md:basis-[48%] bg-white dark:bg-zinc-800 shadow-sm space-y-3 transition-opacity duration-200 ${cat.enabled ? "" : ""
+                      }`}>
                       <div className="flex justify-between items-center">
                         {editingCategoryId === cat._id ? (
                           <div className="flex flex-col gap-2 w-full">
@@ -624,10 +627,13 @@ export default function AdminPage() {
                               </SelectTrigger>
                               <SelectContent>
                                 {departments.map((dep) => (
-                                  <SelectItem key={dep._id} value={dep.name}>{dep.name}</SelectItem>
+                                  <SelectItem key={dep._id} value={dep.name}>
+                                    {dep.name}
+                                  </SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>
+
                             <div className="flex gap-2 justify-end">
                               <Button
                                 size="sm"
@@ -640,7 +646,7 @@ export default function AdminPage() {
                                   // })).unwrap().then(() => {
                                   //   setEditingCategoryId(null);
                                   // });
-                                  dispatch(updateCategory({ id: cat._id, newLabel: editedLabel, newDepartment: editedDepartment }))
+                                  dispatch(updateCategory({ id: cat._id, newLabel: editedLabel, newDepartment: editedDepartment, }))
                                     .unwrap()
                                     .then(() => {
                                       setEditingCategoryId(null);
@@ -668,29 +674,32 @@ export default function AdminPage() {
 
                         ) : (
                           <div className="flex justify-between w-full items-center">
-                           
+
                             <div className="flex items-center gap-2 mt-1">
-                               <h3
-                              className="text-lg font-semibold cursor-pointer"
-                            // onClick={() => {
-                            //   setEditedLabel(cat.label);
-                            //   setEditingCategoryId(cat._id);
-                            // }}
-                            >
-                              {cat.label}
-                            </h3>
-                              {/* <Switch
-                                // checked={cat.enabled}
-                                // onCheckedChange={(checked) => {
-                                //   dispatch(updateCategory({
-                                //     id: cat._id,
-                                //     newLabel: cat.label,
-                                //     newDepartment: cat.department,
-                                //     enabled: checked,
-                                //   }));
-                                // }}
+                              <h3
+                                className="text-lg font-semibold cursor-pointer"
+                              // onClick={() => {
+                              //   setEditedLabel(cat.label);
+                              //   setEditingCategoryId(cat._id);
+                              // }}
+                              >
+                                {cat.label}
+                              </h3>
+                              <Switch
+                                checked={cat.enabled}
+                                onCheckedChange={(checked) => {
+                                  console.log("checked:", checked)
+                                  setEditedEnabled(checked)
+                                  dispatch(updateCategory({
+                                    id: cat._id,
+                                    newLabel: cat.label,
+                                    newDepartment: cat.department,
+                                    enabled: checked,
+                                  }));
+
+                                }}
                               />
-                              <span className="text-xs text-muted-foreground">{true ? "Enabled" : "Disabled"}</span> */}
+                              <span className="text-xs text-muted-foreground">{true ? "Enabled" : "Disabled"}</span>
                             </div>
                             <div>
                               <Button
@@ -700,7 +709,6 @@ export default function AdminPage() {
                                 onClick={() => {
                                   setEditedLabel(cat.label);
                                   setEditedDepartment(cat.department); // <-- set current department
-
                                   setEditingCategoryId(cat._id);
                                 }}
                               >
@@ -740,64 +748,64 @@ export default function AdminPage() {
                           </div>
                         )}
                       </div>
-
-                      <ul className="space-y-2  ">
-                        {cat?.items?.map(item => {
-                          const isEditingItem = editingItem?.categoryId === cat._id && editingItem?.name === item.name;
-                          return (
-                            <li key={item.name} className="flex flex-col gap-2 text-sm border-b pb-2">
-                              {isEditingItem ? (
-                                <>
-                                  <input
-                                    value={editedItemName}
-                                    onChange={(e) => setEditedItemName(e.target.value)}
-                                    className="px-2 py-1 border rounded dark:bg-zinc-900"
-                                  />
-                                  <label className="flex items-center gap-2 text-xs">
+                      <div className={`${!cat.enabled ? "opacity-40 blur-[1px] pointer-events-none select-none" : ""}`}>
+                        <ul className="space-y-2  ">
+                          {cat?.items?.map(item => {
+                            const isEditingItem = editingItem?.categoryId === cat._id && editingItem?.name === item.name;
+                            return (
+                              <li key={item.name} className="flex flex-col gap-2 text-sm border-b pb-2">
+                                {isEditingItem ? (
+                                  <>
                                     <input
-                                      type="checkbox"
-                                      checked={editedAllowMultiple}
-                                      onChange={(e) => setEditedAllowMultiple(e.target.checked)}
+                                      value={editedItemName}
+                                      onChange={(e) => setEditedItemName(e.target.value)}
+                                      className="px-2 py-1 border rounded dark:bg-zinc-900"
                                     />
-                                    Allow Quantity Selection
-                                  </label>
-                                  <div className="flex gap-2 mt-1">
-                                    <Button
-                                      size="sm"
-                                      className="cursor-pointer hover:opacity-75"
-                                      onClick={() => {
+                                    <label className="flex items-center gap-2 text-xs">
+                                      <input
+                                        type="checkbox"
+                                        checked={editedAllowMultiple}
+                                        onChange={(e) => setEditedAllowMultiple(e.target.checked)}
+                                      />
+                                      Allow Quantity Selection
+                                    </label>
+                                    <div className="flex gap-2 mt-1">
+                                      <Button
+                                        size="sm"
+                                        className="cursor-pointer hover:opacity-75"
+                                        onClick={() => {
 
-                                        dispatch(updateItemInCategory({
-                                          categoryId: cat._id,
-                                          oldItemName: item.name,
-                                          newItem: {
-                                            name: editedItemName.trim(),
-                                            allowMultiple: editedAllowMultiple,
-                                          }
-                                        }))
-                                          .unwrap()
-                                          .then(() => {
-                                            dispatch(fetchCategories());
-                                            setEditingItem(null);
-                                          });
-                                      }}
-                                    >
-                                      Save
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      className="cursor-pointer hover:opacity-90"
-                                      onClick={() => setEditingItem(null)}
-                                    >
-                                      Cancel
-                                    </Button>
-                                  </div>
-                                </>
-                              ) : (
-                                <div className="">
-                                  {/* <span>{item.name}</span> */}
-                                  {/* <div className="flex">
+                                          dispatch(updateItemInCategory({
+                                            categoryId: cat._id,
+                                            oldItemName: item.name,
+                                            newItem: {
+                                              name: editedItemName.trim(),
+                                              allowMultiple: editedAllowMultiple,
+                                            }
+                                          }))
+                                            .unwrap()
+                                            .then(() => {
+                                              dispatch(fetchCategories());
+                                              setEditingItem(null);
+                                            });
+                                        }}
+                                      >
+                                        Save
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="cursor-pointer hover:opacity-90"
+                                        onClick={() => setEditingItem(null)}
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div className="">
+                                    {/* <span>{item.name}</span> */}
+                                    {/* <div className="flex">
                                   <Button
                                     size="sm"
                                     className="text-blue-600 hover:text-blue-800 cursor-pointer"
@@ -823,186 +831,187 @@ export default function AdminPage() {
                                     Remove
                                   </Button>
                                 </div> */}
-                                  <div className="flex justify-between items-center">
-                                    <span>{item.name}</span>
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button
-                                          size="icon"
-                                          variant="ghost"
-                                          className="text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
-                                        >
-                                          <FiMoreVertical size={18} />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end" className="w-32">
-                                        <DropdownMenuItem
-                                          onClick={() => {
-                                            setEditingItem({ categoryId: cat._id, name: item.name });
-                                            setEditedItemName(item.name);
-                                            setEditedAllowMultiple(item.allowMultiple);
-                                          }}
-                                        >
-                                          Update
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                          onClick={() =>
-                                            setFeedbackModal({
-                                              open: true,
-                                              type: "delete",
-                                              title: "Delete Category Item?",
-                                              message: "Are you sure you want to delete this item? This action cannot be undone.",
-                                              onConfirm: () => {
-                                                setFeedbackModal(prev => ({ ...prev, open: false })); // close modal first
+                                    <div className="flex justify-between items-center">
+                                      <span>{item.name}</span>
+                                      <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                          <Button
+                                            size="icon"
+                                            variant="ghost"
+                                            className="text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                                          >
+                                            <FiMoreVertical size={18} />
+                                          </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-32">
+                                          <DropdownMenuItem
+                                            onClick={() => {
+                                              setEditingItem({ categoryId: cat._id, name: item.name });
+                                              setEditedItemName(item.name);
+                                              setEditedAllowMultiple(item.allowMultiple);
+                                            }}
+                                          >
+                                            Update
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem
+                                            onClick={() =>
+                                              setFeedbackModal({
+                                                open: true,
+                                                type: "delete",
+                                                title: "Delete Category Item?",
+                                                message: "Are you sure you want to delete this item? This action cannot be undone.",
+                                                onConfirm: () => {
+                                                  setFeedbackModal(prev => ({ ...prev, open: false })); // close modal first
 
-                                                dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }))
-                                                  .unwrap()
-                                                  .then(() => {
-                                                    dispatch(fetchCategories());
+                                                  dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }))
+                                                    .unwrap()
+                                                    .then(() => {
+                                                      dispatch(fetchCategories());
 
-                                                    setFeedbackModal({
-                                                      open: true,
-                                                      type: "delete",
-                                                      title: "Deleted Successfully",
-                                                      message: `Item "${item.name}" has been deleted.`,
+                                                      setFeedbackModal({
+                                                        open: true,
+                                                        type: "delete",
+                                                        title: "Deleted Successfully",
+                                                        message: `Item "${item.name}" has been deleted.`,
+                                                      });
+                                                    })
+                                                    .catch(() => {
+                                                      setFeedbackModal({
+                                                        open: true,
+                                                        type: "delete",
+                                                        title: "Failed",
+                                                        message: "Something went wrong while deleting the item.",
+                                                      });
                                                     });
-                                                  })
-                                                  .catch(() => {
-                                                    setFeedbackModal({
-                                                      open: true,
-                                                      type: "delete",
-                                                      title: "Failed",
-                                                      message: "Something went wrong while deleting the item.",
-                                                    });
-                                                  });
-                                              },
-                                            })
-                                          }
+                                                },
+                                              })
+                                            }
 
-                                          // onClick={() => {
-                                          //   dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }))
-                                          //     .unwrap()
-                                          //     .then(() =>{ 
-                                          //       dispatch(fetchCategories())});
-                                          // }}
-                                          className="text-red-600 focus:text-red-600"
-                                        >
-                                          Remove
-                                        </DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
+                                            // onClick={() => {
+                                            //   dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }))
+                                            //     .unwrap()
+                                            //     .then(() =>{ 
+                                            //       dispatch(fetchCategories())});
+                                            // }}
+                                            className="text-red-600 focus:text-red-600"
+                                          >
+                                            Remove
+                                          </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                      </DropdownMenu>
+                                    </div>
+
+
+
                                   </div>
-
-
-
-                                </div>
-                              )}
-                            </li>
-                          );
-                        })}
-                        {!isOnline &&
-                          offlineCategoryItems?.[cat._id]
-                            ?.filter(offlineItem =>
-                              !cat.items.some(dbItem =>
-                                dbItem.name.trim().toLowerCase() === offlineItem.name.trim().toLowerCase()
-                              )
-                            )
-                            ?.map((item, index) => (
-                              <li
-                                key={`offline-${item.name}-${index}`}
-                                className="flex justify-between text-sm border-b pb-1 italic opacity-70"
-                              >
-                                <div>
-                                  {item.name}
-                                  <span className="ml-1 text-xs text-yellow-600">(Offline)</span>
-                                </div>
-                                <div className="text-xs">
-                                  Quantity: {item.allowMultiple ? "Yes" : "No"}
-                                </div>
+                                )}
                               </li>
-                            ))}
+                            );
+                          })}
+                          {!isOnline &&
+                            offlineCategoryItems?.[cat._id]
+                              ?.filter(offlineItem =>
+                                !cat.items.some(dbItem =>
+                                  dbItem.name.trim().toLowerCase() === offlineItem.name.trim().toLowerCase()
+                                )
+                              )
+                              ?.map((item, index) => (
+                                <li
+                                  key={`offline-${item.name}-${index}`}
+                                  className="flex justify-between text-sm border-b pb-1 italic opacity-70"
+                                >
+                                  <div>
+                                    {item.name}
+                                    <span className="ml-1 text-xs text-yellow-600">(Offline)</span>
+                                  </div>
+                                  <div className="text-xs">
+                                    Quantity: {item.allowMultiple ? "Yes" : "No"}
+                                  </div>
+                                </li>
+                              ))}
 
-                      </ul>
+                        </ul>
 
 
 
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          const itemName = newItems[cat._id]?.trim();
-                          if (itemName) {
-                            const allowMultiple = itemOptions[cat._id] ?? false;
-                            if (isOnline) {
-                              setAddItemLoader(prev => ({ ...prev, [cat._id]: true }));
-                              dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple }))
-                                .unwrap()
-                                .then(() => {
-                                  dispatch(fetchCategories()); setAddItemLoader(prev => ({ ...prev, [cat._id]: false }));
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            const itemName = newItems[cat._id]?.trim();
+                            if (itemName) {
+                              const allowMultiple = itemOptions[cat._id] ?? false;
+                              if (isOnline) {
+                                setAddItemLoader(prev => ({ ...prev, [cat._id]: true }));
+                                dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple }))
+                                  .unwrap()
+                                  .then(() => {
+                                    dispatch(fetchCategories()); setAddItemLoader(prev => ({ ...prev, [cat._id]: false }));
 
 
-                                }).catch(error => { setAddItemLoader(prev => ({ ...prev, [cat._id]: false }));; console.log(error) })
-                            } else {
-                              const alreadyExistsInState =
-                                cat.items.some(item => item.name === itemName) || // from MongoDB
-                                (offlineCategoryItems[cat._id]?.some(item => item.name === itemName) ?? false); // from offline state
+                                  }).catch(error => { setAddItemLoader(prev => ({ ...prev, [cat._id]: false }));; console.log(error) })
+                              } else {
+                                const alreadyExistsInState =
+                                  cat.items.some(item => item.name === itemName) || // from MongoDB
+                                  (offlineCategoryItems[cat._id]?.some(item => item.name === itemName) ?? false); // from offline state
 
-                              if (alreadyExistsInState) {
-                                toast.error("Item already exists in this category.");
-                                return;
+                                if (alreadyExistsInState) {
+                                  toast.error("Item already exists in this category.");
+                                  return;
+                                }
+
+                                savePendingCategoryItem({ categoryId: cat._id, itemName, allowMultiple })
+                                  .then(() => {
+                                    setOfflineCategoryItems(prev => {
+                                      const updated = { ...prev };
+
+                                      // Prevent duplicates
+                                      const alreadyExists = updated[cat._id]?.some(
+                                        item => item.name.trim().toLowerCase() === itemName.trim().toLowerCase()
+                                      );
+
+                                      if (alreadyExists) return updated;
+
+                                      if (!updated[cat._id]) updated[cat._id] = [];
+                                      updated[cat._id].push({ name: itemName, allowMultiple });
+
+                                      return updated;
+                                    });
+
+                                    toast.success("Saved offline. Will sync later.");
+                                  });
                               }
 
-                              savePendingCategoryItem({ categoryId: cat._id, itemName, allowMultiple })
-                                .then(() => {
-                                  setOfflineCategoryItems(prev => {
-                                    const updated = { ...prev };
 
-                                    // Prevent duplicates
-                                    const alreadyExists = updated[cat._id]?.some(
-                                      item => item.name.trim().toLowerCase() === itemName.trim().toLowerCase()
-                                    );
+                              // dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple })).unwrap().then(() => {
+                              //   dispatch(fetchCategories())
+                              // }).catch(() => { })
 
-                                    if (alreadyExists) return updated;
-
-                                    if (!updated[cat._id]) updated[cat._id] = [];
-                                    updated[cat._id].push({ name: itemName, allowMultiple });
-
-                                    return updated;
-                                  });
-
-                                  toast.success("Saved offline. Will sync later.");
-                                });
+                              setNewItems(prev => ({ ...prev, [cat._id]: "" }));
+                              setItemOptions(prev => ({ ...prev, [cat._id]: false }));
                             }
-
-
-                            // dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple })).unwrap().then(() => {
-                            //   dispatch(fetchCategories())
-                            // }).catch(() => { })
-
-                            setNewItems(prev => ({ ...prev, [cat._id]: "" }));
-                            setItemOptions(prev => ({ ...prev, [cat._id]: false }));
-                          }
-                        }}
-                        className="flex flex-col gap-2 pt-2"
-                      >
-                        <input
-                          name="itemName"
-                          value={newItems[cat._id] || ""}
-                          onChange={(e) => setNewItems(prev => ({ ...prev, [cat._id]: e.target.value }))}
-                          placeholder="New item"
-                          className="px-3 py-1.5 border rounded text-sm dark:bg-zinc-900"
-                        />
-                        <label className="flex items-center gap-2 text-sm">
+                          }}
+                          className="flex flex-col gap-2 pt-2"
+                        >
                           <input
-                            type="checkbox"
-                            checked={itemOptions[cat._id] || false}
-                            onChange={(e) => setItemOptions(prev => ({ ...prev, [cat._id]: e.target.checked }))}
+                            name="itemName"
+                            value={newItems[cat._id] || ""}
+                            onChange={(e) => setNewItems(prev => ({ ...prev, [cat._id]: e.target.value }))}
+                            placeholder="New item"
+                            className="px-3 py-1.5 border rounded text-sm dark:bg-zinc-900"
                           />
-                          Allow Quantity Selection (+ / -)
-                        </label>
-                        <Button size="sm" type="submit" className="cursor-pointer hover:opacity-75" disabled={!newItems[cat._id]?.trim()}>
-                          {addItemLoader[cat._id] ? "Saving..." : "Add"}
-                        </Button>
-                      </form>
+                          <label className="flex items-center gap-2 text-sm">
+                            <input
+                              type="checkbox"
+                              checked={itemOptions[cat._id] || false}
+                              onChange={(e) => setItemOptions(prev => ({ ...prev, [cat._id]: e.target.checked }))}
+                            />
+                            Allow Quantity Selection (+ / -)
+                          </label>
+                          <Button size="sm" type="submit" className="cursor-pointer hover:opacity-75" disabled={!newItems[cat._id]?.trim()}>
+                            {addItemLoader[cat._id] ? "Saving..." : "Add"}
+                          </Button>
+                        </form>
+                      </div>
                     </div>
                   ))
               ) : (

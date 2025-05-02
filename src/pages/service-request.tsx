@@ -16,6 +16,11 @@ import { saveOrderOffline } from "@/utils/orderStorage";
 import { OfflineOrder } from '@/types/indexedDB';
 import { toast } from 'sonner';
 import { fetchSiteConfig } from '@/store/features/siteConfig/siteConfig';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 export default function UserPage() {
   const [selectedRequest, setSelectedRequest] = useState('');
@@ -39,12 +44,12 @@ export default function UserPage() {
     if (!user?.department) return [];
 
     return allCategories.filter(category => category.department === user.department);
-  }, [allCategories, user?.department]);  
+  }, [allCategories, user?.department]);
 
   const order: OfflineOrder = {
     userId: user.id,
     person: user.username,
-    department:user.department,
+    department: user.department,
     location: user.location,
     type: selectedRequest,
     items: Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity })),
@@ -68,7 +73,7 @@ export default function UserPage() {
       userId: user.id,
       person: user.username,
       department: user.department,
-      location: user.location ,
+      location: user.location,
       items: orderItems,
       status: 'Pending',
     });
@@ -101,15 +106,15 @@ export default function UserPage() {
   };
 
 
+  console.log("allCategories:", allCategories)
 
 
 
 
-  
   const modalRef = useRef<HTMLDivElement>(null);
 
 
-  const handleOrder = async (orderItems:any) => {
+  const handleOrder = async (orderItems: any) => {
     if (isOnline) {
       try {
         await dispatch(createOrder(orderItems)).unwrap();
@@ -174,27 +179,41 @@ export default function UserPage() {
       <div className="max-w-4xl mx-auto p-4 space-y-6">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="md:w-1/3 space-y-4">
-            {categories && categories.length > 0 ? (
-              categories.map((type) => (
-                <Button
-                  key={type._id}
-                  variant={selectedRequest == type._id ? "default" : "outline"}
-                  className={`w-full border hover:cursor-pointer ${selectedRequest !== type._id
-                    ? theme === 'dark'
-                      ? 'border-white text-white hover:bg-white hover:text-black'
-                      : 'border-black text-black hover:bg-black hover:text-white'
-                    : ''
-                    }`}
-                  onClick={() => setSelectedRequest(type._id)}
-                >
-                  {type.label}
-                </Button>
-              ))
-            ) : (
-              <p className="text-gray-500 text-sm italic text-center">
-                No categories found. Please ask admin to create one.
-              </p>
-            )}
+            {categories.map((type) => (
+              <Tooltip key={type._id}>
+                <TooltipTrigger asChild>
+                  <div className="w-full">
+                    <Button
+                      variant={selectedRequest === type._id ? "default" : "outline"}
+                      disabled={!type.enabled}
+                      className={`w-full border relative transition-all 
+            ${!type.enabled ? "opacity-50 cursor-not-allowed" : ""}
+            ${selectedRequest !== type._id
+                          ? theme === 'dark'
+                            ? 'border-white text-white hover:bg-white hover:text-black'
+                            : 'border-black text-black hover:bg-black hover:text-white'
+                          : ""
+                        }
+          `}
+                      onClick={() => {
+                        if (type.enabled) {
+                          setSelectedRequest(type._id);
+                        }
+                      }}
+                    >
+                      {type.label}
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+                {!type.enabled && (
+                  <TooltipContent side="right" className="text-sm text-red-500 max-w-xs">
+                    This category is currently disabled by the admin.
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            ))}
+
+
           </div>
 
           <div className="flex-1 space-y-4">
@@ -244,7 +263,7 @@ export default function UserPage() {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
-                
+
                   {/* ✅ Show cart summary */}
                   {Object.keys(cart).length > 0 && (
                     <div className="mt-4 space-y-2">

@@ -16,10 +16,10 @@ export default function SiteConfig() {
 
     const [logoPreview, setLogoPreview] = useState<string>("/assets/logo.png");
     const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
-    const [tabs, setTabs] = useState({ T1: '', T2: '', T3: '',T4:'' });
+    const [tabs, setTabs] = useState({ T1: '', T2: '', T3: '', T4: '' });
     const dispatch = useDispatch<AppDispatch>();
-    const { loading } = useSelector((state:RootState) => state.siteConfig);
-       const logoInputRef = useRef<HTMLInputElement>(null);
+    const { loading, config } = useSelector((state: RootState) => state.siteConfig);
+    const logoInputRef = useRef<HTMLInputElement>(null);
     const faviconInputRef = useRef<HTMLInputElement>(null);
 
     const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +49,7 @@ export default function SiteConfig() {
         formData.append('siteTitle', siteTitle);
         formData.append('tagline', tagline);
         formData.append('tabs', JSON.stringify(tabs));
-        formData.append('brandName',brandName)
+        formData.append('brandName', brandName)
         if (logoInputRef.current?.files?.[0]) {
             formData.append('logo', logoInputRef.current.files[0]);
         }
@@ -69,9 +69,9 @@ export default function SiteConfig() {
             return toast.error("Update at least one field before submitting.");
         }
 
-        dispatch(updateSiteConfig(formData)).unwrap().then(()=>{
+        dispatch(updateSiteConfig(formData)).unwrap().then(() => {
             toast.success("Settings submitted successfully.")
-            setTabs({ T1: '', T2: '', T3: '', T4:'' });
+            setTabs({ T1: '', T2: '', T3: '', T4: '' });
             setTagline('');
             setSiteTitle('');
             setBrandName('');
@@ -86,7 +86,7 @@ export default function SiteConfig() {
             }
             dispatch(fetchSiteConfig()).unwrap()
 
-        }).catch(e=>{
+        }).catch(e => {
             toast.error("Settings submitting Failed.");
             console.log(e)
         })
@@ -94,11 +94,22 @@ export default function SiteConfig() {
 
 
 
-    useEffect(()=>{
+    useEffect(() => {
         dispatch(fetchSiteConfig()).unwrap()
-    },[])
+    }, [])
+    useEffect(() => {
+        if (config) {
+            setSiteTitle(config.siteTitle || '');
+            setTagline(config.tagline || '');
+            setBrandName(config.brandName || '');
+            setLogoPreview(config.logo || '/assets/logo.png');
+            setFaviconPreview(config.favicon || '');
+            setTabs(config.tabs || { T1: '', T2: '', T3: '', T4: '' });
+        }
+    }, [config]);
 
 
+    console.log("config:", config)
     return (
         <div className={`min-h-screen  bg-gray-50 text-black`}>
             <PreviewHeader tabs={tabs} logoPreview={logoPreview} />
@@ -135,7 +146,7 @@ export default function SiteConfig() {
                             </div>
                         </div> */}
                         {/* Brand Name */}
-                        <div className="flex flex-col md:flex-row items-start gap-4">
+                        <div className="flex flex-col md:flex-row items-center gap-4">
                             <Label className="w-40">Brand Name</Label>
                             <div className="w-full md:w-1/2">
                                 <Input
@@ -150,7 +161,7 @@ export default function SiteConfig() {
                         </div>
 
                         {/* Tabs Input */}
-                        <div className="flex flex-col md:flex-row items-start gap-4">
+                        <div className="flex flex-col md:flex-row items-center gap-4">
                             <Label className="w-40">Admin Tabs</Label>
                             <div className="w-full md:w-1/2 space-y-2">
                                 <Input
@@ -171,7 +182,7 @@ export default function SiteConfig() {
                             </div>
                         </div>
                         {/* Tabs Input */}
-                        <div className="flex flex-col md:flex-row items-start gap-4">
+                        <div className="flex flex-col md:flex-row items-center gap-4">
                             <Label className="w-40">User Tabs</Label>
                             <div className="w-full md:w-1/2 space-y-2">
                                 <Input
@@ -193,7 +204,7 @@ export default function SiteConfig() {
                         </div>
 
                         {/* Logo Upload */}
-                        <div className="flex flex-col md:flex-row items-start gap-4">
+                        <div className="flex flex-col md:flex-row items-center   gap-4">
                             <Label className="w-40">Logo Upload</Label>
                             <div className="w-full md:w-1/2 space-y-2">
                                 <div className="flex items-center gap-4">
@@ -208,7 +219,7 @@ export default function SiteConfig() {
                                     <Button type="button" onClick={() => logoInputRef.current?.click()}>
                                         Choose Logo
                                     </Button>
-                                    { (
+                                    {(
                                         <img src={logoPreview} alt="Logo preview" className="h-16 object-contain" />
                                     )}
                                 </div>
@@ -219,7 +230,7 @@ export default function SiteConfig() {
                         </div>
 
                         {/* Favicon Upload */}
-                        <div className="flex flex-col md:flex-row items-start gap-4">
+                        <div className="flex flex-col md:flex-row items-center gap-4">
                             <Label className="w-40">Favicon Upload</Label>
                             <div className="w-full md:w-1/2 space-y-2">
                                 <div className="flex items-center gap-4">
@@ -248,7 +259,7 @@ export default function SiteConfig() {
                         {/* 👇 Submit Button */}
                         <div className="flex justify-end">
                             <Button disabled={loading} onClick={handleSubmit} className="w-40 mt-6 cursor-pointer hover:opacity-75">
-                                {loading ? "Submiting..." :"Submit"}  
+                                {loading ? "Updating..." : "Update"}
                             </Button>
                         </div>
 

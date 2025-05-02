@@ -46,7 +46,12 @@ export const createCategory = createAsyncThunk(
 export const updateCategory = createAsyncThunk(
   "categories/update",
   async (
-    payload: { id: string; newLabel: string; newDepartment: string },
+    payload: {
+      id: string;
+      newLabel: string;
+      newDepartment: string;
+      enabled?: boolean;
+    },
     { rejectWithValue }
   ) => {
     try {
@@ -101,6 +106,8 @@ export const updateItemInCategory = createAsyncThunk(
       toast.success("Category Item Updated.");
       return res.data.data;
     } catch (error: any) {
+      toast.error("Category Item Updation Failed.");
+
       return rejectWithValue(
         error.response?.data?.message || "Failed to update item"
       );

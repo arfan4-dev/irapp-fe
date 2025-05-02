@@ -162,7 +162,7 @@ const [addUserModal,setAddUserModal]=useState(false)
 
                                         <div className="flex flex-col gap-1">
                                             <Label>Department</Label>
-                                            <Select
+                                            <Select 
                                                 value={changes[user._id]?.department || user.department || "none"}
                                                 onValueChange={(val) =>
                                                     handleChange(user._id, "department", val === "none" ? "" : val)

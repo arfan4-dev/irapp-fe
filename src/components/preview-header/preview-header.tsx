@@ -59,7 +59,8 @@ const PreviewHeader: React.FC<HeaderProps> = ({
                                       
                                         className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                                     >
-                                        {tabs.T1 || config.tabs.T1  || ' Home'}
+                                        <Link to='/admin-panel'>
+                                            {tabs.T1 || config.tabs.T1 || ' Home'}</Link>
                                     </p>
                                 </li>
                                 <li>
@@ -67,7 +68,8 @@ const PreviewHeader: React.FC<HeaderProps> = ({
                                       
                                         className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                                     >
-                                        {tabs.T2 || config.tabs.T2 || 'User Management'}
+                                        <Link to='/manage-users'>
+                                            {tabs.T2 || config.tabs.T2 || 'User Management'}</Link>
                                     </p>
                                 </li>
                                 <li>
@@ -75,7 +77,9 @@ const PreviewHeader: React.FC<HeaderProps> = ({
                                 
                                         className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                                     >
+                                        <Link to='/answered-order'>
                                         {tabs.T3 || config.tabs.T3 || 'Answered order'}
+                                        </Link>
                                     </p>
                                 </li>
                             </ul>

@@ -11,7 +11,7 @@ const initialState: SiteConfigState = {
   config: null,
   loading: false,
   error: null,
-};
+}; 
 
 const siteConfigSlice = createSlice({
   name: "siteConfig",

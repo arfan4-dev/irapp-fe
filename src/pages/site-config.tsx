@@ -8,95 +8,34 @@ import PreviewHeader from "@/components/preview-header/preview-header";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { fetchSiteConfig, updateSiteConfig } from "@/store/features/siteConfig/siteConfig";
+import useThemeMode from "@/hooks/useTheme";
+import { useLocation } from 'react-router-dom';
+import UserSetting from "@/common/UserSetting";
 
 export default function SiteConfig() {
+    const dispatch = useDispatch<AppDispatch>();
+    const { loading, config } = useSelector((state: RootState) => state.siteConfig);
+    const { theme,setTheme } = useThemeMode();
+    const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
+
     const [siteTitle, setSiteTitle] = useState("");
     const [tagline, setTagline] = useState("");
     const [brandName, setBrandName] = useState("");
-
-    const [logoPreview, setLogoPreview] = useState<string>("/assets/logo.png");
+    const [logoPreview, setLogoPreview] = useState("/assets/logo.png");
     const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
     const [tabs, setTabs] = useState({ T1: '', T2: '', T3: '', T4: '' });
-    const dispatch = useDispatch<AppDispatch>();
-    const { loading, config } = useSelector((state: RootState) => state.siteConfig);
+    const location=useLocation()
+    const [isEditing, setIsEditing] = useState(false);
     const logoInputRef = useRef<HTMLInputElement>(null);
     const faviconInputRef = useRef<HTMLInputElement>(null);
-
-    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            if (!file.type.startsWith("image/")) {
-                toast.error("Please upload a valid image file.");
-                return;
-            }
-            setLogoPreview(URL.createObjectURL(file));
-        }
-    };
-
-    const handleFaviconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            if (!file.type.startsWith("image/")) {
-                toast.error("Please upload a valid image file.");
-                return;
-            }
-            setFaviconPreview(URL.createObjectURL(file));
-        }
-    };
-
-    const handleSubmit = () => {
-        const formData = new FormData();
-        formData.append('siteTitle', siteTitle);
-        formData.append('tagline', tagline);
-        formData.append('tabs', JSON.stringify(tabs));
-        formData.append('brandName', brandName)
-        if (logoInputRef.current?.files?.[0]) {
-            formData.append('logo', logoInputRef.current.files[0]);
-        }
-        if (faviconInputRef.current?.files?.[0]) {
-            formData.append('favicon', faviconInputRef.current.files[0]);
-        }
-        if (
-            siteTitle.trim() === "" &&
-            tagline.trim() === "" &&
-            brandName.trim() === "" &&
-            !faviconInputRef.current?.files?.[0] &&
-            tabs.T1.trim() === "" &&
-            tabs.T2.trim() === "" &&
-            tabs.T3.trim() === "" &&
-            tabs.T4?.trim?.() === "" // optional check if T4 exists
-        ) {
-            return toast.error("Update at least one field before submitting.");
-        }
-
-        dispatch(updateSiteConfig(formData)).unwrap().then(() => {
-            toast.success("Settings submitted successfully.")
-            setTabs({ T1: '', T2: '', T3: '', T4: '' });
-            setTagline('');
-            setSiteTitle('');
-            setBrandName('');
-            setLogoPreview('/assets/logo.png');
-            setFaviconPreview('');
-            if (faviconInputRef.current) {
-                faviconInputRef.current.value = ""; // ✅ reset the actual file input
-            }
-
-            if (logoInputRef.current) {
-                logoInputRef.current.value = ""; // ✅ also reset logo input if needed
-            }
-            dispatch(fetchSiteConfig()).unwrap()
-
-        }).catch(e => {
-            toast.error("Settings submitting Failed.");
-            console.log(e)
-        })
-    };
-
-
+    const [showSettings,setShowSettings]=useState(false)
+    const charOnly = /^[a-zA-Z\s]*$/;
+    const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        dispatch(fetchSiteConfig()).unwrap()
-    }, [])
+        dispatch(fetchSiteConfig());
+    }, [dispatch]);
+
     useEffect(() => {
         if (config) {
             setSiteTitle(config.siteTitle || '');
@@ -108,164 +47,171 @@ export default function SiteConfig() {
         }
     }, [config]);
 
+    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && file.type.startsWith("image/")) {
+            setLogoPreview(URL.createObjectURL(file));
+        } else {
+            toast.error("Please upload a valid image file.");
+        }
+    };
 
-    console.log("config:", config)
+    const handleFaviconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && file.type.startsWith("image/")) {
+            setFaviconPreview(URL.createObjectURL(file));
+        } else {
+            toast.error("Please upload a valid image file.");
+        }
+    };
+
+    // const handleSubmit = () => {
+    //     if (!isEditing) return;
+
+    //     if (![siteTitle, tagline, brandName, tabs.T1, tabs.T2, tabs.T3, tabs.T4].every(v => charOnly.test(v))) {
+    //         return toast.error("Only alphabets and spaces are allowed in all fields.");
+    //     }
+
+    //     const formData = new FormData();
+    //     formData.append("siteTitle", siteTitle);
+    //     formData.append("tagline", tagline);
+    //     formData.append("tabs", JSON.stringify(tabs));
+    //     formData.append("brandName", brandName);
+    //     if (logoInputRef.current?.files?.[0]) formData.append("logo", logoInputRef.current.files[0]);
+    //     if (faviconInputRef.current?.files?.[0]) formData.append("favicon", faviconInputRef.current.files[0]);
+
+    //     dispatch(updateSiteConfig(formData)).unwrap().then(() => {
+    //         toast.success("Settings updated successfully.");
+    //         setIsEditing(false);
+    //         dispatch(fetchSiteConfig());
+    //     }).catch(() => toast.error("Update failed."));
+    // };
+
+    const handleSubmit = () => {
+        if (!isEditing) return;
+
+        if (![siteTitle, tagline, brandName, tabs.T1, tabs.T2, tabs.T3, tabs.T4].every(v => charOnly.test(v))) {
+            return toast.error("Only alphabets and spaces are allowed in all fields.");
+        }
+
+        const isUnchanged =
+            siteTitle === (config.siteTitle || '') &&
+            tagline === (config.tagline || '') &&
+            brandName === (config.brandName || '') &&
+            tabs.T1 === (config.tabs?.T1 || '') &&
+            tabs.T2 === (config.tabs?.T2 || '') &&
+            tabs.T3 === (config.tabs?.T3 || '') &&
+            tabs.T4 === (config.tabs?.T4 || '') &&
+            !logoInputRef.current?.files?.[0] &&
+            !faviconInputRef.current?.files?.[0];
+
+        if (isUnchanged) {
+            toast.info("No changes detected.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("siteTitle", siteTitle);
+        formData.append("tagline", tagline);
+        formData.append("tabs", JSON.stringify(tabs));
+        formData.append("brandName", brandName);
+        if (logoInputRef.current?.files?.[0]) formData.append("logo", logoInputRef.current.files[0]);
+        if (faviconInputRef.current?.files?.[0]) formData.append("favicon", faviconInputRef.current.files[0]);
+
+        dispatch(updateSiteConfig(formData)).unwrap().then(() => {
+            toast.success("Settings updated successfully.");
+            setIsEditing(false);
+            dispatch(fetchSiteConfig());
+        }).catch(() => toast.error("Update failed."));
+    };
+
+    const handleCancel = () => {
+        if (config) {
+            setSiteTitle(config.siteTitle || '');
+            setTagline(config.tagline || '');
+            setBrandName(config.brandName || '');
+            setLogoPreview(config.logo || '/assets/logo.png');
+            setFaviconPreview(config.favicon || '');
+            setTabs(config.tabs || { T1: '', T2: '', T3: '', T4: '' });
+        }
+        setIsEditing(false);
+    };
+
     return (
-        <div className={`min-h-screen  bg-gray-50 text-black`}>
-            <PreviewHeader tabs={tabs} logoPreview={logoPreview} />
-
+        <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
+            <PreviewHeader showSettings={showSettings} setShowSettings={setShowSettings} tabs={tabs} logoPreview={logoPreview} theme={theme} setTheme={setTheme} location={location}  />
             <div className="space-y-10 max-w-[1200px] mx-auto p-4">
                 <h1 className="text-2xl font-bold">Site Identity</h1>
-
                 <Card>
                     <CardContent className="p-6 space-y-8">
+
 
                         {/* Site Title */}
                         <div className="flex flex-col md:flex-row items-center gap-4">
                             <Label className="w-40">Site Title</Label>
-                            <Input
-                                placeholder="Enter your website title"
-                                value={siteTitle}
-                                onChange={(e) => setSiteTitle(e.target.value)}
-                                className="w-full md:w-1/2"
-                            />
+                            <Input disabled={!isEditing} value={siteTitle} onChange={(e) => setSiteTitle(e.target.value)} />
                         </div>
 
-                        {/* Tagline */}
-                        {/* <div className="flex flex-col md:flex-row items-start gap-4">
-                            <Label className="w-40">Tagline</Label>
-                            <div className="w-full md:w-1/2">
-                                <Input
-                                    placeholder="A short description..."
-                                    value={tagline}
-                                    onChange={(e) => setTagline(e.target.value)}
-                                />
-                                <p className="text-xs text-gray-500 mt-1">
-                                    In a few words, explain what this site is about.
-                                </p>
-                            </div>
-                        </div> */}
                         {/* Brand Name */}
                         <div className="flex flex-col md:flex-row items-center gap-4">
                             <Label className="w-40">Brand Name</Label>
-                            <div className="w-full md:w-1/2">
-                                <Input
-                                    placeholder="Brand Name"
-                                    value={brandName}
-                                    onChange={(e) => setBrandName(e.target.value)}
-                                />
-                                {/* <p className="text-xs text-gray-500 mt-1">
-                                    In a few words, explain what this site is about.
-                                </p> */}
+                            <Input disabled={!isEditing} value={brandName} onChange={(e) => setBrandName(e.target.value)} />
+                        </div>
+
+                        {/* Admin Tabs */}
+                        <div className="flex flex-col md:flex-row items-center gap-4">
+                            <Label className="w-40">Admin Tabs</Label>
+                            <div className="space-y-2 w-full">
+                                <Input disabled={!isEditing} value={tabs.T1} onChange={(e) => setTabs({ ...tabs, T1: e.target.value })} placeholder="Tab 1" />
+                                <Input disabled={!isEditing} value={tabs.T2} onChange={(e) => setTabs({ ...tabs, T2: e.target.value })} placeholder="Tab 2" />
+                                <Input disabled={!isEditing} value={tabs.T3} onChange={(e) => setTabs({ ...tabs, T3: e.target.value })} placeholder="Tab 3" />
                             </div>
                         </div>
 
-                        {/* Tabs Input */}
+                        {/* User Tab */}
                         <div className="flex flex-col md:flex-row items-center gap-4">
-                            <Label className="w-40">Admin Tabs</Label>
-                            <div className="w-full md:w-1/2 space-y-2">
-                                <Input
-                                    placeholder="Tab 1 Name"
-                                    value={tabs.T1}
-                                    onChange={(e) => setTabs(prev => ({ ...prev, T1: e.target.value }))}
-                                />
-                                <Input
-                                    placeholder="Tab 2 Name"
-                                    value={tabs.T2}
-                                    onChange={(e) => setTabs(prev => ({ ...prev, T2: e.target.value }))}
-                                />
-                                <Input
-                                    placeholder="Tab 3 Name"
-                                    value={tabs.T3}
-                                    onChange={(e) => setTabs(prev => ({ ...prev, T3: e.target.value }))}
-                                />
-                            </div>
-                        </div>
-                        {/* Tabs Input */}
-                        <div className="flex flex-col md:flex-row items-center gap-4">
-                            <Label className="w-40">User Tabs</Label>
-                            <div className="w-full md:w-1/2 space-y-2">
-                                <Input
-                                    placeholder="Tab 1 Name"
-                                    value={tabs.T4}
-                                    onChange={(e) => setTabs(prev => ({ ...prev, T4: e.target.value }))}
-                                />
-                                {/* <Input
-                                    placeholder="Tab 2 Name"
-                                    value={tabs.T2}
-                                    onChange={(e) => setTabs(prev => ({ ...prev, T2: e.target.value }))}
-                                />
-                                <Input
-                                    placeholder="Tab 3 Name"
-                                    value={tabs.T3}
-                                    onChange={(e) => setTabs(prev => ({ ...prev, T3: e.target.value }))}
-                                /> */}
-                            </div>
+                            <Label className="w-40">User Tab</Label>
+                            <Input disabled={!isEditing} value={tabs.T4} onChange={(e) => setTabs({ ...tabs, T4: e.target.value })} placeholder="User Tab" />
                         </div>
 
                         {/* Logo Upload */}
-                        <div className="flex flex-col md:flex-row items-center   gap-4">
-                            <Label className="w-40">Logo Upload</Label>
-                            <div className="w-full md:w-1/2 space-y-2">
-                                <div className="flex items-center gap-4">
-                                    <Input
-                                        type="file"
-                                        accept="image/*"
-                                        name="logo"
-                                        ref={logoInputRef}
-                                        onChange={handleLogoChange}
-                                        hidden
-                                    />
-                                    <Button type="button" onClick={() => logoInputRef.current?.click()}>
-                                        Choose Logo
-                                    </Button>
-                                    {(
-                                        <img src={logoPreview} alt="Logo preview" className="h-16 object-contain" />
-                                    )}
-                                </div>
-                                <p className="text-xs text-gray-500">
-                                    Logo should be at least 512x512 pixels.
-                                </p>
+                        <div className="flex flex-col md:flex-row items-center gap-4">
+                            <Label className="w-40">Logo</Label>
+                            <div className="flex gap-4">
+                                <Button className="cursor-pointer" disabled={!isEditing} onClick={() => logoInputRef.current?.click()}>Upload</Button>
+                                <Input type="file" accept="image/*" ref={logoInputRef} onChange={handleLogoChange} hidden />
+                                <img src={logoPreview} className="h-12 object-contain" alt="Logo preview" />
                             </div>
                         </div>
 
                         {/* Favicon Upload */}
                         <div className="flex flex-col md:flex-row items-center gap-4">
-                            <Label className="w-40">Favicon Upload</Label>
-                            <div className="w-full md:w-1/2 space-y-2">
-                                <div className="flex items-center gap-4">
-                                    <Input
-                                        type="file"
-                                        accept="image/*"
-                                        name="favicon"
-
-                                        ref={faviconInputRef}
-                                        onChange={handleFaviconChange}
-                                        hidden
-                                    />
-                                    <Button type="button" onClick={() => faviconInputRef.current?.click()}>
-                                        Choose Favicon
-                                    </Button>
-                                    {faviconPreview && (
-                                        <img src={faviconPreview} alt="Favicon preview" className="h-12 object-contain" />
-                                    )}
-                                </div>
-                                <p className="text-xs text-gray-500">
-                                    Favicon must be a square image (e.g., 512x512 px).
-                                </p>
+                            <Label className="w-40">Favicon</Label>
+                            <div className="flex gap-4">
+                                <Button className="cursor-pointer" disabled={!isEditing} onClick={() => faviconInputRef.current?.click()}>Upload</Button>
+                                <Input type="file" accept="image/*" ref={faviconInputRef} onChange={handleFaviconChange} hidden />
+                                {faviconPreview && <img src={faviconPreview} className="h-10 object-contain" alt="Favicon preview" />}
                             </div>
                         </div>
-
-                        {/* 👇 Submit Button */}
-                        <div className="flex justify-end">
-                            <Button disabled={loading} onClick={handleSubmit} className="w-40 mt-6 cursor-pointer hover:opacity-75">
-                                {loading ? "Updating..." : "Update"}
-                            </Button>
+                        <div className="flex justify-end gap-4">
+                            {!isEditing ? (
+                                <Button className="cursor-pointer hover:opacity-80" onClick={() => setIsEditing(true)} variant="outline">Edit</Button>
+                            ) : (
+                                <>
+                                    <Button className='cursor-pointer hover:opacity-75' onClick={handleSubmit} disabled={loading}>
+                                        {loading ? "Updating..." : "Update"}
+                                    </Button>
+                                    <Button onClick={handleCancel} className="cursor-pointer" variant="secondary">Cancel</Button>
+                                </>
+                            )}
                         </div>
-
                     </CardContent>
                 </Card>
             </div>
+
+            {showSettings && (
+                <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={''} />
+            )}
         </div>
     );
 }

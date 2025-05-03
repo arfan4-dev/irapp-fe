@@ -22,6 +22,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 
+
 export default function UserPage() {
   const [selectedRequest, setSelectedRequest] = useState('');
   const [notes, setNotes] = useState('');
@@ -34,12 +35,13 @@ export default function UserPage() {
   const [itemQuantities, setItemQuantities] = useState<any>({});
   const [cart, setCart] = useState<{ [key: string]: { name: string; quantity: number } }>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const isOnline = useOfflineStatus();
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
   const allCategories = useSelector((state: RootState) => state.categories.categories || []);
-
+ 
   const categories = useMemo(() => {
     if (!user?.department) return [];
 
@@ -61,13 +63,7 @@ export default function UserPage() {
 
   const confirmSendOrder = () => {
     const orderItems = Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity }));
-    // dispatch(createOrder({
-    //   type: selectedRequest,
-    //   userId: user.id,
-    //   person: user.username,
-    //   items: orderItems,
-    //   status: 'Pending',
-    // }));
+   
     handleOrder({
       type: selectedRequest,
       userId: user.id,
@@ -104,15 +100,6 @@ export default function UserPage() {
 
     }
   };
-
-
-  console.log("allCategories:", allCategories)
-
-
-
-
-  const modalRef = useRef<HTMLDivElement>(null);
-
 
   const handleOrder = async (orderItems: any) => {
     if (isOnline) {
@@ -160,7 +147,6 @@ export default function UserPage() {
     fetchData();
   }, []);
 
-  console.log("categories:", categories);
 
   useEffect(() => {
     dispatch(fetchSiteConfig()).unwrap()

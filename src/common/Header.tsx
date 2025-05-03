@@ -16,6 +16,7 @@ import { fetchUserById } from "@/store/features/user/user";
 // import { getImageUrl } from "@/utils";
 import { Building2, LogOut, MonitorCog } from "lucide-react";
 import { AvatarImage } from "@radix-ui/react-avatar";
+import { getInitials } from "@/utils/getIntialUsername";
 
 interface HeaderProps {
   theme: 'light' | 'dark';
@@ -59,10 +60,7 @@ const Header: React.FC<HeaderProps> = ({
   }, [dispatch, user?.id]);
 
 
-  const getInitials = (name: string) => {
-    return name?.charAt(0).toUpperCase() || "U";
-  };
-
+  
   return (
     <header className="sticky top-0 bg-inherit border-b z-10 dark:bg-gray-900 dark:text-white flex justify-between items-center px-4 ">
       <div className="flex items-center gap-2">
@@ -104,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({
               </ul>
             </nav>
           )}
-          {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users" && location !== "/admin-panel/departments") && (
+          {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users" && location !== "/departments") && (
             <nav>
               <ul className="flex items-center ml-6">
                 <li>
@@ -119,7 +117,7 @@ const Header: React.FC<HeaderProps> = ({
             </nav>
           )}
 
-          {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users' || location == '/admin-panel/departments') && (
+          {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users' || location == '/departments') && (
             <nav>
               <ul className="flex items-center gap-10 ml-6">
                 <li>
@@ -258,7 +256,7 @@ const Header: React.FC<HeaderProps> = ({
                 <MonitorCog />  Site Configuration
               </DropdownMenuItem>
             </NavLink>
-              <NavLink to='/admin-panel/departments'>
+              <NavLink to='/departments'>
                 <DropdownMenuItem className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
                   <Building2 /> Department
                 </DropdownMenuItem>

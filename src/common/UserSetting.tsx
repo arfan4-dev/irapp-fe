@@ -58,7 +58,7 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
     // Add this above the form return
     const handleVerifyPassword = async () => {
         if (!currentPassword) {
-            toast.error("Please Enter Your Current Password");
+            toast.error("Please Enter Your Current Password.");
             return;
         }
 
@@ -118,7 +118,7 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
             .then(() => {
                 dispatch(fetchUserById(user.id));
                 setLoading(false); // ✅ start loading
-                toast.success("User updated successfully!");
+                toast.success("User updated successfully.");
 
                 setShowSettings(false);
             })

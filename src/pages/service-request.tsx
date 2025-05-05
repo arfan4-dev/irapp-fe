@@ -151,6 +151,7 @@ export default function UserPage() {
   useEffect(() => {
     dispatch(fetchSiteConfig()).unwrap()
   }, [])
+  console.log("categories:", categories)
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
       <Header
@@ -165,41 +166,45 @@ export default function UserPage() {
       <div className="max-w-4xl mx-auto p-4 space-y-6">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="md:w-1/3 space-y-4">
-            {categories.map((type) => (
-              <Tooltip key={type._id}>
-                <TooltipTrigger asChild>
-                  <div className="w-full">
-                    <Button
-                      variant={selectedRequest === type._id ? "default" : "outline"}
-                      disabled={!type.enabled}
-                      className={`w-full border relative transition-all 
-            ${!type.enabled ? "opacity-50 cursor-not-allowed" : ""}
-            ${selectedRequest !== type._id
-                          ? theme === 'dark'
-                            ? 'border-white text-white hover:bg-white hover:text-black'
-                            : 'border-black text-black hover:bg-black hover:text-white'
-                          : ""
-                        }
-          `}
-                      onClick={() => {
-                        if (type.enabled) {
-                          setSelectedRequest(type._id);
-                        }
-                      }}
-                    >
-                      {type.label}
-                    </Button>
-                  </div>
-                </TooltipTrigger>
-                {!type.enabled && (
-                  <TooltipContent side="right" className="text-sm text-red-500 max-w-xs">
-                    This category is currently disabled by the admin.
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            ))}
-
-
+            {categories.length === 0 ? (
+              <p className="text-sm text-gray-500 italic text-center">
+                No categories available. Please contact the admin or try again later.
+              </p>
+            ) : (
+              categories.map((type) => (
+                <Tooltip key={type._id}>
+                  <TooltipTrigger asChild>
+                    <div className="w-full">
+                      <Button
+                        variant={selectedRequest === type._id ? "default" : "outline"}
+                        disabled={!type.enabled}
+                        className={`w-full border relative transition-all 
+                ${!type.enabled ? "opacity-50 cursor-not-allowed" : ""}
+                ${selectedRequest !== type._id
+                            ? theme === 'dark'
+                              ? 'border-white text-white hover:bg-white hover:text-black'
+                              : 'border-black text-black hover:bg-black hover:text-white'
+                            : ""
+                          }
+              `}
+                        onClick={() => {
+                          if (type.enabled) {
+                            setSelectedRequest(type._id);
+                          }
+                        }}
+                      >
+                        {type.label}
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  {!type.enabled && (
+                    <TooltipContent side="right" className="text-sm text-red-500 max-w-xs">
+                      This category is currently disabled by the admin.
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              ))
+            )}
           </div>
 
           <div className="flex-1 space-y-4">

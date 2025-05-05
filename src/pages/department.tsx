@@ -244,7 +244,7 @@ export default function DepartmentManagementPage() {
                                             onClick={() => setShowCategoryModal(true)}
                                             className="mt-2 text-[12px] md:text-[16px] cursor-pointer hover:opacity-75"
                                         >
-                                            Add
+                                            Add 
                                         </Button>
                                         <Button
                                             size="lg"

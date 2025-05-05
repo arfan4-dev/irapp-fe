@@ -106,7 +106,8 @@ const PreviewHeader: React.FC<any> = ({
                                                 {tabs.T3 || config.tabs.T3 || 'Answered order'}
                                             </Link>
                                         </p>
-                                    </li>'  <li>
+                                    </li>
+                                     <li>
                                                             <NavLink
                                                               to="/manage-categories-departments"
                                                               className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
@@ -114,7 +115,7 @@ const PreviewHeader: React.FC<any> = ({
                                             {tabs?.T5 || config.tabs.T5 || "Manage Categories and Departments"}
                                     
                                                             </NavLink>
-                                                          </li>'
+                                                          </li>
                                 </ul>
                             </nav>
                         )}

@@ -82,7 +82,7 @@ export default function OrderPage() {
               </div>
 
               {/* ✅ Scrollable area with dark mode support */}
-              <div className="max-h-[60vh] overflow-y-auto pr-1 space-y-3">
+              <div className="max-h-[70vh] overflow-y-auto pr-1 space-y-3">
                 {filteredOrders.length === 0 ? (
                   <p className="text-gray-500 dark:text-gray-400 text-center italic">No orders found.</p>
                 ) : (

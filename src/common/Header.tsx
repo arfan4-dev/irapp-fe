@@ -102,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({
               </ul>
             </nav>
           )}
-          {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users" && location !== "/manage-categories-departments") && (
+          {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users" && location !== "/staff-panel" && location !== "/manage-categories-departments") && (
             <nav>
               <ul className="flex items-center ml-6">
                 <li>
@@ -117,18 +117,29 @@ const Header: React.FC<HeaderProps> = ({
             </nav>
           )}
 
-          {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users' || location == '/manage-categories-departments') && (
+          {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users' || location == '/manage-categories-departments' || location =='/staff-panel') && (
             <nav>
               <ul className="flex items-center gap-10 ml-6">
+               {
+                  user?.role === "staff" && <li>
+                    <NavLink
+                      to="/staff-panel"
+                      className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                    >
+                      {tabs?.T1 || "Home"}
+                    </NavLink>
+                  </li>
+               }
+                {user?.role === "admin" && (<>
+                  <li>
+                    <NavLink
+                      to="/admin-panel"
+                      className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                    >
+                      {tabs?.T1 || "Home"}
+                    </NavLink>
+                  </li>
                 <li>
-                  <NavLink
-                    to="/admin-panel"
-                    className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
-                  >
-                    {tabs?.T1 || "Home"}
-                  </NavLink>
-                </li>
-                {user?.role === "admin" && (<><li>
                   <NavLink
                     to="/manage-users"
                     className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
@@ -145,14 +156,14 @@ const Header: React.FC<HeaderProps> = ({
                     {tabs?.T3 || "Answered order"}
                   </NavLink>
                 </li>
-                <li>
+                {user?.role === "admin" && <li>
                   <NavLink
                     to="/manage-categories-departments"
                     className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                   >
                     {tabs?.T5 || "Manage Categories and Departments"}
                   </NavLink>
-                </li>
+                </li>}
               </ul>
             </nav>
           )}

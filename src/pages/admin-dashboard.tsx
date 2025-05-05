@@ -252,7 +252,7 @@ export default function AdminPage() {
 
 
               <div>
-                <CardContent className="p-4 md:p-6 ">
+                <CardContent className="px-4 md:px-6 ">
 
                   <h2 className="text-xl font-semibold mb-4">Pending Requests</h2>
                   <div className="flex flex-wrap gap-2 mb-4">
@@ -272,7 +272,7 @@ export default function AdminPage() {
                     />
                     <Input
                       type="date"
-                      className="w-40 md:w-36 placeholder:text-[12px] placeholder:md:text-[14px]"
+                      className="w-40 md:w-40 placeholder:text-[12px] placeholder:md:text-[14px]"
                       value={pendingFilters.date}
                       onChange={(e) => setPendingFilters(prev => ({ ...prev, date: e.target.value }))}
                     />
@@ -406,7 +406,7 @@ export default function AdminPage() {
               </div>
               <div className={`border border-l mx-2 sm:mx-0  ${viewMode !== "grid" && "mx-5"} `} />
               <div>
-                <CardContent className="p-4 md:p-6">
+                <CardContent className="px-4 md:px-6 ">
                   <h2 className="text-xl font-semibold mb-4">In Progress Requests</h2>
                   <div className="flex flex-wrap gap-2 mb-4">
                     <Input
@@ -425,7 +425,7 @@ export default function AdminPage() {
                     />
                     <Input
                       type="date"
-                      className="w-40 md:w-36 "
+                      className="w-40 md:w-[145px] "
                       value={progressFilters.date}
                       onChange={(e) => setProgressFilters(prev => ({ ...prev, date: e.target.value }))}
                     />

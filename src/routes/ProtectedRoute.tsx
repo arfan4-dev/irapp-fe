@@ -12,7 +12,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const location = useLocation();
-    // console.log("ProtectedRoute.....", user.id);
+    console.log("ProtectedRoute.....", user.role);
 
 
     useEffect(() => {
@@ -47,19 +47,23 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
     // ✅ Redirect '/' based on role
     if (isAuthenticated && location.pathname === "/") {
-        if (user?.role === "admin" || user?.role == "staff") return <Navigate to="/admin-panel" replace />;
+        if (user?.role === "admin") return <Navigate to="/admin-panel" replace />;
         if (user?.role === "user") return <Navigate to="/service-request" replace />;
+        if (user?.role == "staff") return <Navigate to="/staff-panel" replace />;
     }
 
     // ❌ Prevent admin from accessing user dashboard
-    if ((user?.role === "admin" || user?.role === "staff") && (location.pathname.startsWith("/service-request") || location.pathname.startsWith("/order-status"))) {
+    if ((user?.role === "admin") && (location.pathname.startsWith("/service-request") || location.pathname.startsWith("/staff-panel") || location.pathname.startsWith("/order-status"))) {
         return <Navigate to="/admin-panel" replace />;
+    }
+    if ((user?.role === "staff") && (location.pathname.startsWith("/service-request") || location.pathname.startsWith("/admin-panel") || location.pathname.startsWith("/order-status"))) {
+        return <Navigate to="/staff-panel" replace />;
     }
 
     // ❌ Prevent user from accessing admin dashboard or answered order
     if (
         user?.role === "user" &&
-        (location.pathname.startsWith("/manage-categories-departments") ||location.pathname.startsWith("/admin-panel") || location.pathname.startsWith("/admin-panel/site-config") || location.pathname.startsWith("/answered-order") || location.pathname.startsWith("/manage-users"))
+        (location.pathname.startsWith("/manage-categories-departments") || location.pathname.startsWith("/admin-panel") || location.pathname.startsWith("/admin-panel/site-config") || location.pathname.startsWith("/answered-order") || location.pathname.startsWith("/manage-users") || location.pathname.startsWith("/staff-panel"))
     ) {
         return <Navigate to="/service-request" replace />;
     } 

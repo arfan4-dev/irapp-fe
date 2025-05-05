@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import api from "@/api/api";
 import { fetchUserById } from "@/store/features/user/user";
 // import { getImageUrl } from "@/utils";
-import { Building2, LogOut, MonitorCog } from "lucide-react";
+import {LogOut, MonitorCog } from "lucide-react";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { getInitials } from "@/utils/getIntialUsername";
 
@@ -60,7 +60,7 @@ const Header: React.FC<HeaderProps> = ({
   }, [dispatch, user?.id]);
 
 
-  
+
   return (
     <header className="sticky top-0 bg-inherit border-b z-10 dark:bg-gray-900 dark:text-white flex justify-between items-center px-4 ">
       <div className="flex items-center gap-2">
@@ -102,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({
               </ul>
             </nav>
           )}
-          {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users" && location !== "/departments") && (
+          {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users" && location !== "/manage-categories-departments") && (
             <nav>
               <ul className="flex items-center ml-6">
                 <li>
@@ -117,7 +117,7 @@ const Header: React.FC<HeaderProps> = ({
             </nav>
           )}
 
-          {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users' || location == '/departments') && (
+          {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users' || location == '/manage-categories-departments') && (
             <nav>
               <ul className="flex items-center gap-10 ml-6">
                 <li>
@@ -143,6 +143,14 @@ const Header: React.FC<HeaderProps> = ({
                     className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
                   >
                     {tabs?.T3 || "Answered order"}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/manage-categories-departments"
+                    className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                  >
+                    {tabs?.T5 || "Manage Categories and Departments"}
                   </NavLink>
                 </li>
               </ul>
@@ -202,7 +210,7 @@ const Header: React.FC<HeaderProps> = ({
                     </ul>
                   </nav>
                 )}
-                {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users") && (
+                {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users" && location !== '/manage-categories-departments') && (
                   <nav>
                     <ul className="flex  ">
                       <li>
@@ -217,7 +225,7 @@ const Header: React.FC<HeaderProps> = ({
                   </nav>
                 )}
 
-                {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users') && (
+                {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users' || location == '/manage-categories-departments') && (
                   <nav>
                     <ul className="flex flex-col items-start gap-2 list-disc ml-4">
                       <li>
@@ -246,6 +254,15 @@ const Header: React.FC<HeaderProps> = ({
 
                         </NavLink>
                       </li>
+                      <li>
+                        <NavLink
+                          to="/manage-categories-departments"
+                          className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                        >
+                          {tabs?.T5 || "Manage Categories and Departments"}
+
+                        </NavLink>
+                      </li>
                     </ul>
                   </nav>
                 )}
@@ -256,11 +273,13 @@ const Header: React.FC<HeaderProps> = ({
                 <MonitorCog />  Site Configuration
               </DropdownMenuItem>
             </NavLink>
-              <NavLink to='/departments'>
+              {/* <NavLink to='/manage-categories-departments'>
                 <DropdownMenuItem className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
                   <Building2 /> Department
                 </DropdownMenuItem>
-              </NavLink></>)}
+              </NavLink> */}
+              
+              </>)}
 
             <DropdownMenuItem onClick={() => setShowSettings(true)} className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
               ⚙️ Profile Setting

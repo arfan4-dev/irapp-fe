@@ -45,7 +45,6 @@ export const useSyncPendingCategoryItems = () => {
       const pending = await db.getAll("pendingCategoryItems");
 console.log('useSyncPendingCategoryItems.......');
       for (const entry of pending) {
-        console.log("entry:", entry);
         try {
           await api.post(`/categories/${entry.categoryId}/items`, entry);
           await db.delete("pendingCategoryItems", entry.id);

@@ -23,7 +23,7 @@ export default function SiteConfig() {
     const [brandName, setBrandName] = useState("");
     const [logoPreview, setLogoPreview] = useState("/assets/logo.png");
     const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
-    const [tabs, setTabs] = useState({ T1: '', T2: '', T3: '', T4: '' });
+    const [tabs, setTabs] = useState({ T1: '', T2: '', T3: '', T4: '', T5: '' });
     const location=useLocation()
     const [isEditing, setIsEditing] = useState(false);
     const logoInputRef = useRef<HTMLInputElement>(null);
@@ -43,7 +43,7 @@ export default function SiteConfig() {
             setBrandName(config.brandName || '');
             setLogoPreview(config.logo || '/assets/logo.png');
             setFaviconPreview(config.favicon || '');
-            setTabs(config.tabs || { T1: '', T2: '', T3: '', T4: '' });
+            setTabs(config.tabs || { T1: '', T2: '', T3: '', T4: '', T5: '' });
         }
     }, [config]);
 
@@ -90,7 +90,7 @@ export default function SiteConfig() {
     const handleSubmit = () => {
         if (!isEditing) return;
 
-        if (![siteTitle, tagline, brandName, tabs.T1, tabs.T2, tabs.T3, tabs.T4].every(v => charOnly.test(v))) {
+        if (![siteTitle, tagline, brandName, tabs.T1, tabs.T2, tabs.T3, tabs.T4, tabs.T5].every(v => charOnly.test(v))) {
             return toast.error("Only alphabets and spaces are allowed in all fields.");
         }
 
@@ -102,6 +102,7 @@ export default function SiteConfig() {
             tabs.T2 === (config.tabs?.T2 || '') &&
             tabs.T3 === (config.tabs?.T3 || '') &&
             tabs.T4 === (config.tabs?.T4 || '') &&
+            tabs.T5=== (config.tabs?.T5 || '') &&
             !logoInputRef.current?.files?.[0] &&
             !faviconInputRef.current?.files?.[0];
 
@@ -132,7 +133,7 @@ export default function SiteConfig() {
             setBrandName(config.brandName || '');
             setLogoPreview(config.logo || '/assets/logo.png');
             setFaviconPreview(config.favicon || '');
-            setTabs(config.tabs || { T1: '', T2: '', T3: '', T4: '' });
+            setTabs(config.tabs || { T1: '', T2: '', T3: '', T4: '',T5:'' });
         }
         setIsEditing(false);
     };
@@ -159,12 +160,14 @@ export default function SiteConfig() {
                         </div>
 
                         {/* Admin Tabs */}
-                        <div className="flex flex-col md:flex-row items-center gap-4">
+                        <div className="flex flex-col md:flex-row items-start gap-4">
                             <Label className="w-40">Admin Tabs</Label>
                             <div className="space-y-2 w-full">
                                 <Input disabled={!isEditing} value={tabs.T1} onChange={(e) => setTabs({ ...tabs, T1: e.target.value })} placeholder="Tab 1" />
                                 <Input disabled={!isEditing} value={tabs.T2} onChange={(e) => setTabs({ ...tabs, T2: e.target.value })} placeholder="Tab 2" />
                                 <Input disabled={!isEditing} value={tabs.T3} onChange={(e) => setTabs({ ...tabs, T3: e.target.value })} placeholder="Tab 3" />
+                                <Input disabled={!isEditing} value={tabs.T5} onChange={(e) => setTabs({ ...tabs, T5: e.target.value })} placeholder="Tab 4" />
+
                             </div>
                         </div>
 

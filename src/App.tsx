@@ -40,7 +40,7 @@ function App() {
         <Route path="/admin-panel" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
         <Route path="/manage-users" element={<ProtectedRoute><ManageUsers /></ProtectedRoute>} />
         <Route path="/admin-panel/site-config" element={<ProtectedRoute><SiteConfig /></ProtectedRoute>} />
-        <Route path="/departments" element={<ProtectedRoute><DepartmentManagementPage /></ProtectedRoute>} />
+        <Route path="/manage-categories-departments" element={<ProtectedRoute><DepartmentManagementPage /></ProtectedRoute>} />
 
         <Route path="/answered-order" element={<ProtectedRoute><AnsweredOrdersPage /></ProtectedRoute>} />
         <Route path="/order-status" element={<ProtectedRoute><OrderPage /> </ProtectedRoute>} />

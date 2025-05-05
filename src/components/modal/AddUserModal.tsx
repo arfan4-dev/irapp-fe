@@ -63,6 +63,15 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
 
+        if (formState.username.trim() == "" ||
+            formState.email.trim() == "" ||
+            formState.password.trim() == "" ||
+            formState.role.trim() == "" ||
+            formState.location.trim() == "" ||
+            formState.department.trim() == "" ||
+            !fileInputRef.current?.files?.[0]
+        ) return toast.info("Please Fill All the Fields.")
+
         if (!usernameRegex.test(formState.username)) {
             return toast.error("Username must not contain special characters.");
         }
@@ -119,7 +128,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
 
                 <div className="grid gap-4 pt-2">
                     <div className="grid gap-1">
-                        <Label>Username</Label>
+                        <Label className="mb-1">Username</Label>
                         <Input
                             type='text'
                             value={formState.username}
@@ -129,7 +138,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
                     </div>
 
                     <div className="grid gap-1">
-                        <Label>Email</Label>
+                        <Label className="mb-1">Email</Label>
                         <Input
                             type='email'
                             value={formState.email}
@@ -139,7 +148,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
                     </div>
 
                     <div className="grid gap-1 relative">
-                        <Label>Password</Label>
+                        <Label className="mb-1">Password</Label>
                         <Input
                             type={showPassword ? "text" : "password"}
                             placeholder="Enter Password"
@@ -158,11 +167,11 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
 
 
                     <div className="grid gap-1">
-                        <Label>Location</Label>
+                        <Label className="mb-1">Location</Label>
                         <Input placeholder="Enter Location" name="location" maxLength={20} value={formState.location} onChange={(e) => handleChange("location", e.target.value)} required />
                     </div>
                     <div className="grid gap-1">
-                        <Label>Role</Label>
+                        <Label className="mb-1">Role</Label>
                         <Select value={formState.role} onValueChange={(value) => handleChange("role", value)}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select role" />
@@ -178,7 +187,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
                     </div>
 
                     <div className="grid gap-1">
-                        <Label>Department</Label>
+                        <Label className="mb-1">Department</Label>
                         <Select
                             value={formState.department}
                             onValueChange={(value) => handleChange("department", value)}
@@ -198,7 +207,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
                     </div>
 
                     <div className="grid gap-1">
-                        <Label>Profile Image</Label>
+                        <Label className="mb-1">Profile Image</Label>
                         <div className="flex items-center gap-4">
                             <Input
                                 type="file"

@@ -84,7 +84,7 @@ const Header: React.FC<HeaderProps> = ({
         }
 
 
-        <h1 className="text-[14px] md:text-xl font-semibold">{serviceName}</h1>
+        <h1 className="text-[14px] 2xl:text-xl font-semibold">{serviceName}</h1>
         <div className="hidden lg:flex items-center gap-4 ml-6">
 
 
@@ -124,7 +124,7 @@ const Header: React.FC<HeaderProps> = ({
                   user?.role === "staff" && <li>
                     <NavLink
                       to="/staff-panel"
-                      className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                      className="text-[14px] 2xl:text-[16px] hover:underline text-black hover:text-gray-800 dark:text-white transition"
                     >
                       {tabs?.T1 || "Home"}
                     </NavLink>
@@ -134,7 +134,7 @@ const Header: React.FC<HeaderProps> = ({
                   <li>
                     <NavLink
                       to="/admin-panel"
-                      className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                      className="text-[14px] 2xl:text-[16px] hover:underline text-black hover:text-gray-800 dark:text-white transition"
                     >
                       {tabs?.T1 || "Home"}
                     </NavLink>
@@ -142,7 +142,7 @@ const Header: React.FC<HeaderProps> = ({
                 <li>
                   <NavLink
                     to="/manage-users"
-                    className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                      className="text-[14px] 2xl:text-[16px] hover:underline text-black hover:text-gray-800 dark:text-white transition"
                   >
                     {tabs?.T2 || "User Management "}
                   </NavLink>
@@ -151,7 +151,7 @@ const Header: React.FC<HeaderProps> = ({
                 <li>
                   <NavLink
                     to="/answered-order"
-                    className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                    className="text-[14px] 2xl:text-[16px] hover:underline text-black hover:text-gray-800 dark:text-white transition"
                   >
                     {tabs?.T3 || "Answered order"}
                   </NavLink>
@@ -159,7 +159,7 @@ const Header: React.FC<HeaderProps> = ({
                 {user?.role === "admin" && <li>
                   <NavLink
                     to="/manage-categories-departments"
-                    className="hover:underline text-black hover:text-gray-800 dark:text-white transition"
+                    className="text-[14px] 2xl:text-[16px] hover:underline text-black hover:text-gray-800 dark:text-white transition"
                   >
                     {tabs?.T5 || "Manage Categories and Departments"}
                   </NavLink>

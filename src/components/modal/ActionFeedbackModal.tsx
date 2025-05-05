@@ -73,7 +73,7 @@ export default function ActionFeedbackModal({
                     <DialogTitle className="text-lg font-semibold">
                         {title || `${type[0].toUpperCase() + type.slice(1)} Successful`}
                     </DialogTitle>
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-gray-200 text-sm">
                         {message || defaultMessages[type]}
                     </p>
                 </DialogHeader>

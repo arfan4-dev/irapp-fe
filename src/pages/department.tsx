@@ -210,7 +210,7 @@ export default function DepartmentManagementPage() {
 
             <div className="max-w-7xl mx-auto py-8 px-4">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold">Department Management</h2>
+                    <h2 className="text-[18px] lg:text-2xl font-bold">Department Management</h2>
                     <Dialog open={newDeptModalOpen} onOpenChange={setNewDeptModalOpen}>
                         <DialogTrigger asChild>
                             <Button className='cursor-pointer hover:opacity-75'>+ Add Department</Button>
@@ -230,19 +230,19 @@ export default function DepartmentManagementPage() {
                         </DialogContent>
                     </Dialog>
                 </div>
-                <div className="flex flex-row-reverse gap-6 justify-between w-full h-[calc(100vh-200px)] ">
+                <div className="flex flex-col md:flex-row-reverse gap-6 w-full h-auto md:h-[calc(100vh-200px)]">
                     <div className="w-full">
                         {user.role === 'admin' && <Card>
-                            <CardContent className="p-4 md:px-6  space-y-6 w-full h-full max-h-[calc(100vh-250px)] overflow-y-auto pr-1">
-                                <h2 className="text-xl font-semibold mb-4 ">Manage Categories </h2>
-                                <div className="flex items-center  justify-between ">
-                                    <h3 className="text-lg font-semibold">Add New Category</h3>
-                                    <div className="flex gap-3">
+                            <CardContent className="px-4 md:px-6 space-y-6 w-full h-full max-h-[calc(100vh-250px)] overflow-y-auto">
+                                <h2 className=" sm:text-xl font-semibold mb-4 ">Manage Categories </h2>
+                                <div className="flex flex-col md:flex-row md:items-center  justify-between ">
+                                    <h3 className="text-[14px] sm:text-lg font-semibold">Add New Category</h3>
+                                    <div className="flex gap-3 self-end">
                                         <Button
                                             size="lg"
                                             type="submit"
                                             onClick={() => setShowCategoryModal(true)}
-                                            className="mt-2 cursor-pointer hover:opacity-75"
+                                            className="mt-2 text-[12px] md:text-[16px] cursor-pointer hover:opacity-75"
                                         >
                                             Add
                                         </Button>
@@ -250,7 +250,7 @@ export default function DepartmentManagementPage() {
                                             size="lg"
                                             type="button"
                                             onClick={() => setCategorySortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))}
-                                            className="mt-2 cursor-pointer hover:opacity-75 sm:mr-[10px] lg:mr-[31px]"
+                                            className="mt-2 text-[12px] md:text-[16px] cursor-pointer hover:opacity-75 sm:mr-[10px] lg:mr-[22px]"
                                         >
                                             Sort {categorySortOrder === 'asc' ? 'Descending' : 'Ascending'}
                                         </Button>
@@ -738,7 +738,7 @@ export default function DepartmentManagementPage() {
                                                             </Button>
                                                         </form>
                                                     </div>
-                                                    {/* here */}
+                                                    
                                                 </div>
                                             ))
                                     ) : (
@@ -768,6 +768,11 @@ export default function DepartmentManagementPage() {
 
                                                 if (!label || !isValid) {
                                                     toast.error("Category name should not contain special characters.");
+                                                    return;
+                                                }
+
+                                                if (!dept) {
+                                                    toast.error("Department is required.");
                                                     return;
                                                 }
                                                 if (categories.some(cat => cat.label === label)) {
@@ -834,7 +839,7 @@ export default function DepartmentManagementPage() {
                             </div>
                         )}
                     </div>
-                    <div className="w-[300px] flex flex-col h-full">
+                    <div className="w-full md:w-[300px] flex flex-col">
                         <div className="flex-1 flex flex-col bg-white dark:bg-zinc-800 rounded-lg border overflow-auto">
                             <Input
                                 placeholder="Search department"
@@ -867,7 +872,7 @@ export default function DepartmentManagementPage() {
                                                     key={dept._id}
                                                     onClick={() => setSelectedDept(dept.name)}
                                                     className={`cursor-pointer transition-all duration-150 
-    ${selectedDept === dept.name ? "bg-blue-100 dark:bg-zinc-700 font-semibold" : "hover:bg-gray-100 dark:hover:bg-zinc-800"}`}
+                                                 ${selectedDept === dept.name ? "bg-blue-100 dark:bg-zinc-700 font-semibold" : "hover:bg-gray-100 dark:hover:bg-zinc-800"}`}
                                                 >
 
                                                     <TableCell>

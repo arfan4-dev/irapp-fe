@@ -54,7 +54,6 @@ export default function DepartmentManagementPage() {
     const { departments, loading } = useSelector((state: RootState) => state.departments);
     const { config } = useSelector((state: RootState) => state.siteConfig);
     const location = useLocation();
-    const [showAdminSettings, setShowAdminSettings] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
@@ -119,7 +118,6 @@ export default function DepartmentManagementPage() {
         }
     }, [editDept]);
 
-    console.log(showSettings)
     return (
         <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
             <Header
@@ -127,8 +125,8 @@ export default function DepartmentManagementPage() {
                 theme={theme}
                 serviceName={config.brandName || serviceName}
                 setTheme={setTheme}
-                setShowSettings={setShowAdminSettings}
-                showSettings={showAdminSettings}
+                setShowSettings={setShowSettings}
+                showSettings={showSettings}
             />
 
             <div className="max-w-4xl mx-auto py-8 px-4">
@@ -252,11 +250,9 @@ export default function DepartmentManagementPage() {
                     </TableBody>
                 </Table>
             </div>
-            {showSettings && (
-                <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={''} />
-            )}
+           
 
-            
+
             <ActionFeedbackModal
                 open={feedbackModal.open}
                 onClose={() => setFeedbackModal((prev) => ({ ...prev, open: false }))}
@@ -265,6 +261,9 @@ export default function DepartmentManagementPage() {
                 message={feedbackModal.message}
                 onConfirm={feedbackModal.onConfirm}
             />
+            {showSettings && (
+                <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={''} />
+            )}
         </div>
     );
 }

@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Eye, EyeOff } from "lucide-react";
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { fetchUserById, updateUser } from '@/store/features/user/user';
 import api from '@/api/api';
@@ -13,7 +13,7 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
     const dispatch = useDispatch<AppDispatch>();
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<any>({
         username: "",
         password: ""
     });
@@ -23,7 +23,7 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
     const [preview, setPreview] = useState<string | null>(null);
     const [currentPassword, setCurrentPassword] = useState("");
     const [isVerified, setIsVerified] = useState(false);
-
+    console.log("user:", user)
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -50,10 +50,8 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
             }
         }
 
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormData((prev: any) => ({ ...prev, [name]: value }));
     };
-
-
 
     // Add this above the form return
     const handleVerifyPassword = async () => {
@@ -128,6 +126,14 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
             });
     };
 
+    useEffect(() => {
+        if (user) {
+            setFormData({ username: user?.username || '' });
+            if (user.image) {
+                setPreview(user.image); // Show existing image as preview on first load
+            }
+        }
+    }, [user]);
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

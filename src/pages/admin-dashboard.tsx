@@ -42,7 +42,7 @@ export default function AdminPage() {
   useSyncPendingCategoryItems()
   const { departments } = useSelector((state: RootState) => state?.departments || []);
   const [_, setEditedEnabled] = useState(true);
-
+const [editItemsLoader,setEditItemsLoader]=useState(false)
   const [showSettings, setShowSettings] = useState(false);
   const [showAdminSettings, setShowAdminSettings] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -318,7 +318,7 @@ export default function AdminPage() {
                     <table className="w-full text-left ">
                       <thead>
                         <tr className="bg-gray-200 dark:bg-gray-700">
-                          <th className="p-2">Type & Items</th>
+                          <th className="p-2">Items</th>
                           <th className="p-2">Requested By</th>
                           <th className="p-2">Department</th>
                           <th className="p-2">Location</th>
@@ -333,7 +333,7 @@ export default function AdminPage() {
                         {filteredPendingOrders.map(req => (
                           <tr key={req._id} className="border-b align-top">
                             <td className="p-2">
-                              <div className="font-semibold italic">{req.type}</div>
+                              {/* <div className="font-semibold italic">{req.type}</div> */}
                               <div className="text-sm italic">
                                 {req.items.map(item => `${item.quantity} × ${item.name}`).join(", ")}
                               </div>
@@ -471,7 +471,7 @@ export default function AdminPage() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="bg-gray-200 dark:bg-gray-700">
-                          <th className="p-2">Type & Items</th>
+                          <th className="p-2">Items</th>
                           <th className="p-2">Requested By</th>
                           <th className="p-2">Department</th>
                           <th className="p-2">Location</th>
@@ -485,7 +485,7 @@ export default function AdminPage() {
                         {filteredInProgressOrders.map(req => (
                           <tr key={req._id} className="border-b align-top">
                             <td className="p-2">
-                              <div className="font-semibold italic">{req.type}</div>
+                              {/* <div className="font-semibold italic">{req.type}</div> */}
                               <div className="text-sm italic">
                                 {req.items.map(item => `${item.quantity} × ${item.name}`).join(", ")}
                               </div>
@@ -688,7 +688,6 @@ export default function AdminPage() {
                               <Switch
                                 checked={cat.enabled}
                                 onCheckedChange={(checked) => {
-                                  console.log("checked:", checked)
                                   setEditedEnabled(checked)
                                   dispatch(updateCategory({
                                     id: cat._id,
@@ -748,7 +747,7 @@ export default function AdminPage() {
                           </div>
                         )}
                       </div>
-                      <div className={`${!cat.enabled ? "opacity-40 blur-[1px] pointer-events-none select-none" : ""}`}>
+                      <form  className={`${!cat.enabled ? "opacity-40 blur-[1px] pointer-events-none select-none" : ""}`}>
                         <ul className="space-y-2  ">
                           {cat?.items?.map(item => {
                             const isEditingItem = editingItem?.categoryId === cat._id && editingItem?.name === item.name;
@@ -773,8 +772,9 @@ export default function AdminPage() {
                                       <Button
                                         size="sm"
                                         className="cursor-pointer hover:opacity-75"
+                                        type="submit"
                                         onClick={() => {
-
+                                          setEditItemsLoader(true)
                                           dispatch(updateItemInCategory({
                                             categoryId: cat._id,
                                             oldItemName: item.name,
@@ -787,10 +787,11 @@ export default function AdminPage() {
                                             .then(() => {
                                               dispatch(fetchCategories());
                                               setEditingItem(null);
+                                              setEditItemsLoader(false)
                                             });
                                         }}
                                       >
-                                        Save
+                                        {editItemsLoader?'Updating':'Update'}
                                       </Button>
                                       <Button
                                         size="sm"
@@ -1011,7 +1012,8 @@ export default function AdminPage() {
                             {addItemLoader[cat._id] ? "Saving..." : "Add"}
                           </Button>
                         </form>
-                      </div>
+                      </form>
+                      {/* here */}
                     </div>
                   ))
               ) : (

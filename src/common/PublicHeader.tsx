@@ -32,6 +32,7 @@ const PublicHeader: React.FC<PublicHeaderProps> = ({ theme, setTheme, serviceNam
             </div>
            
             <Button
+                className="cursor-pointer"
                 variant="ghost"
                 onClick={() => setTheme(theme === "light" ? "dark" : "light")}
             >

@@ -85,8 +85,8 @@ export default function DepartmentManagementPage() {
         setShowCategoryModal,
         showSettings, setShowSettings
     } = useDeptCategoryState();
-    
- 
+
+
 
     const handleCreate = () => {
         const trimmed = newDeptInput.trim();
@@ -275,7 +275,7 @@ export default function DepartmentManagementPage() {
                                             onClick={() => setShowCategoryModal(true)}
                                             className="mt-2 text-[12px] md:text-[16px] cursor-pointer hover:opacity-75"
                                         >
-                                            Add 
+                                            Add
                                         </Button>
                                         <Button
                                             size="lg"
@@ -769,7 +769,7 @@ export default function DepartmentManagementPage() {
                                                             </Button>
                                                         </form>
                                                     </div>
-                                                    
+
                                                 </div>
                                             ))
                                     ) : (
@@ -870,7 +870,7 @@ export default function DepartmentManagementPage() {
                             </div>
                         )}
                     </div>
-                   
+
                     <div className="hidden md:flex w-[300px] flex-col">
                         <div className="flex-1 flex flex-col bg-white dark:bg-zinc-800 rounded-lg border overflow-auto">
                             <Input
@@ -895,8 +895,8 @@ export default function DepartmentManagementPage() {
                                         <TableRow
                                             onClick={() => setSelectedDept(null)}
                                             className={`cursor-pointer transition-all duration-150 ${selectedDept === null
-                                                    ? "bg-blue-100 dark:bg-zinc-700 font-semibold"
-                                                    : "hover:bg-gray-100 dark:hover:bg-zinc-800"
+                                                ? "bg-blue-100 dark:bg-zinc-700 font-semibold"
+                                                : "hover:bg-gray-100 dark:hover:bg-zinc-800"
                                                 }`}
                                         >
                                             <TableCell colSpan={2}>
@@ -992,7 +992,7 @@ export default function DepartmentManagementPage() {
                         </div>
                     </div>
 
-                  
+
 
                 </div>
 

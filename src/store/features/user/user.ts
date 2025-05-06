@@ -170,3 +170,35 @@ export const adminLogin = createAsyncThunk(
     }
   }
 );
+
+export const forgetPassword = createAsyncThunk(
+  "user/forgetPassword",
+  async (
+    { email }: { email: string},
+    { rejectWithValue }
+  ) => {
+    try {
+        const response = await api.post("/auth/forgot-password", { email });
+      return response.data; // Only return the actual user data object
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Admin login failed"
+      );
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  "user/resetPassword",
+  async ({ password, token }: { password: string,token:string }, { rejectWithValue }) => {
+    try {
+      const response = api.post(`/auth/reset-password/${token}`, { password });
+      return response; // Only return the actual user data object
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || " login failed"
+      );
+    }
+  }
+);
+

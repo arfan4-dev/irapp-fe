@@ -120,7 +120,7 @@ const [open,setOpen]=useState(false)
                 </Card>
             </div>
 
-            {user?.changePassword && (
+            {open && (
                 <PasswordChangeModal open={open} setOpen={setOpen} userId={user.id} />
     )}
         </div>

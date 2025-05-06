@@ -11,7 +11,9 @@ import UserSetting from "@/common/UserSetting";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import useViewMode from "@/hooks/useViewMode";
 import useUsername from "@/hooks/useUsername";
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { isSameDate } from "@/utils/isSameDate";
 export default function AnsweredOrdersPage() {
     const { theme, setTheme } = useThemeMode();
     const [showSettings, setShowSettings] = useState(false);
@@ -20,6 +22,7 @@ export default function AnsweredOrdersPage() {
     const location = useLocation();
     const modalRef = useRef<HTMLDivElement>(null);
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
     const allOrders = useSelector((state: RootState) =>
         (state.orders as RootState['orders']).orders.filter(order => order.status === 'Answered')
@@ -29,7 +32,7 @@ export default function AnsweredOrdersPage() {
     // Filters
     const [searchItem, setSearchItem] = useState("");
     const [searchPerson, setSearchPerson] = useState("");
-    const [searchDate, setSearchDate] = useState("");
+    const [_, setSearchDate] = useState("");
 
     
     // Sort
@@ -45,9 +48,10 @@ export default function AnsweredOrdersPage() {
                 ? (userIdToUsername[order.userId]?.toLowerCase().includes(searchPerson.toLowerCase()) ?? false)
                 : true;
 
-            const dateMatch = searchDate
-                ? new Date(order.timestamp!).toISOString().split("T")[0] === searchDate
+            const dateMatch = selectedDate
+                ? isSameDate(new Date(order.timestamp!), selectedDate)
                 : true;
+
 
             return itemMatch && personMatch && dateMatch;
         })
@@ -119,18 +123,37 @@ export default function AnsweredOrdersPage() {
                         onChange={(e) => setSearchPerson(e.target.value)}
                         className="w-48"
                     />
-                    <Input
+                    {/* <Input
                         type="date"
+                     
                         value={searchDate}
                         onChange={(e) => setSearchDate(e.target.value)}
-                        className="w-36"
-                    />
-                    <Button
+                        className="w-36 "
+                    /> */}
+                    <div className="datepicker-wrapper">
+                        <DatePicker
+                            selected={selectedDate}
+                            onChange={(date) => {
+                                setSelectedDate(date);
+                                if (date) {
+                                    const formatted = date.toISOString().split("T")[0]; // yyyy-mm-dd
+                                    setSearchDate(formatted);
+                                } else {
+                                    setSearchDate("");
+                                }
+                            }}
+                            placeholderText="DD/MM/YYYY"
+                            className="custom-datepicker-input"
+                            dateFormat="dd/MM/yyyy"
+                        />
+                        </div>                   
+                         <Button
                         variant="outline"
                         onClick={() => {
                             setSearchItem('');
                             setSearchPerson('');
                             setSearchDate('');
+                            setSelectedDate(null); // Reset date picker
                             setSortOrder('desc'); // (optional) Sort reset bhi chahte ho to ye line
                         }}
                         className="w-48 cursor-pointer text-black dark:bg-black dark:text-white"
@@ -177,7 +200,7 @@ export default function AnsweredOrdersPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         {filteredOrders.map((order) => (
                             <Card key={order._id}>
-                                <CardContent className="p-4 space-y-2">
+                                <CardContent className="px-4 space-y-2">
                                     {/* <div><strong>Type:</strong> {order.type}</div> */}
                                     <div><strong>Items:</strong> {order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}</div>
                                     <div><strong>By:</strong> {userIdToUsername[order.userId] || "Loading..."}</div>
@@ -248,7 +271,7 @@ export default function AnsweredOrdersPage() {
                                             .filter(order => order.department === user.department)
                                             .map((order) => (
                                                 <Card key={order._id}>
-                                                    <CardContent className="p-4 space-y-2">
+                                                    <CardContent className="px-4 space-y-2">
                                                         <div><strong>Type:</strong> {order.type}</div>
                                                         <div><strong>Items:</strong> {order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}</div>
                                                         <div><strong>By:</strong> {userIdToUsername[order.userId] || "Loading..."}</div>

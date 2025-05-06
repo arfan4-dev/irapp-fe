@@ -22,6 +22,9 @@ import { Input } from "@/components/ui/input";
 import useUsername from "@/hooks/useUsername";
 import ActionFeedbackModal from "@/components/modal/ActionFeedbackModal";
 import { fetchDepartments } from "@/store/features/department/department";
+import { isSameDate } from "@/utils/isSameDate";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
   updateOrderStatusSync()
@@ -49,8 +52,12 @@ export default function AdminPage() {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
   const isOnline = useOfflineStatus();
-  const [pendingFilters, setPendingFilters] = useState({ item: "", person: "", date: "" });
-  const [progressFilters, setProgressFilters] = useState({ item: "", person: "", date: "" });
+  const [pendingFilters, setPendingFilters] = useState({
+    item: "",
+    person: "",
+    date: null as Date | null,
+  });
+  const [progressFilters, setProgressFilters] = useState({ item: "", person: "", date: null as Date | null, });
   const [sortOrderAsc, setSortOrderAsc] = useState(true);
 
 
@@ -73,17 +80,23 @@ export default function AdminPage() {
   const { config } = useSelector((state: RootState) => state.siteConfig);
 
 
-  const applyFiltersAndSort = (orders: typeof pendingOrders, filters: { item: string; person: string; date: string }) => {
-    let filtered = orders.filter(order => {
+  const applyFiltersAndSort = (
+    orders: typeof pendingOrders,
+    filters: { item: string; person: string; date: Date | null }
+  ) => {
+    const filtered = orders.filter(order => {
       const matchItem = filters.item
         ? order.items.some(i => i.name.toLowerCase().includes(filters.item.toLowerCase()))
         : true;
+
       const matchPerson = filters.person
         ? (userIdToUsername[order.userId]?.toLowerCase().includes(filters.person.toLowerCase()) ?? false)
         : true;
+
       const matchDate = filters.date
-        ? new Date(order.timestamp as string).toISOString().split("T")[0] === filters.date
+        ? isSameDate(new Date(order.timestamp as string), filters.date)
         : true;
+
       return matchItem && matchPerson && matchDate;
     });
 
@@ -97,6 +110,11 @@ export default function AdminPage() {
   };
 
 
+  interface pendingFilters {
+    item: string;
+    person: string;
+    date: Date | null;
+  }
   const filteredPendingOrders = applyFiltersAndSort(pendingOrders, pendingFilters);
   const filteredInProgressOrders = applyFiltersAndSort(inProgressOrders, progressFilters);
 
@@ -270,17 +288,19 @@ export default function AdminPage() {
                       value={pendingFilters.person}
                       onChange={(e) => setPendingFilters(prev => ({ ...prev, person: e.target.value }))}
                     />
-                    <Input
-                      type="date"
-                      className="w-40 md:w-40 placeholder:text-[12px] placeholder:md:text-[14px]"
-                      value={pendingFilters.date}
-                      onChange={(e) => setPendingFilters(prev => ({ ...prev, date: e.target.value }))}
+                    <DatePicker
+                      selected={pendingFilters.date}
+                      onChange={(date: Date | null) => setPendingFilters(prev => ({ ...prev, date }))}
+                      placeholderText="DD/MM/YYYY"
+                      dateFormat="dd/MM/yyyy"
+                      className="w-40 md:w-[145px] text-sm px-2 py-[7px] cursor-pointer border rounded dark:bg-zinc-900"
                     />
+
                     <Button
                       className="cursor-pointer text-[14px] md:text-[16px]"
 
                       variant="outline"
-                      onClick={() => setPendingFilters({ item: "", person: "", date: "" })}
+                      onClick={() => setPendingFilters({ item: "", person: "", date: null})}
                     >
                       Clear Filters
                     </Button>
@@ -423,16 +443,24 @@ export default function AdminPage() {
                       value={progressFilters.person}
                       onChange={(e) => setProgressFilters(prev => ({ ...prev, person: e.target.value }))}
                     />
-                    <Input
+                    {/* <Input
                       type="date"
                       className="w-40 md:w-[145px] "
                       value={progressFilters.date}
                       onChange={(e) => setProgressFilters(prev => ({ ...prev, date: e.target.value }))}
+                    /> */}
+                    <DatePicker
+                      selected={progressFilters.date}
+                      onChange={(date: Date | null) => setProgressFilters(prev => ({ ...prev, date }))}
+                      placeholderText="DD/MM/YYYY"
+                      dateFormat="dd/MM/yyyy"
+                      className="w-40 md:w-[145px] text-sm px-2 py-[7px] cursor-pointer border rounded dark:bg-zinc-900"
                     />
+
                     <Button
                       className="cursor-pointer text-[14px] md:text-[16px]"
                       variant="outline"
-                      onClick={() => setProgressFilters({ item: "", person: "", date: "" })}
+                      onClick={() => setProgressFilters({ item: "", person: "", date: null })}
                     >
                       Clear Filters
                     </Button>

@@ -119,11 +119,28 @@
   }
 }
 
+.custom-datepicker-input::placeholder {
+  color: #888;
+  /* font-style: italic; */
+  text-align: center;
+  font-size:14px
+}
+
+.custom-datepicker-input {
+  width: 150px;
+  padding: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center; /* Center input text */
+  cursor:pointer
+}
+
 .active{
 
   font-weight:600;
   text-decoration:underline;
 }
+
 
 /* global.css or tailwind.css */
 @keyframes ping-once {

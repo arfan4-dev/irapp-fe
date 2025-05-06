@@ -269,7 +269,15 @@ export default function DepartmentManagementPage() {
                     <div className="w-full">
                         {user.role === 'admin' && <Card>
                             <CardContent className="px-4 md:px-6 space-y-6 w-full h-full max-h-[calc(100vh-250px)] overflow-y-auto">
-                                <h2 className=" sm:text-xl font-semibold mb-4 ">Manage Categories </h2>
+                                <h2 className="sm:text-xl font-semibold mb-4">
+                                    Manage Categories
+                                    {selectedDept && (
+                                        <span className="ml-2 text-sm font-medium text-muted-foreground">
+                                            for <span className="text-primary">{selectedDept}</span>
+                                        </span>
+                                    )}
+                                </h2>
+
                                 <div className="flex flex-col md:flex-row md:items-center  justify-between ">
                                     <h3 className="text-[14px] sm:text-lg font-semibold">Add New Category</h3>
                                     <div className="flex gap-3 self-end">

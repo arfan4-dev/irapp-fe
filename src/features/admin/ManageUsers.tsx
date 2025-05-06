@@ -56,7 +56,7 @@ const [addUserModal,setAddUserModal]=useState(false)
         dispatch(updateUserRoleAndDepartment({ userId, ...change }))
             .unwrap()
             .then(() => {
-                toast.success("User updated!");
+                toast.success("User updated.");
                 dispatch(fetchAllUsers());
             })
             .catch(() => toast.error("Failed to update user."));

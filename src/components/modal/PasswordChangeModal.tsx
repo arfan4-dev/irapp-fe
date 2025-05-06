@@ -51,7 +51,7 @@ export default function PasswordChangeModal({ userId, open, setOpen }:any) {
                 newPassword,
             });
             setOpen(false)
-            toast.success("Password changed successfully!");
+            toast.success("Password changed successfully.");
             navigate("/admin-panel");
         } catch (err:any) {
             console.log(err);

@@ -43,8 +43,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     if (!isAuthenticated) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
-    console.log(isAuthenticated &&
-        ["/", "/login", "/admin-login", "/register"].includes(location.pathname))
+  
     // ✅ Redirect '/' based on role
     if (
         isAuthenticated &&

@@ -151,7 +151,6 @@ export default function UserPage() {
   useEffect(() => {
     dispatch(fetchSiteConfig()).unwrap()
   }, [])
-  console.log("categories:", categories)
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
       <Header

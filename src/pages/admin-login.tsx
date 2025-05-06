@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { adminLogin } from "@/store/features/user/user";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PublicHeader from "@/common/PublicHeader";
 import useThemeMode from "@/hooks/useTheme";
 import PasswordChangeModal from "@/components/modal/PasswordChangeModal";
@@ -84,6 +84,14 @@ export default function AdminLogin() {
                             >
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
+                              <div className="text-right mt-1">
+                                                                <Link
+                                                                    to="/forgot-password"
+                                                                    className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+                                                                >
+                                                                    Forgot Password?
+                                                                </Link>
+                                                            </div>
                         </div>
                         <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
                             {loading ? (

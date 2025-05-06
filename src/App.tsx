@@ -19,7 +19,6 @@ import { AppDispatch, RootState } from "./store";
 import { useEffect } from "react";
 import { fetchSiteConfig } from "./store/features/siteConfig/siteConfig";
 import DepartmentManagementPage from "./pages/department";
-import PublicRoute from "./routes/PublicRoute";
 
 function App() {
   useOrderSync();
@@ -54,7 +53,7 @@ function App() {
           // </PublicRoute>
         } />
 
-        
+
         {/* Private Route */}
         <Route path="/service-request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
         <Route path="/admin-panel" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />

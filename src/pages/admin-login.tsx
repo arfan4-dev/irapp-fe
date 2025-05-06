@@ -9,6 +9,7 @@ import { adminLogin } from "@/store/features/user/user";
 import { useNavigate } from "react-router-dom";
 import PublicHeader from "@/common/PublicHeader";
 import useThemeMode from "@/hooks/useTheme";
+import PasswordChangeModal from "@/components/modal/PasswordChangeModal";
 
 export default function AdminLogin() {
     const dispatch = useDispatch<AppDispatch>();
@@ -18,11 +19,11 @@ export default function AdminLogin() {
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const [serviceName] = useState("IntraServe Admin ");
     const { loading } = useSelector((state: RootState) => state?.user);
-
+    const user = useSelector((state: RootState) => state.user.currentUser?.data);
+    const [open, setOpen] = useState(false)
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!form.email || !form.password) {
@@ -32,8 +33,10 @@ export default function AdminLogin() {
 
         try {
             const user = await dispatch(adminLogin(form)).unwrap();
-
-
+            if (user.data.changePassword) {
+                setOpen(true);
+                return;
+            } 
             if (user.data.role !== "admin") {
                 toast.error("Access denied. Only admins can log in.");
                 return;
@@ -96,6 +99,9 @@ export default function AdminLogin() {
                     </form>
                 </div>
             </div>
+             {user?.changePassword && (
+                            <PasswordChangeModal open={open} setOpen={setOpen} userId={user.id} />
+                )}
         </div>
 
     );

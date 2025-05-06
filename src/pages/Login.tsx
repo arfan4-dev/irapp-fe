@@ -22,7 +22,7 @@ export default function Login() {
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const { loading } = useSelector((state: RootState) => state?.user);
     const user = useSelector((state: RootState) => state.user.currentUser?.data);
-
+const [open,setOpen]=useState(false)
     const navigate=useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,14 +38,18 @@ export default function Login() {
 
    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+     
     try {
         const res = await dispatch(loginUser(formData)).unwrap();
 
-        toast.success("Login successfully.");
+       
 
         // ✅ Now do role-based navigation here
-        if (res.data.changePassword) return ;
+        if (res.data.changePassword){
+            setOpen(true);
+            return;
+        } 
+         toast.success("Login successfully.");
         // if (res.data?.role === "admin" ) {
         //     navigate("/admin-panel");
         // } else {
@@ -117,7 +121,7 @@ export default function Login() {
             </div>
 
             {user?.changePassword && (
-      <PasswordChangeModal open={true} userId={user.id} />
+                <PasswordChangeModal open={open} setOpen={setOpen} userId={user.id} />
     )}
         </div>
        

@@ -153,7 +153,7 @@ export default function AdminPage() {
       dispatch(fetchCategories())
         .unwrap()
         .then(() => {
-          toast.success("Categories synced successfully By Arfan");
+          toast.success("Categories synced successfully.");
         })
     }
   }, [isOnline, showCategoryModal]); // ✅

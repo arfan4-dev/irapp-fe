@@ -73,7 +73,7 @@ export default function ActionFeedbackModal({
                     <DialogTitle className="text-lg font-semibold">
                         {title || `${type[0].toUpperCase() + type.slice(1)} Successful`}
                     </DialogTitle>
-                    <p className="text-gray-200 text-sm">
+                    <p className="dark:text-gray-200 text-sm">
                         {message || defaultMessages[type]}
                     </p>
                 </DialogHeader>
@@ -84,7 +84,7 @@ export default function ActionFeedbackModal({
                             <Button variant="outline" className="cursor-pointer" onClick={onClose}>
                                 Cancel
                             </Button>
-                            <Button onClick={onConfirm} className="bg-red-600 hover:bg-red-700 cursor-pointer">
+                            <Button onClick={onConfirm} className="bg-red-600 hover:bg-red-700 cursor-pointer dark:text-gray-200">
                                 Confirm Delete
                             </Button>
                         </>

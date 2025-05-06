@@ -19,6 +19,7 @@ import { AppDispatch, RootState } from "./store";
 import { useEffect } from "react";
 import { fetchSiteConfig } from "./store/features/siteConfig/siteConfig";
 import DepartmentManagementPage from "./pages/department";
+import PublicRoute from "./routes/PublicRoute";
 
 function App() {
   useOrderSync();
@@ -32,9 +33,28 @@ function App() {
     <ErrorBoundary>
       <Routes>
         {/* Public Route */}
-        <Route path="/" element={<Register />} />
+        {/* <Route path="/" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminLogin />} /> */}
+        <Route path="/login" element={
+          // <PublicRoute>
+            <Login />
+          // </PublicRoute>
+        } />
+
+        <Route path="/" element={
+          // <PublicRoute>
+            <Register />
+          // </PublicRoute>
+        } />
+
+        <Route path="/admin" element={
+          // <PublicRoute>
+            <AdminLogin />
+          // </PublicRoute>
+        } />
+
+        
         {/* Private Route */}
         <Route path="/service-request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
         <Route path="/admin-panel" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />

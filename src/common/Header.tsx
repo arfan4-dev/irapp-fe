@@ -17,6 +17,7 @@ import { fetchUserById } from "@/store/features/user/user";
 import {LogOut, MonitorCog } from "lucide-react";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { getInitials } from "@/utils/getIntialUsername";
+import { logout } from "@/store/slices/userSlice";
 
 interface HeaderProps {
   theme: 'light' | 'dark';
@@ -41,14 +42,22 @@ const Header: React.FC<HeaderProps> = ({
   const tabs = config?.tabs || {};
 
 
+
   const handleLogout = async () => {
     try {
       await api.post("/logout", {}, { withCredentials: true });
-      navigate("/login");
+
+      // ✅ Clear Redux state
+      dispatch(logout());
+
+      // ✅ Clear localStorage (if used with persist)
       localStorage.removeItem("persist:user");
       localStorage.removeItem("persist:root");
+
+      // ✅ Navigate to login
+      navigate("/login");
     } catch (error) {
-      console.error(error);
+      console.error("Logout failed:", error);
     }
   };
 

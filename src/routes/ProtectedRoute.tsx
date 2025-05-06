@@ -12,7 +12,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const location = useLocation();
-    console.log("ProtectedRoute.....", user.role);
 
 
     useEffect(() => {
@@ -27,7 +26,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             }
         };
         checkAuth();
-    }, []);
+    }, [user]);
 
     if (isAuthenticated === null) {
         return (
@@ -44,13 +43,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     if (!isAuthenticated) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
-
+    console.log(isAuthenticated &&
+        ["/", "/login", "/admin-login", "/register"].includes(location.pathname))
     // ✅ Redirect '/' based on role
-    if (isAuthenticated && location.pathname === "/") {
+    if (
+        isAuthenticated &&
+        ["/", "/login", "/admin-login", "/register"].includes(location.pathname)
+    ) {
         if (user?.role === "admin") return <Navigate to="/admin-panel" replace />;
+        if (user?.role === "staff") return <Navigate to="/staff-panel" replace />;
         if (user?.role === "user") return <Navigate to="/service-request" replace />;
-        if (user?.role == "staff") return <Navigate to="/staff-panel" replace />;
     }
+
 
     // ❌ Prevent admin from accessing user dashboard
     if ((user?.role === "admin") && (location.pathname.startsWith("/service-request") || location.pathname.startsWith("/staff-panel") || location.pathname.startsWith("/order-status"))) {

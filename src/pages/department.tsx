@@ -230,6 +230,37 @@ export default function DepartmentManagementPage() {
                         </DialogContent>
                     </Dialog>
                 </div>
+
+                {/* Mobile: Department Dropdown */}
+                <div className="block md:hidden mb-4">
+                    <Button
+                        variant={selectedDept === null ? "default" : "outline"}
+                        onClick={() => setSelectedDept(null)}
+                        className="w-full mb-2"
+                    >
+                        Show All Categories
+                    </Button>
+
+                    <Label className="text-sm mb-1">Filter by Department</Label>
+                    <Select
+                        value={selectedDept || ""}
+                        onValueChange={(val) => {
+                            setSelectedDept(val === "ALL" ? null : val);
+                        }}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Department" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {departments.map((dep) => (
+                                <SelectItem key={dep._id} value={dep.name}>
+                                    {dep.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
                 <div className="flex flex-col md:flex-row-reverse gap-6 w-full h-auto md:h-[calc(100vh-200px)]">
                     <div className="w-full">
                         {user.role === 'admin' && <Card>
@@ -839,7 +870,8 @@ export default function DepartmentManagementPage() {
                             </div>
                         )}
                     </div>
-                    <div className="w-full md:w-[300px] flex flex-col">
+                   
+                    <div className="hidden md:flex w-[300px] flex-col">
                         <div className="flex-1 flex flex-col bg-white dark:bg-zinc-800 rounded-lg border overflow-auto">
                             <Input
                                 placeholder="Search department"
@@ -860,6 +892,17 @@ export default function DepartmentManagementPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
+                                        <TableRow
+                                            onClick={() => setSelectedDept(null)}
+                                            className={`cursor-pointer transition-all duration-150 ${selectedDept === null
+                                                    ? "bg-blue-100 dark:bg-zinc-700 font-semibold"
+                                                    : "hover:bg-gray-100 dark:hover:bg-zinc-800"
+                                                }`}
+                                        >
+                                            <TableCell colSpan={2}>
+                                                <span className="hover:underline">All Categories</span>
+                                            </TableCell>
+                                        </TableRow>
                                         {filtered.length === 0 ? (
                                             <TableRow>
                                                 <TableCell colSpan={2} className="text-center italic text-gray-500">
@@ -948,6 +991,9 @@ export default function DepartmentManagementPage() {
 
                         </div>
                     </div>
+
+                  
+
                 </div>
 
             </div>

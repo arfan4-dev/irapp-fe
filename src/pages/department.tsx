@@ -88,7 +88,8 @@ export default function DepartmentManagementPage() {
 
 
 
-    const handleCreate = () => {
+    const handleCreate = (e:any) => {
+        e.preventDefault()
         const trimmed = newDeptInput.trim();
         const regex = /^[a-zA-Z /]+$/;
         if (!regex.test(trimmed)) return toast.error("Only letters, spaces, and '/' allowed.");
@@ -158,7 +159,7 @@ export default function DepartmentManagementPage() {
             dispatch(fetchCategories())
                 .unwrap()
                 .then(() => {
-                    toast.success("Categories synced successfully.");
+                    // toast.success("Categories synced successfully.");
                 })
         }
     }, [isOnline, showCategoryModal]); // ✅
@@ -219,14 +220,17 @@ export default function DepartmentManagementPage() {
                             <DialogHeader>
                                 <DialogTitle>Create New Department</DialogTitle>
                             </DialogHeader>
-                            <Input
-                                placeholder="Enter department name"
-                                value={newDeptInput}
-                                onChange={(e) => setNewDeptInput(e.target.value)}
-                            />
-                            <Button className="mt-4 w-full cursor-pointer" onClick={handleCreate} disabled={loader}>
-                                {loader ? 'Saving...' : 'Create'}
-                            </Button>
+                            <form onSubmit={handleCreate}>
+                                <Input
+                                    placeholder="Enter department name"
+                                    value={newDeptInput}
+                                    onChange={(e) => setNewDeptInput(e.target.value)}
+                                />
+                                <Button className="mt-4 w-full cursor-pointer" type='submit' disabled={loader}>
+                                    {loader ? 'Saving...' : 'Create'}
+                                </Button>
+                            </form>
+                           
                         </DialogContent>
                     </Dialog>
                 </div>
@@ -314,12 +318,12 @@ export default function DepartmentManagementPage() {
                                                                     </p>
                                                                 </div>
 
-                                                                {/* <Input
-                                  value={editedLabel}
-                                  onChange={(e) => setEditedLabel(e.target.value)}
-                                  className="text-lg font-semibold border border-gray-300 dark:bg-zinc-900"
-                                  placeholder="Edit Category Label"
-                                /> */}
+                                                                                            {/* <Input
+                                                            value={editedLabel}
+                                                            onChange={(e) => setEditedLabel(e.target.value)}
+                                                            className="text-lg font-semibold border border-gray-300 dark:bg-zinc-900"
+                                                            placeholder="Edit Category Label"
+                                                            /> */}
                                                                 <Input
                                                                     value={editedLabel}
                                                                     onChange={(e) => setEditedLabel(e.target.value)}
@@ -749,13 +753,27 @@ export default function DepartmentManagementPage() {
                                                             }}
                                                             className="flex flex-col gap-2 pt-2"
                                                         >
+                                                         
+
                                                             <input
                                                                 name="itemName"
                                                                 value={newItems[cat._id] || ""}
-                                                                onChange={(e) => setNewItems(prev => ({ ...prev, [cat._id]: e.target.value }))}
+                                                                onChange={(e) => {
+                                                                    const inputValue = e.target.value;
+                                                                    const isValid = /^[a-zA-Z ]*$/.test(inputValue); // only letters and spaces allowed
+
+                                                                    if (!isValid) {
+                                                                        toast.error("Only alphabets and spaces are allowed.");
+                                                                    }
+
+                                                                    // Filter invalid characters before setting state
+                                                                    const filtered = inputValue.replace(/[^a-zA-Z ]/g, "");
+                                                                    setNewItems((prev) => ({ ...prev, [cat._id]: filtered }));
+                                                                }}
                                                                 placeholder="New item"
                                                                 className="px-3 py-1.5 border rounded text-sm dark:bg-zinc-900"
                                                             />
+
                                                             <label className="flex items-center gap-2 text-sm">
                                                                 <input
                                                                     type="checkbox"

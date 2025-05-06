@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import Header from "@/common/Header";
 import { useLocation } from "react-router-dom";
 import useThemeMode from "@/hooks/useTheme";
-import { fetchCategories } from "@/store/features/category/category";
 import { getOrdersByUser, updateOrderStatus } from "@/store/features/order/order";
 import UserSetting from "@/common/UserSetting";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
@@ -14,8 +13,6 @@ import { toast } from "sonner";
 import { getOfflineOrders, saveStatusUpdateOffline } from "@/utils/orderStorage";
 import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { updateOrderStatusSync } from "@/utils/orderSync";
-import { getOfflineCategories, getPendingCategoryItems} from "@/utils/categoryStorage";
-import { setCategories } from "@/store/slices/categorySlice";
 import { setOrder } from "@/store/slices/orderSlice";
 import useViewMode from "@/hooks/useViewMode";
 import { Input } from "@/components/ui/input";
@@ -31,12 +28,9 @@ export default function AdminPage() {
   const [showSettings, setShowSettings] = useState(false);
   const [showAdminSettings, setShowAdminSettings] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const [_, setOfflineCategoryItems] = useState<Record<string, { name: string; allowMultiple: boolean }[]>>({});
   const [serviceName] = useState("IntraServe Admin Panel");
   const { viewMode, toggleViewMode } = useViewMode();
-  const [showCategoryModal] = useState(false);
   const location = useLocation()
-  const { categories } = useSelector((state: RootState) => state?.categories);
   const allOrders = useSelector((state: RootState) => state?.orders?.orders);
  
   const [feedbackModal, setFeedbackModal] = useState<{
@@ -149,40 +143,13 @@ export default function AdminPage() {
     }
   };
 
-
-  useEffect(() => {
-    const loadOfflineItems = async () => {
-      const pendingItems = await getPendingCategoryItems();
-      const map: Record<string, { name: string; allowMultiple: boolean }[]> = {};
-      pendingItems.forEach(item => {
-        if (!map[item.categoryId]) map[item.categoryId] = [];
-        map[item.categoryId].push({
-          name: item.itemName,
-          allowMultiple: item.allowMultiple,
-        });
-      });
-
-      setOfflineCategoryItems(map);
-    };
-
-    loadOfflineItems();
-
-    if (isOnline) {
-      dispatch(fetchCategories())
-        .unwrap()
-        .then(() => {
-          toast.success("Categories synced successfully.");
-        })
-    }
-  }, [isOnline, showCategoryModal]); // ✅
-
-
-
   // offline orders
   useEffect(() => {
     const loadOrders = async () => {
       if (isOnline) {
         dispatch(getOrdersByUser());
+        dispatch(fetchDepartments());
+
       } else {
         const offlineOrderStatus = await getOfflineOrders();
         dispatch(setOrder([...orders, ...offlineOrderStatus])); // ✅ use actual action
@@ -194,29 +161,6 @@ export default function AdminPage() {
     loadOrders()
   }, [dispatch, isOnline]);
 
-
-  useEffect(() => {
-    const loadCategories = async () => {
-      if (isOnline) {
-        dispatch(getOrdersByUser());
-
-        dispatch(fetchCategories())
-          .unwrap()
-        // .then(() => toast.success("Categories synced successfully."))
-        // .catch(() => toast.error("Failed to sync categories."));
-        dispatch(fetchDepartments());
-
-      } else {
-        const offlineCats = await getOfflineCategories();
-
-        dispatch(setCategories([...categories, ...offlineCats])); // ✅ use actual action
-        toast.info("Showing offline categories.");
-      }
-
-    };
-
-    loadCategories();
-  }, [dispatch, isOnline, showCategoryModal]);
 
   useEffect(() => {
     getUserIdFromLocalStorage()

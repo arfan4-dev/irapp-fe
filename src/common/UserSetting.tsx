@@ -151,7 +151,7 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
                 >
                     ×
                 </button>
-                <h2 className="text-xl font-semibold mb- " >User Settings</h2>
+                <h2 className="text-xl font-semibold mb- " >Personal Settings</h2>
 
                 <div className="space-y-4" >
                     {/* {!isVerified ? (

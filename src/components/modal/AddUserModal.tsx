@@ -44,10 +44,38 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
     const [preview, setPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { loading } = useSelector((state: RootState) => state?.user);
+  
+    
     const handleChange = (key: string, value: string) => {
-
-        setFormState((prev) => ({ ...prev, [key]: value }));
+        if (key === "email") {
+            if (/\s/.test(value)) {
+                toast.error("Email cannot contain spaces.");
+                return;
+            }
+            setFormState((prev) => ({ ...prev, email: value }));
+        } else if (key === "username") {
+            if (/\s/.test(value)) {
+                toast.error("Username cannot contain spaces.");
+                return;
+            }
+            const isValid = /^[a-zA-Z0-9]*$/.test(value);
+            if (!isValid) {
+                toast.error("Username must be alphanumeric only.");
+                return;
+            }
+            setFormState((prev) => ({ ...prev, username: value }));
+        } else if (key === "password" || key === "location") {
+            if (/\s{2,}/.test(value)) {
+                toast.error("Only single spaces allowed between words.");
+                return;
+            }
+            setFormState((prev) => ({ ...prev, [key]: value }));
+        } else {
+            setFormState((prev) => ({ ...prev, [key]: value }));
+        }
     };
+
+
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

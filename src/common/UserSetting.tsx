@@ -23,7 +23,6 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
     const [preview, setPreview] = useState<string | null>(null);
     const [currentPassword, setCurrentPassword] = useState("");
     const [isVerified, setIsVerified] = useState(false);
-    console.log("user:", user)
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -43,15 +42,27 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
         const { name, value } = e.target;
 
         if (name === "username") {
-            const isValid = /^[a-zA-Z0-9 ]*$/.test(value); // only letters, numbers, spaces
+            if (/\s/.test(value)) {
+                toast.error("Username cannot contain spaces.");
+                return;
+            }
+            const isValid = /^[a-zA-Z0-9]*$/.test(value); // only letters and numbers
             if (!isValid) {
-                toast.error("Username cannot contain special characters.");
+                toast.error("Username must be alphanumeric only.");
+                return;
+            }
+        }
+
+        if (name === "password") {
+            if (/\s{2,}/.test(value)) {
+                toast.error("Only single spaces allowed in password.");
                 return;
             }
         }
 
         setFormData((prev: any) => ({ ...prev, [name]: value }));
     };
+
 
     // Add this above the form return
     const handleVerifyPassword = async () => {
@@ -69,8 +80,10 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
             } else {
                 toast.error("Invalid current password");
             }
-        } catch (err) {
-            toast.error("Verification failed");
+        } catch (err:any) {
+            console.log(err);
+            
+            toast.error(err?.response?.data?.message);
         }
     };
 

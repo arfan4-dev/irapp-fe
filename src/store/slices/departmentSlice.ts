@@ -26,7 +26,11 @@ const initialState: DepartmentState = {
 const departmentSlice = createSlice({
   name: "departments",
   initialState,
-  reducers: {},
+  reducers: {
+    setDepartments: (state, action) => {
+      state.departments = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Fetch
@@ -75,15 +79,13 @@ const departmentSlice = createSlice({
       )
 
       // Delete
-      .addCase(
-        deleteDepartment.fulfilled,
-        (state, action: PayloadAction<string>) => {
-          state.departments = state.departments.filter(
-            (d) => d._id !== action.payload
-          );
-        }
-      );
+      .addCase(deleteDepartment.fulfilled, (state, action) => {
+        state.departments = state.departments.filter(
+          (dep) => dep._id !== action.meta.arg
+        );
+      });
   },
 });
 
+export const { setDepartments } = departmentSlice.actions;
 export default departmentSlice.reducer;

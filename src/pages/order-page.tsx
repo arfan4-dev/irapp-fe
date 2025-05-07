@@ -66,7 +66,7 @@ export default function OrderPage() {
       <div className="h-[calc(100vh-61px)] bg-white dark:bg-gray-900 text-black dark:text-white p-6">
         <div className="max-w-4xl mx-auto space-y-6">
           <Card className="bg-white dark:bg-zinc-800 text-black dark:text-white border border-gray-200 dark:border-gray-700 shadow-sm rounded">
-            <CardContent className="p-4">
+            <CardContent className="px-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">My Orders</h2>
                 <Select value={filter} onValueChange={(val) => setFilter(val as any)}>

@@ -32,7 +32,7 @@ import UserSetting from "@/common/UserSetting";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Trash2, SquarePen } from 'lucide-react'; 
+import { Trash2, SquarePen } from 'lucide-react';
 import { Switch } from "@/components/ui/switch";
 import { addItemToCategory, createCategory, deleteCategory, fetchCategories, removeItemFromCategory, updateCategory, updateItemInCategory } from "@/store/features/category/category";
 import { getOfflineCategories, getPendingCategoryItems, savePendingCategoryItem, savePendingCategoryUpdate } from "@/utils/categoryStorage";
@@ -82,12 +82,13 @@ export default function DepartmentManagementPage() {
         setEditDept,
         showCategoryModal,
         setShowCategoryModal,
-        showSettings, setShowSettings
+        showSettings, setShowSettings,
+        categorySearch, setCategorySearch
     } = useDeptCategoryState();
 
 
 
-    const handleCreate = (e:any) => {
+    const handleCreate = (e: any) => {
         e.preventDefault()
         const trimmed = newDeptInput.trim();
         const regex = /^[a-zA-Z /]+$/;
@@ -129,13 +130,21 @@ export default function DepartmentManagementPage() {
     };
 
 
+
     const filtered = departments
         .filter((d) => d.name.toLowerCase().includes(search.toLowerCase()))
         .sort((a, b) => a.name.localeCompare(b.name));
+
+
+        
     const filteredCategories = selectedDept
         ? categories.filter((cat) => cat.department === selectedDept)
         : categories;
 
+
+    const finalFilteredCategories = filteredCategories.filter(cat =>
+        cat.label.toLowerCase().includes(categorySearch.toLowerCase())
+    );
 
     useEffect(() => {
         const loadOfflineItems = async () => {
@@ -229,20 +238,14 @@ export default function DepartmentManagementPage() {
                                     {loader ? 'Saving...' : 'Create'}
                                 </Button>
                             </form>
-                           
+
                         </DialogContent>
                     </Dialog>
                 </div>
 
                 {/* Mobile: Department Dropdown */}
                 <div className="block md:hidden mb-4">
-                    <Button
-                        variant={selectedDept === null ? "default" : "outline"}
-                        onClick={() => setSelectedDept(null)}
-                        className="w-full mb-2"
-                    >
-                        Show All Categories
-                    </Button>
+
 
                     <Label className="text-sm mb-1">Filter by Department</Label>
                     <Select
@@ -262,22 +265,52 @@ export default function DepartmentManagementPage() {
                             ))}
                         </SelectContent>
                     </Select>
+                    <Button
+                        variant={selectedDept === null ? "default" : "outline"}
+                        onClick={() => setSelectedDept(null)}
+                        className="w-full mt-2"
+                    >
+                        Show All Categories
+                    </Button>
                 </div>
 
                 <div className="flex flex-col md:flex-row-reverse gap-6 w-full h-auto md:h-[calc(100vh-200px)]">
                     <div className="w-full">
                         {user.role === 'admin' && <Card>
                             <CardContent className="px-4 md:px-6 space-y-6 w-full h-full max-h-[calc(100vh-250px)] overflow-y-auto">
-                                <h2 className="sm:text-xl font-semibold mb-4">
-                                    Manage Categories
-                                    {selectedDept && (
-                                        <span className="ml-2 text-sm font-medium text-muted-foreground">
-                                            for <span className="text-primary">{selectedDept}</span>
-                                        </span>
-                                    )}
-                                </h2>
 
-                            
+
+                                <div className="flex items-center justify-between gap-2">
+                                    <h2 className="sm:text-xl font-semibold mb-4">
+                                        Manage Categories
+                                        {selectedDept && (
+                                            <span className="ml-2 text-sm font-medium text-muted-foreground">
+                                                for <span className="text-primary">{selectedDept}</span>
+                                            </span>
+                                        )}
+                                    </h2>
+                                    <div className="flex items-center gap-2 sm:mr-[10px] lg:mr-[22px]">
+                                        <Input
+                                            type="text"
+                                            value={categorySearch}
+                                            onChange={(e) => setCategorySearch(e.target.value)}
+                                            placeholder="Search "
+                                            className="max-w-xs "
+                                        />
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => {
+                                                setCategorySearch("");
+                                                setSelectedDept(null);
+                                            }}
+                                            className="text-sm cursor-pointer"
+                                        >
+                                            Reset Filter
+                                        </Button>
+                                    </div>
+
+                                </div>
+
                                 <div className="flex flex-col md:flex-row md:items-center  justify-between ">
                                     <h3 className="text-[14px] sm:text-lg font-semibold">Add New Category</h3>
                                     <div className="flex gap-3 self-end">
@@ -303,8 +336,8 @@ export default function DepartmentManagementPage() {
 
 
                                 <div className="flex gap-4 flex-wrap items-start">
-                                    {filteredCategories && filteredCategories.length > 0 ? (
-                                        [...filteredCategories] // create a shallow copy first
+                                    {finalFilteredCategories && finalFilteredCategories.length > 0 ? (
+                                        [...finalFilteredCategories] // create a shallow copy first
                                             .sort((a, b) => {
                                                 const nameA = a.label.toLowerCase();
                                                 const nameB = b.label.toLowerCase();
@@ -314,7 +347,8 @@ export default function DepartmentManagementPage() {
                                                     return nameB.localeCompare(nameA);
                                                 }
                                             })?.map((cat) => (
-                                                <div key={cat._id} className={`rounded-lg border p-4 basis-[100%] md:basis-[48%] bg-white dark:bg-zinc-800 shadow-sm space-y-3 transition-opacity duration-200 ${cat.enabled ? "" : ""
+                                                <div key={cat._id} className={`hover:shadow-md hover:scale-[1.01] transition-all duration-200 ease-in-out
+                                                    rounded-lg border p-4 basis-[100%] md:basis-[48%] bg-white dark:bg-zinc-800 shadow-sm space-y-3 ${cat.enabled ? "" : ""
                                                     }`}>
                                                     <div className="flex justify-between items-center">
                                                         {editingCategoryId === cat._id ? (
@@ -326,12 +360,7 @@ export default function DepartmentManagementPage() {
                                                                     </p>
                                                                 </div>
 
-                                                                                            {/* <Input
-                                                            value={editedLabel}
-                                                            onChange={(e) => setEditedLabel(e.target.value)}
-                                                            className="text-lg font-semibold border border-gray-300 dark:bg-zinc-900"
-                                                            placeholder="Edit Category Label"
-                                                            /> */}
+
                                                                 <Input
                                                                     value={editedLabel}
                                                                     onChange={(e) => setEditedLabel(e.target.value)}
@@ -377,16 +406,11 @@ export default function DepartmentManagementPage() {
 
                                                                 <div className="flex gap-2 justify-end">
                                                                     <Button
+                                                                        className="cursor-pointer"
                                                                         size="sm"
                                                                         disabled={loading}
                                                                         onClick={() => {
-                                                                            // dispatch(updateCategory({
-                                                                            //   id: cat._id,
-                                                                            //   newLabel: editedLabel,
-                                                                            //   newDepartment: editedDepartment,
-                                                                            // })).unwrap().then(() => {
-                                                                            //   setEditingCategoryId(null);
-                                                                            // });
+
                                                                             dispatch(updateCategory({ id: cat._id, newLabel: editedLabel, newDepartment: editedDepartment, }))
                                                                                 .unwrap()
                                                                                 .then(() => {
@@ -404,6 +428,7 @@ export default function DepartmentManagementPage() {
                                                                         {loading ? "Saving..." : "Save"}
                                                                     </Button>
                                                                     <Button
+                                                                        className="cursor-pointer"
                                                                         size="sm"
                                                                         variant="outline"
                                                                         onClick={() => setEditingCategoryId(null)}
@@ -419,10 +444,7 @@ export default function DepartmentManagementPage() {
                                                                 <div className="flex items-center gap-2 mt-1">
                                                                     <h3
                                                                         className="text-lg font-semibold cursor-pointer"
-                                                                    // onClick={() => {
-                                                                    //   setEditedLabel(cat.label);
-                                                                    //   setEditingCategoryId(cat._id);
-                                                                    // }}
+
                                                                     >
                                                                         {cat.label}
                                                                     </h3>
@@ -438,8 +460,9 @@ export default function DepartmentManagementPage() {
                                                                             }));
 
                                                                         }}
+                                                                        className="cursor-pointer"
                                                                     />
-                                                                    <span className="text-xs text-muted-foreground">{true ? "Enabled" : "Disabled"}</span>
+                                                                        <span className="text-xs text-muted-foreground">{cat.enabled ? "Enabled" : "Disabled"}</span>
                                                                 </div>
                                                                 <div>
                                                                     <Button
@@ -452,7 +475,7 @@ export default function DepartmentManagementPage() {
                                                                             setEditingCategoryId(cat._id);
                                                                         }}
                                                                     >
-                                                                            <SquarePen />
+                                                                        <SquarePen />
 
                                                                     </Button>
                                                                     <Button
@@ -480,7 +503,7 @@ export default function DepartmentManagementPage() {
                                                                         }
 
                                                                     >
-                                                                            <Trash2 />
+                                                                        <Trash2 />
                                                                     </Button>
                                                                 </div>
 
@@ -488,7 +511,7 @@ export default function DepartmentManagementPage() {
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <div className={`${!cat.enabled ? "opacity-40 blur-[1px] pointer-events-none select-none" : ""}`}>
+                                                    <div className={`${!cat.enabled ? " opacity-40 blur-[1px] pointer-events-none select-none" : ""}`}>
                                                         <ul className="space-y-2  ">
                                                             {cat?.items?.map(item => {
                                                                 const isEditingItem = editingItem?.categoryId === cat._id && editingItem?.name === item.name;
@@ -496,11 +519,7 @@ export default function DepartmentManagementPage() {
                                                                     <li key={item.name} className="flex flex-col gap-2 text-sm border-b pb-2">
                                                                         {isEditingItem ? (
                                                                             <>
-                                                                                {/* <input
-                                          value={editedItemName}
-                                          onChange={(e) => setEditedItemName(e.target.value)}
-                                          className="px-2 py-1 border rounded dark:bg-zinc-900"
-                                        /> */}
+
                                                                                 <input
                                                                                     value={editedItemName}
                                                                                     onChange={(e) => setEditedItemName(e.target.value)}
@@ -573,33 +592,7 @@ export default function DepartmentManagementPage() {
                                                                             </>
                                                                         ) : (
                                                                             <div className="">
-                                                                                {/* <span>{item.name}</span> */}
-                                                                                {/* <div className="flex">
-                                      <Button
-                                        size="sm"
-                                        className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                                        variant="ghost"
-                                        onClick={() => {
-                                          setEditingItem({ categoryId: cat._id, name: item.name });
-                                          setEditedItemName(item.name);
-                                          setEditedAllowMultiple(item.allowMultiple);
-                                        }}
-                                      >
-                                        Update
-                                      </Button>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="text-red-600 hover:text-red-800 cursor-pointer"
-                                        onClick={() => {
-                                          dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }))
-                                            .unwrap()
-                                            .then(() => dispatch(fetchCategories()))
-                                        }}
-                                      >
-                                        Remove
-                                      </Button>
-                                    </div> */}
+
                                                                                 <div className="flex justify-between items-center">
                                                                                     <span>{item.name}</span>
                                                                                     <DropdownMenu>
@@ -609,7 +602,7 @@ export default function DepartmentManagementPage() {
                                                                                                 variant="ghost"
                                                                                                 className="text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
                                                                                             >
-                                                                                                    <EllipsisVertical size={18} />
+                                                                                                <EllipsisVertical size={18} />
 
                                                                                             </Button>
                                                                                         </DropdownMenuTrigger>
@@ -657,12 +650,7 @@ export default function DepartmentManagementPage() {
                                                                                                     })
                                                                                                 }
 
-                                                                                                // onClick={() => {
-                                                                                                //   dispatch(removeItemFromCategory({ categoryId: cat._id, itemName: item.name }))
-                                                                                                //     .unwrap()
-                                                                                                //     .then(() =>{ 
-                                                                                                //       dispatch(fetchCategories())});
-                                                                                                // }}
+
                                                                                                 className="text-red-600 focus:text-red-600"
                                                                                             >
                                                                                                 Remove
@@ -751,18 +739,13 @@ export default function DepartmentManagementPage() {
                                                                             });
                                                                     }
 
-
-                                                                    // dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple })).unwrap().then(() => {
-                                                                    //   dispatch(fetchCategories())
-                                                                    // }).catch(() => { })
-
                                                                     setNewItems(prev => ({ ...prev, [cat._id]: "" }));
                                                                     setItemOptions(prev => ({ ...prev, [cat._id]: false }));
                                                                 }
                                                             }}
                                                             className="flex flex-col gap-2 pt-2"
                                                         >
-                                                         
+
 
                                                             <input
                                                                 name="itemName"
@@ -921,9 +904,10 @@ export default function DepartmentManagementPage() {
                                     <TableBody>
                                         <TableRow
                                             onClick={() => setSelectedDept(null)}
-                                            className={`cursor-pointer transition-all duration-150 ${selectedDept === null
-                                                ? "bg-blue-100 dark:bg-zinc-700 font-semibold"
-                                                : "hover:bg-gray-100 dark:hover:bg-zinc-800"
+                                            className={`cursor-pointer transition-all duration-150 transform 
+                                              hover:scale-[1.01] hover:shadow-md  ${selectedDept === null
+                                                    ? "bg-blue-100 dark:bg-zinc-700 font-semibold"
+                                                    : "hover:bg-gray-100 dark:hover:bg-zinc-800"
                                                 }`}
                                         >
                                             <TableCell colSpan={2}>
@@ -982,6 +966,7 @@ export default function DepartmentManagementPage() {
                                                                 <DropdownMenuContent align="end">
                                                                     <DropdownMenuItem onClick={() => setEditDept({ id: dept._id, name: dept.name })}>Edit</DropdownMenuItem>
                                                                     <DropdownMenuItem
+                                                                         
                                                                         onClick={() => setFeedbackModal({
                                                                             open: true,
                                                                             type: "delete",
@@ -991,15 +976,28 @@ export default function DepartmentManagementPage() {
                                                                                 dispatch(deleteDepartment(dept._id))
                                                                                     .unwrap()
                                                                                     .then(() => {
+                                                                                        if (selectedDept === dept.name) {
+                                                                                            setSelectedDept(null);
+                                                                                        }
+
+                                                                                        // ✅ Immediately update the list manually if fetch doesn't help
+                                                                                        const updated = departments.filter(d => d._id !== dept._id);
+                                                                                        dispatch({ type: "departments/setDepartments", payload: updated }); // <-- assumes slice has `setDepartments` reducer
+
+                                                                                        // Re-fetch for sync
+                                                                                        dispatch(fetchDepartments());
+
                                                                                         setFeedbackModal({
                                                                                             open: true,
                                                                                             type: "delete",
                                                                                             title: "Department Deleted",
-                                                                                            message: `Department \"${dept.name}\" has been successfully removed.`,
+                                                                                            message: `Department "${dept.name}" has been successfully removed.`,
                                                                                         });
                                                                                     })
+
                                                                                     .catch(() => toast.error("Failed to delete department."));
-                                                                            },
+                                                                            }
+
                                                                         })}
                                                                         className="text-red-600"
                                                                     >

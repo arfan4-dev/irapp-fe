@@ -4,6 +4,8 @@ export function useDeptCategoryState() {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
     null
   );
+  const [categorySearch, setCategorySearch] = useState("");
+
   const [showSettings, setShowSettings] = useState(false);
   const [search, setSearch] = useState("");
   const [editDept, setEditDept] = useState<{ id: string; name: string } | null>(
@@ -83,5 +85,7 @@ export function useDeptCategoryState() {
     setShowSettings,
     feedbackModal,
     setFeedbackModal,
+    categorySearch,
+    setCategorySearch,
   };
 }

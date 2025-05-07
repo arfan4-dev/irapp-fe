@@ -62,10 +62,9 @@ export default function PasswordChangeModal({ userId, open, setOpen }:any) {
         }
     };
 
-    console.log("open:",open)
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
+            <DialogContent className="">
                 <DialogHeader>
                     <DialogTitle>Change Your Password</DialogTitle>
                 </DialogHeader>

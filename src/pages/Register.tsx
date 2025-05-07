@@ -37,6 +37,7 @@ export default function Register() {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const { theme, setTheme } = useThemeMode();
 
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, files } = e.target;
 
@@ -46,29 +47,42 @@ export default function Register() {
 
             if (!allowedTypes.includes(file.type)) {
                 toast.error("Only JPG, PNG, or WEBP images are allowed.");
-                e.target.value = ""; // reset the input
+                e.target.value = "";
                 return;
             }
 
             setFormData(prev => ({ ...prev, image: file }));
             setPreviewUrl(URL.createObjectURL(file));
         } else if (name === "email") {
+            if (/\s/.test(value)) {
+                toast.error("Email cannot contain spaces.");
+                return;
+            }
             setFormData(prev => ({ ...prev, email: value.toLowerCase() }));
         } else if (name === "username") {
-            // Allow only alphanumeric and spaces
-            const isValid = /^[a-zA-Z0-9 ]*$/.test(value);
+            if (/\s/.test(value)) {
+                toast.error("Username cannot contain spaces.");
+                return;
+            }
+            const isValid = /^[a-zA-Z0-9]*$/.test(value);
             if (!isValid) {
-                toast.error("Username cannot contain special characters.");
+                toast.error("Username must be alphanumeric only.");
                 return;
             }
             setFormData(prev => ({ ...prev, username: value }));
+        } else if (name === "password" || name === "location") {
+            if (/\s{2,}/.test(value)) {
+                toast.error("Only single spaces allowed between words.");
+                return;
+            }
+            setFormData(prev => ({ ...prev, [name]: value }));
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
-    // const handleRoleChange = (value: string) => {
-    //     setFormData(prev => ({ ...prev, role: value }));
-    // };
+
+
+    
 
 
     const dispatch = useDispatch<AppDispatch>();

@@ -21,6 +21,7 @@ import { fetchSiteConfig } from "./store/features/siteConfig/siteConfig";
 import DepartmentManagementPage from "./pages/department";
 import ForgotPassword from "./pages/forgot-password";
 import ResetPassword from "./pages/reset-password";
+// import PublicRoute from "./routes/PublicRoute";
 
 function App() {
   useOrderSync();
@@ -40,7 +41,7 @@ function App() {
         <Route path="/login" element={
           // <PublicRoute>
             <Login />
-          // </PublicRoute>
+          // </PublicRoute> 
         } />
 
         <Route path="/" element={
@@ -52,7 +53,7 @@ function App() {
         <Route path="/admin" element={
           // <PublicRoute>
             <AdminLogin />
-          // </PublicRoute>
+        //  </PublicRoute>
         } />
         <Route path="/forgot-password" element={
           // <PublicRoute>

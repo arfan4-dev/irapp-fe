@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { Button } from "@/components/ui/button";
-import { FaSun, FaMoon } from "react-icons/fa";
+import { Sun,Moon } from 'lucide-react'; 
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -186,7 +186,7 @@ const Header: React.FC<HeaderProps> = ({
           variant="ghost"
           onClick={() => setTheme(theme === "light" ? "dark" : "light")}
         >
-          {theme === "light" ? <FaMoon /> : <FaSun />}
+          {theme === "light" ? <Moon /> : <Sun />}
         </Button>
 
         {/* User Dropdown with Avatar */}

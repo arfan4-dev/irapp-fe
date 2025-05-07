@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from "@/store";
 import { fetchUserById } from "@/store/features/user/user";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { Sun,Moon } from 'lucide-react'; 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Building2, LogOut, MonitorCog } from "lucide-react";
@@ -127,7 +127,7 @@ const PreviewHeader: React.FC<any> = ({
                         variant="ghost"
                         onClick={() => setTheme(theme === "light" ? "dark" : "light")}
                     >
-                        {theme === "light" ? <FaMoon /> : <FaSun />}
+                        {theme === "light" ? <Moon /> : <Sun />}
                     </Button>
 
                     {/* User Dropdown with Avatar */}

@@ -27,13 +27,12 @@ import useThemeMode from "@/hooks/useTheme";
 import ActionFeedbackModal from "@/components/modal/ActionFeedbackModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreVertical, PencilLine } from "lucide-react";
+import { MoreVertical, PencilLine, EllipsisVertical } from "lucide-react";
 import UserSetting from "@/common/UserSetting";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { FiEdit, FiMoreVertical } from "react-icons/fi";
-import { FaTrashCan } from "react-icons/fa6";
+import { Trash2, SquarePen } from 'lucide-react'; 
 import { Switch } from "@/components/ui/switch";
 import { addItemToCategory, createCategory, deleteCategory, fetchCategories, removeItemFromCategory, updateCategory, updateItemInCategory } from "@/store/features/category/category";
 import { getOfflineCategories, getPendingCategoryItems, savePendingCategoryItem, savePendingCategoryUpdate } from "@/utils/categoryStorage";
@@ -452,7 +451,7 @@ export default function DepartmentManagementPage() {
                                                                             setEditingCategoryId(cat._id);
                                                                         }}
                                                                     >
-                                                                        <FiEdit />
+                                                                            <SquarePen />
 
                                                                     </Button>
                                                                     <Button
@@ -480,7 +479,7 @@ export default function DepartmentManagementPage() {
                                                                         }
 
                                                                     >
-                                                                        <FaTrashCan />
+                                                                            <Trash2 />
                                                                     </Button>
                                                                 </div>
 
@@ -609,7 +608,8 @@ export default function DepartmentManagementPage() {
                                                                                                 variant="ghost"
                                                                                                 className="text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
                                                                                             >
-                                                                                                <FiMoreVertical size={18} />
+                                                                                                    <EllipsisVertical size={18} />
+
                                                                                             </Button>
                                                                                         </DropdownMenuTrigger>
                                                                                         <DropdownMenuContent align="end" className="w-32">

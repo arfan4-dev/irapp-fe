@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { Sun,Moon } from 'lucide-react'; 
 import { Button } from "@/components/ui/button";
 
 interface PublicHeaderProps {
@@ -36,7 +36,7 @@ const PublicHeader: React.FC<PublicHeaderProps> = ({ theme, setTheme, serviceNam
                 variant="ghost"
                 onClick={() => setTheme(theme === "light" ? "dark" : "light")}
             >
-                {theme === "light" ? <FaMoon /> : <FaSun />}
+                {theme === "light" ? <Moon /> : <Sun />}
             </Button>
         </header>
     );

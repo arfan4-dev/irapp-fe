@@ -39,32 +39,32 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} /> */}
         <Route path="/login" element={
-          <PublicRoute>
+          // <PublicRoute>
             <Login />
-          </PublicRoute>
+          // </PublicRoute>
         } />
 
         <Route path="/" element={
-          <PublicRoute>
+          // <PublicRoute>
             <Register />
-          </PublicRoute>
+          // </PublicRoute>
         } />
 
         <Route path="/admin" element={
-          <PublicRoute>
+          // <PublicRoute>
             <AdminLogin />
-         </PublicRoute>
+        //  </PublicRoute>
         } />
         <Route path="/forgot-password" element={
-          <PublicRoute>
+          // <PublicRoute>
           <ForgotPassword />
-          </PublicRoute>
+          // </PublicRoute>
         } />
 
         <Route path="/reset-password/:token" element={
-          <PublicRoute>
+          // <PublicRoute>
           <ResetPassword />
-          </PublicRoute>
+          // </PublicRoute>
         } />
         {/* Private Route */}
         <Route path="/service-request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />

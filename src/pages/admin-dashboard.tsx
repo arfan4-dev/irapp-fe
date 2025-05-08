@@ -32,7 +32,10 @@ export default function AdminPage() {
   const { viewMode, toggleViewMode } = useViewMode();
   const location = useLocation()
   const allOrders = useSelector((state: RootState) => state?.orders?.orders);
- 
+  const [pendingPage, setPendingPage] = useState(1);
+  const [progressPage, setProgressPage] = useState(1);
+  const ORDERS_PER_PAGE = 5;
+
   const [feedbackModal, setFeedbackModal] = useState<{
     open: boolean;
     type?: any;
@@ -111,6 +114,9 @@ export default function AdminPage() {
   }
   const filteredPendingOrders = applyFiltersAndSort(pendingOrders, pendingFilters);
   const filteredInProgressOrders = applyFiltersAndSort(inProgressOrders, progressFilters);
+
+  const paginatedPendingOrders = filteredPendingOrders.slice((pendingPage - 1) * ORDERS_PER_PAGE, pendingPage * ORDERS_PER_PAGE);
+  const paginatedInProgressOrders = filteredInProgressOrders.slice((progressPage - 1) * ORDERS_PER_PAGE, progressPage * ORDERS_PER_PAGE);
 
 
   const handleStatusUpdate = async (orderId: string, status: string) => {
@@ -266,7 +272,7 @@ export default function AdminPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredPendingOrders.map(req => (
+                        {paginatedPendingOrders.map(req => (
                           <tr key={req._id} className="border-b align-top">
                             <td className="p-2">
                               {/* <div className="font-semibold italic">{req.type}</div> */}
@@ -323,7 +329,7 @@ export default function AdminPage() {
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
 
                       {
-                        filteredPendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>) : (filteredPendingOrders.map(req => (
+                          paginatedPendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>) : (paginatedPendingOrders.map(req => (
                           <Card key={req._id}>
                             <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
                               {/* <div><strong>Type:</strong> {req.type}</div> */}
@@ -366,7 +372,27 @@ export default function AdminPage() {
                         )))}
                     </div>
                   )}
+                  {filteredPendingOrders.length>=5 && <div className="flex justify-end gap-2 mt-4">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={pendingPage === 1}
+                      onClick={() => setPendingPage(prev => Math.max(prev - 1, 1))}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={pendingPage * ORDERS_PER_PAGE >= filteredPendingOrders.length}
+                      onClick={() => setPendingPage(prev => prev + 1)}
+                    >
+                      Next 
+                    </Button>
+                  </div>}
                 </CardContent>
+               
+
               </div>
               <div className={`border border-l mx-2 sm:mx-0  ${viewMode !== "grid" && "mx-5"} `} />
               <div>
@@ -409,7 +435,7 @@ export default function AdminPage() {
                       Clear Filters
                     </Button>
                   </div>
-                  {filteredInProgressOrders.length === 0 ? (
+                  {paginatedInProgressOrders.length === 0 ? (
                     <div className="text-gray-500">No requests in progress.</div>
                   ) : viewMode === "list" ? (
                     <table className="w-full text-left">
@@ -426,7 +452,7 @@ export default function AdminPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredInProgressOrders.map(req => (
+                          {paginatedInProgressOrders.map(req => (
                           <tr key={req._id} className="border-b align-top">
                             <td className="p-2">
                               {/* <div className="font-semibold italic">{req.type}</div> */}
@@ -472,7 +498,7 @@ export default function AdminPage() {
                     </table>
                   ) : (
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                      {filteredInProgressOrders.map(req => (
+                          {paginatedInProgressOrders.map(req => (
                         <Card key={req._id}>
                           <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
                             {/* <div><strong>Type:</strong> {req.type}</div> */}
@@ -496,9 +522,33 @@ export default function AdminPage() {
                           </CardContent>
                         </Card>
                       ))}
+
+                      
                     </div>
                   )}
+
+                  {filteredInProgressOrders.length>=5 && <div className="flex justify-end gap-2  mt-4">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="cursor-pointer"
+                      disabled={progressPage === 1}
+                      onClick={() => setProgressPage(prev => Math.max(prev - 1, 1))}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="cursor-pointer"
+                      disabled={progressPage * ORDERS_PER_PAGE >= filteredInProgressOrders.length}
+                      onClick={() => setProgressPage(prev => prev + 1)}
+                    >
+                      Next
+                    </Button>
+                  </div>}
                 </CardContent>
+               
               </div>
             </div>
           </Card>

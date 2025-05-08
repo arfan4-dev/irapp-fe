@@ -56,7 +56,7 @@ const [open,setOpen]=useState(false)
 
     } catch (err: any) {
        
-        toast.error(err);
+        toast.error("Invalid Email or Password.");
     }
 };
 

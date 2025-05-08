@@ -23,7 +23,8 @@ export default function AnsweredOrdersPage() {
     const modalRef = useRef<HTMLDivElement>(null);
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10;
     const allOrders = useSelector((state: RootState) =>
         (state.orders as RootState['orders']).orders.filter(order => order.status === 'Answered')
     );
@@ -32,12 +33,9 @@ export default function AnsweredOrdersPage() {
     // Filters
     const [searchItem, setSearchItem] = useState("");
     const [searchPerson, setSearchPerson] = useState("");
-    const [_, setSearchDate] = useState("");
-
-    
+    const [_, setSearchDate] = useState("");    
     // Sort
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); // Default Descending
-
     const filteredOrders = allOrders
         .filter(order => {
             const itemMatch = order.items.some(item =>
@@ -62,7 +60,8 @@ export default function AnsweredOrdersPage() {
             return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
         });
 
-
+    const totalPages = Math.ceil(filteredOrders.length / pageSize);
+    const paginatedOrders = filteredOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize);
     useEffect(() => {
         getUserIdFromLocalStorage();
         const handleClickOutside = (e: MouseEvent) => {
@@ -162,7 +161,7 @@ export default function AnsweredOrdersPage() {
                     </Button>
                 </div>
                
-                {user.role === 'admin' &&  <div>  { filteredOrders.length === 0 ? (
+                {user.role === 'admin' && <div>  {paginatedOrders.length === 0 ? (
                     <p className="text-center text-gray-500">No answered requests found.</p>
                 ) : viewMode === 'list' ? (
                     <div className="overflow-x-auto">
@@ -179,7 +178,7 @@ export default function AnsweredOrdersPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredOrders.map((order) => (
+                                    {paginatedOrders.map((order) => (
                                     <tr key={order._id} className="border-b align-top">
                                         <td className="p-2">
                                             {/* <div className="font-semibold italic">{order.type}</div> */}
@@ -198,7 +197,7 @@ export default function AnsweredOrdersPage() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        {filteredOrders.map((order) => (
+                                {paginatedOrders.map((order) => (
                             <Card key={order._id}>
                                 <CardContent className="px-4 space-y-2">
                                     {/* <div><strong>Type:</strong> {order.type}</div> */}
@@ -224,7 +223,7 @@ export default function AnsweredOrdersPage() {
                     {
                         // ✅ Filter orders by department
                         user?.department
-                            ? filteredOrders.filter(order => order.department === user.department).length === 0
+                            ? paginatedOrders.filter(order => order.department === user.department).length === 0
                                 ? (
                                     <p className="text-center text-gray-500">No answered requests found.</p>
                                 ) : viewMode === 'list' ? (
@@ -241,7 +240,7 @@ export default function AnsweredOrdersPage() {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {filteredOrders
+                                                {paginatedOrders
                                                     .filter(order => order.department === user.department)
                                                     .map((order) => (
                                                         <tr key={order._id} className="border-b align-top">
@@ -267,7 +266,7 @@ export default function AnsweredOrdersPage() {
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                        {filteredOrders
+                                            {paginatedOrders
                                             .filter(order => order.department === user.department)
                                             .map((order) => (
                                                 <Card key={order._id}>
@@ -296,7 +295,17 @@ export default function AnsweredOrdersPage() {
 }
             </div>
 
-
+            {totalPages > 1 && (
+                <div className="flex justify-center items-center my-3 gap-4">
+                    <Button className="cursor-pointer hover:opacity-85 disabled:cursor-not-allowed" onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}>
+                        Previous
+                    </Button>
+                    <span className="text-sm">Page {currentPage} of {totalPages}</span>
+                    <Button className="cursor-pointer hover:opacity-85 disabled:cursor-not-allowed" onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>
+                        Next
+                    </Button>
+                </div>
+            )}
             {showSettings && (
                 <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={""} />
             )}

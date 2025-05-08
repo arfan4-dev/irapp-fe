@@ -11,6 +11,7 @@ import { fetchSiteConfig, updateSiteConfig } from "@/store/features/siteConfig/s
 import useThemeMode from "@/hooks/useTheme";
 import { useLocation } from 'react-router-dom';
 import UserSetting from "@/common/UserSetting";
+import { filterAlphaSpaces } from "@/utils/alphaSpace";
 
 export default function SiteConfig() {
     const dispatch = useDispatch<AppDispatch>();
@@ -150,23 +151,51 @@ export default function SiteConfig() {
                         {/* Site Title */}
                         <div className="flex flex-col md:flex-row items-center gap-4">
                             <Label className="w-40">Site Title</Label>
-                            <Input disabled={!isEditing} value={siteTitle} onChange={(e) => setSiteTitle(e.target.value)} />
-                        </div>
+                            <Input
+                                disabled={!isEditing}
+                                value={siteTitle}
+                                onChange={(e) => setSiteTitle(filterAlphaSpaces(e.target.value))}
+                            />                        </div>
 
                         {/* Brand Name */}
                         <div className="flex flex-col md:flex-row items-center gap-4">
                             <Label className="w-40">Brand Name</Label>
-                            <Input disabled={!isEditing} value={brandName} onChange={(e) => setBrandName(e.target.value)} />
-                        </div>
+                            <Input
+                                disabled={!isEditing}
+                                value={siteTitle}
+                                onChange={(e) => setSiteTitle(filterAlphaSpaces(e.target.value))}
+                            />                        </div>
 
                         {/* Admin Tabs */}
                         <div className="flex flex-col md:flex-row items-start gap-4">
                             <Label className="w-40">Admin Tabs</Label>
                             <div className="space-y-2 w-full">
-                                <Input disabled={!isEditing} value={tabs.T1} onChange={(e) => setTabs({ ...tabs, T1: e.target.value })} placeholder="Tab 1" />
-                                <Input disabled={!isEditing} value={tabs.T2} onChange={(e) => setTabs({ ...tabs, T2: e.target.value })} placeholder="Tab 2" />
-                                <Input disabled={!isEditing} value={tabs.T3} onChange={(e) => setTabs({ ...tabs, T3: e.target.value })} placeholder="Tab 3" />
-                                <Input disabled={!isEditing} value={tabs.T5} onChange={(e) => setTabs({ ...tabs, T5: e.target.value })} placeholder="Tab 4" />
+                                <Input
+                                    disabled={!isEditing}
+                                    value={tabs.T1}
+                                    onChange={(e) => setTabs({ ...tabs, T1: filterAlphaSpaces(e.target.value) })}
+                                    placeholder="Tab 1"
+                                />
+                                <Input
+                                    disabled={!isEditing}
+                                    value={tabs.T2}
+                                    onChange={(e) => setTabs({ ...tabs, T2: filterAlphaSpaces(e.target.value) })}
+                                    placeholder="Tab 2"
+                                />
+                                <Input
+                                    disabled={!isEditing}
+                                    value={tabs.T3}
+                                    onChange={(e) => setTabs({ ...tabs, T3: filterAlphaSpaces(e.target.value) })}
+                                    placeholder="Tab 3"
+                                />
+                                <Input
+                                    disabled={!isEditing}
+                                    value={tabs.T5}
+                                    onChange={(e) => setTabs({ ...tabs, T5: e.target.value })}
+                                    placeholder="Tab 4"
+                                />
+
+                               
 
                             </div>
                         </div>
@@ -174,8 +203,13 @@ export default function SiteConfig() {
                         {/* User Tab */}
                         <div className="flex flex-col md:flex-row items-center gap-4">
                             <Label className="w-40">User Tab</Label>
-                            <Input disabled={!isEditing} value={tabs.T4} onChange={(e) => setTabs({ ...tabs, T4: e.target.value })} placeholder="User Tab" />
-                        </div>
+                            {/* User Tab */}
+                            <Input
+                                disabled={!isEditing}
+                                value={tabs.T4}
+                                onChange={(e) => setTabs({ ...tabs, T4: filterAlphaSpaces(e.target.value) })}
+                                placeholder="User Tab"
+                            />                        </div>
 
                         {/* Logo Upload */}
                         <div className="flex flex-col md:flex-row items-center gap-4">

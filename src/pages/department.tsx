@@ -109,20 +109,20 @@ export default function DepartmentManagementPage() {
     };
 
     const handleUpdate = () => {
-        if (!editDept?.name.trim()) return toast.error("Updated name required.");
+        if (!editDept?.id || !editDept.name.trim()) return toast.error("Updated name required.");
         const regex = /^[a-zA-Z /]+$/;
         if (!regex.test(editDept.name.trim())) return toast.error("Only letters, spaces, and '/' allowed.");
-
 
         setEditLoading(true);
         dispatch(updateDepartment({ id: editDept.id, name: editDept.name.trim() }))
             .unwrap()
             .then(() => {
-                setEditDept(null);
-                toast.success("Department updated successfully");
+                setEditDept(null); // close the editing row
+                toast.success("Department updated successfully.");
+                dispatch(fetchDepartments()); // refresh list
             })
             .catch(() => {
-                toast.error("Update failed");
+                toast.error("Update failed.");
             })
             .finally(() => {
                 setEditLoading(false);
@@ -793,92 +793,7 @@ export default function DepartmentManagementPage() {
                         </Card>
                         }
 
-                        {showCategoryModal && (
-                            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-                                <Card className="w-full max-w-md bg-white dark:bg-zinc-900 text-black dark:text-white rounded-lg shadow-lg">
-                                    <CardContent className="px-6 space-y-4">
-                                        <h3 className="text-lg font-semibold">Add New Category</h3>
-                                        <form
-                                            onSubmit={(e) => {
-                                                e.preventDefault();
-                                                const form = e.target as any;
-                                                const label = form.catLabel.value.trim();
-                                                const dept = form.department.value.trim();
-                                                // Disallow special characters except space, dash, underscore
-                                                const isValid = /^[a-zA-Z0-9 _-]+$/.test(label);
-
-                                                if (!label || !isValid) {
-                                                    toast.error("Category name should not contain special characters.");
-                                                    return;
-                                                }
-
-                                                if (!dept) {
-                                                    toast.error("Department is required.");
-                                                    return;
-                                                }
-                                                if (categories.some(cat => cat.label === label)) {
-                                                    toast.error("Category already exists.");
-                                                    return;
-                                                }
-
-                                                const newCategory = { label, dept };
-
-                                                if (isOnline) {
-                                                    dispatch(createCategory(newCategory))
-                                                        .unwrap()
-                                                        .then(() => {
-                                                            toast.success("Category created!");
-                                                            setShowCategoryModal(false);
-                                                        })
-                                                        .catch(() => {
-                                                            toast.error("Failed to create category.");
-                                                        });
-                                                } else {
-                                                    savePendingCategoryUpdate(newCategory)
-                                                        .then(() => {
-                                                            toast.success("Category saved offline. Will sync when online.");
-                                                            setShowCategoryModal(false);
-                                                        })
-                                                        .catch(() => toast.error("Failed to save offline."));
-                                                }
-                                            }}
-
-
-                                            className="space-y-4"
-                                        >
-                                            <Label className="mb-2.5">Cateogry Name</Label>
-                                            <Input
-                                                name="catLabel"
-                                                placeholder="Category Name"
-                                                className="w-full px-3 py-2 border rounded text-sm dark:bg-zinc-800"
-                                                required
-                                            />
-                                            <div className="grid">
-                                                <Label className="mb-2.5">Department</Label>
-                                                <Select
-                                                    name="department"
-                                                >
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Select department" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {departments.map((dep) => (
-                                                            <SelectItem key={dep._id} value={dep.name}>
-                                                                {dep.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div className="flex justify-end gap-2">
-                                                <Button variant="outline" onClick={() => setShowCategoryModal(false)} type="button">Cancel</Button>
-                                                <Button type="submit" className="cursor-pointer hover:opacity-75">{loading ? "Saving..." : "Add"}</Button>
-                                            </div>
-                                        </form>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        )}
+                      
                     </div>
 
                     <div className="hidden md:flex w-[300px] flex-col">
@@ -942,7 +857,13 @@ export default function DepartmentManagementPage() {
                                                                             setEditDept((prev) => ({ ...prev!, name: value }));
                                                                         }
                                                                     }}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === "Enter") {
+                                                                            handleUpdate();
+                                                                        }
+                                                                    }}
                                                                 />
+
                                                             </div>
                                                         ) : (
                                                             <span className="hover:underline ">{dept.name}</span>
@@ -1024,7 +945,92 @@ export default function DepartmentManagementPage() {
             </div>
 
 
+            {showCategoryModal && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                    <Card className="w-full max-w-md bg-white dark:bg-zinc-900 text-black dark:text-white rounded-lg shadow-lg">
+                        <CardContent className="px-6 space-y-4">
+                            <h3 className="text-lg font-semibold">Add New Category</h3>
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const form = e.target as any;
+                                    const label = form.catLabel.value.trim();
+                                    const dept = form.department.value.trim();
+                                    // Disallow special characters except space, dash, underscore
+                                    const isValid = /^[a-zA-Z0-9 _-]+$/.test(label);
 
+                                    if (!label || !isValid) {
+                                        toast.error("Category name should not contain special characters.");
+                                        return;
+                                    }
+
+                                    if (!dept) {
+                                        toast.error("Department is required.");
+                                        return;
+                                    }
+                                    if (categories.some(cat => cat.label === label)) {
+                                        toast.error("Category already exists.");
+                                        return;
+                                    }
+
+                                    const newCategory = { label, dept };
+
+                                    if (isOnline) {
+                                        dispatch(createCategory(newCategory))
+                                            .unwrap()
+                                            .then(() => {
+                                                toast.success("Category created.");
+                                                setShowCategoryModal(false);
+                                            })
+                                            .catch(() => {
+                                                toast.error("Failed to create category.");
+                                            });
+                                    } else {
+                                        savePendingCategoryUpdate(newCategory)
+                                            .then(() => {
+                                                toast.success("Category saved offline. Will sync when online.");
+                                                setShowCategoryModal(false);
+                                            })
+                                            .catch(() => toast.error("Failed to save offline."));
+                                    }
+                                }}
+
+
+                                className="space-y-4"
+                            >
+                                <Label className="mb-2.5">Cateogry Name</Label>
+                                <Input
+                                    name="catLabel"
+                                    placeholder="Category Name"
+                                    className="w-full px-3 py-2 border rounded text-sm dark:bg-zinc-800"
+                                    required
+                                />
+                                <div className="grid">
+                                    <Label className="mb-2.5">Department</Label>
+                                    <Select
+                                        name="department"
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select department" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {departments.map((dep) => (
+                                                <SelectItem key={dep._id} value={dep.name}>
+                                                    {dep.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="flex justify-end gap-2">
+                                    <Button variant="outline" onClick={() => setShowCategoryModal(false)} type="button">Cancel</Button>
+                                    <Button type="submit" className="cursor-pointer hover:opacity-75">{loading ? "Saving..." : "Add"}</Button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
             <ActionFeedbackModal
                 open={feedbackModal.open}
                 onClose={() => setFeedbackModal((prev) => ({ ...prev, open: false }))}

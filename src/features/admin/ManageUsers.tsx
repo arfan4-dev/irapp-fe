@@ -26,16 +26,24 @@ export default function ManageUsers() {
     const [showSettings, setShowSettings] = useState(false);
     const location = useLocation()
       const { departments } = useSelector((state: RootState) => state?.departments || []);
-    
+    const [currentPage, setCurrentPage] = useState(1);
+    const usersPerPage = 10;
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const [serviceName] = useState("Manage Users");
     const [searchName, setSearchName] = useState('');
     const [searchEmail, setSearchEmail] = useState('');
+    const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
+
     const filteredUsers = users?.filter((user: any) => {
         const nameMatch = user.username.toLowerCase().includes(searchName.toLowerCase());
         const emailMatch = user.email.toLowerCase().includes(searchEmail.toLowerCase());
         return nameMatch && emailMatch;
     });
+ 
+    const sortedFilteredUsers = [...filteredUsers].sort((a:any, b:any) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
 const [addUserModal,setAddUserModal]=useState(false)
 
 
@@ -53,14 +61,21 @@ const [addUserModal,setAddUserModal]=useState(false)
         const change = changes[userId];
         if (!change) return;
 
+        setUpdatingUserId(userId); // 🔥 start loader for this user
+
         dispatch(updateUserRoleAndDepartment({ userId, ...change }))
             .unwrap()
             .then(() => {
                 toast.success("User updated.");
-                dispatch(fetchAllUsers());
             })
-            .catch(() => toast.error("Failed to update user."));
+            .catch(() => {
+                toast.error("Failed to update user.");
+            })
+            .finally(() => {
+                setUpdatingUserId(null); // ✅ reset after done
+            });
     };
+
 
 
     useEffect(() => {
@@ -133,7 +148,10 @@ const [addUserModal,setAddUserModal]=useState(false)
                         <UserManageSkeleton />
                     ) : users && users.length > 0 ? (
                         filteredUsers.length > 0 ? (
-                            filteredUsers.map((user: any) => (
+                                sortedFilteredUsers
+                                    .slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage)
+                                    .map((user: any) => (
+
                                 <Card key={user._id}>
                                     <CardContent className="p-4 space-y-3">
                                         <p className="font-semibold">
@@ -190,9 +208,12 @@ const [addUserModal,setAddUserModal]=useState(false)
                                             
                                             className={`cursor-pointer hover:opacity-75 mt-2 text-white dark:text-zinc-900`}
                                         >
-                                            Save Changes
+                                                    {updatingUserId === user._id ? "Updating..." : "Save Changes"}
+
+
                                         </Button>
                                     </CardContent>
+                                    
                                 </Card>
                             ))
                         ) : (
@@ -207,6 +228,31 @@ const [addUserModal,setAddUserModal]=useState(false)
                     )
                 }
 
+                {filteredUsers.length > usersPerPage && (
+                    <div className="flex justify-center mt-6 gap-4 items-center">
+                        <Button
+                            variant="outline"
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        >
+                            Previous
+                        </Button>
+                        <span className="text-sm">
+                            Page {currentPage} of {Math.ceil(filteredUsers.length / usersPerPage)}
+                        </span>
+                        <Button
+                            variant="outline"
+                            disabled={currentPage === Math.ceil(filteredUsers.length / usersPerPage)}
+                            onClick={() =>
+                                setCurrentPage((prev) =>
+                                    Math.min(prev + 1, Math.ceil(filteredUsers.length / usersPerPage))
+                                )
+                            }
+                        >
+                            Next
+                        </Button>
+                    </div>
+                )}
 
                 
             </div>

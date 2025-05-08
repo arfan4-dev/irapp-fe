@@ -177,7 +177,7 @@ export default function UserPage() {
                       <Button
                         variant={selectedRequest === type._id ? "default" : "outline"}
                         disabled={!type.enabled}
-                        className={`w-full border relative transition-all 
+                        className={`w-full border cursor-pointer relative transition-all 
                 ${!type.enabled ? "opacity-50 cursor-not-allowed" : ""}
                 ${selectedRequest !== type._id
                             ? theme === 'dark'
@@ -231,14 +231,14 @@ export default function UserPage() {
                             <span className="text-[14px] font-medium w-[19%] ">{item.name}</span>
                             {item.allowMultiple ? (
                               <div className="flex items-center gap-3 ">
-                                <Button variant="outline" onClick={() => handleQuantityChange(item.name, Math.max(1, quantity - 1))}>–</Button>
+                                <Button className='cursor-pointer' variant="outline" onClick={() => handleQuantityChange(item.name, Math.max(1, quantity - 1))}>–</Button>
                                 <span className="min-w-[24px] text-center">{quantity}</span>
-                                <Button variant="outline" onClick={() => handleQuantityChange(item.name, quantity + 1)}>+</Button>
+                                <Button className='cursor-pointer' variant="outline" onClick={() => handleQuantityChange(item.name, quantity + 1)}>+</Button>
                               </div>
                             ) : (
                               <div className="italic text-sm text-gray-500">One per request</div>
                             )}
-                            <Button onClick={() => {
+                            <Button className='cursor-pointer' onClick={() => {
                               submitRequest();
                               handleAddToCart(item.name, item.allowMultiple ? quantity : 1);
                             }}>Order</Button>
@@ -287,8 +287,8 @@ export default function UserPage() {
               <h2 className="text-xl font-semibold">Confirm Your Order</h2>
               <p>Would you like to send the order now or add more items?</p>
               <div className="flex justify-end gap-4">
-                <Button variant="outline" onClick={() => setShowConfirmModal(false)}>Add More Items</Button>
-                <Button className="bg-black text-white dark:bg-white dark:text-black" onClick={confirmSendOrder}>Send Order</Button>
+                <Button className='cursor-pointer' variant="outline" onClick={() => setShowConfirmModal(false)}>Add More Items</Button>
+                <Button className="bg-black text-white dark:bg-white dark:text-black cursor-pointer" onClick={confirmSendOrder}>Send Order</Button>
               </div>
             </CardContent>
           </Card>

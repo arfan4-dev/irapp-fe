@@ -85,7 +85,7 @@ export default function DepartmentManagementPage() {
         showSettings, setShowSettings,
         categorySearch, setCategorySearch
     } = useDeptCategoryState();
-
+    const [deleteLoading, setDeleteLoading] = useState<boolean>(false); // Track department being deleted
 
 
     const handleCreate = (e: any) => {
@@ -136,7 +136,7 @@ export default function DepartmentManagementPage() {
         .sort((a, b) => a.name.localeCompare(b.name));
 
 
-        
+
     const filteredCategories = selectedDept
         ? categories.filter((cat) => cat.department === selectedDept)
         : categories;
@@ -206,6 +206,18 @@ export default function DepartmentManagementPage() {
         }
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [showSettings, setShowSettings]);
+
+    useEffect(() => {
+        // If selectedDept is no longer in departments, reset it
+        if (selectedDept && !departments.some((d) => d.name === selectedDept)) {
+            setSelectedDept(null);
+        }
+    }, [departments, selectedDept]);
+    useEffect(() => {
+        if (selectedDept === null) {
+            dispatch(fetchCategories()).unwrap(); // Refresh categories when no department is selected
+        }
+    }, [selectedDept, dispatch]);
     return (
         <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
             <Header
@@ -462,7 +474,7 @@ export default function DepartmentManagementPage() {
                                                                         }}
                                                                         className="cursor-pointer"
                                                                     />
-                                                                        <span className="text-xs text-muted-foreground">{cat.enabled ? "Enabled" : "Disabled"}</span>
+                                                                    <span className="text-xs text-muted-foreground">{cat.enabled ? "Enabled" : "Disabled"}</span>
                                                                 </div>
                                                                 <div>
                                                                     <Button
@@ -793,7 +805,7 @@ export default function DepartmentManagementPage() {
                         </Card>
                         }
 
-                      
+
                     </div>
 
                     <div className="hidden md:flex w-[300px] flex-col">
@@ -886,7 +898,7 @@ export default function DepartmentManagementPage() {
                                                                 </DropdownMenuTrigger>
                                                                 <DropdownMenuContent align="end">
                                                                     <DropdownMenuItem onClick={() => setEditDept({ id: dept._id, name: dept.name })}>Edit</DropdownMenuItem>
-                                                                    <DropdownMenuItem
+                                                                    {/* <DropdownMenuItem
                                                                          
                                                                         onClick={() => setFeedbackModal({
                                                                             open: true,
@@ -923,7 +935,36 @@ export default function DepartmentManagementPage() {
                                                                         className="text-red-600"
                                                                     >
                                                                         Delete
-                                                                    </DropdownMenuItem>
+                                                                    </DropdownMenuItem> */}
+                                                                        <DropdownMenuItem
+                                                                            onClick={() =>
+                                                                              {  
+                                                                                setDeleteLoading (true) 
+                                                                            dispatch(deleteDepartment(dept._id))
+                                                                                .unwrap()
+                                                                                .then(() => {
+                                                                                    if (selectedDept === dept.name) {
+                                                                                        setSelectedDept(null); // Clear selected department
+                                                                                    }
+                                                                                    setDeleteLoading(false) 
+                                                                                    // Remove manual state update
+                                                                                    // dispatch({ type: "departments/setDepartments", payload: updated });
+
+                                                                                    // Re-fetch departments to ensure sync
+                                                                                    return dispatch(fetchDepartments()).unwrap(); // Ensure fetch completes
+                                                                                })
+
+                                                                                .catch((error) => {
+                                                                                    console.error("Delete department failed:", error);
+                                                                                    setDeleteLoading(false) 
+                                                                                    toast.error("Failed to delete department.");
+                                                                                })
+                                                                            }}
+                                                                            className="text-red-600"
+                                                                            disabled={deleteLoading }
+                                                                        >
+                                                                            {deleteLoading ?"Deleting..." : "Delete"}
+                                                                        </DropdownMenuItem>
                                                                 </DropdownMenuContent>
                                                             </DropdownMenu>
                                                         )}

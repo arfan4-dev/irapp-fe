@@ -41,9 +41,6 @@ const Header: React.FC<HeaderProps> = ({
   const { config } = useSelector((state: RootState) => state.siteConfig);
   const tabs = config?.tabs || {};
 
-  console.log("user:", user)
-
-
   const handleLogout = async () => {
     try {
       await api.post("/logout", {}, { withCredentials: true });

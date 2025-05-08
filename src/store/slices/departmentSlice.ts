@@ -81,8 +81,9 @@ const departmentSlice = createSlice({
       // Delete
       .addCase(deleteDepartment.fulfilled, (state, action) => {
         state.departments = state.departments.filter(
-          (dep) => dep._id !== action.meta.arg
+          (d) => d._id !== action.payload
         );
+        state.loading = false;
       });
   },
 });

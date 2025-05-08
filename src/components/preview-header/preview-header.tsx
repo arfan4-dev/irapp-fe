@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 import { Sun,Moon } from 'lucide-react'; 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Building2, LogOut, MonitorCog } from "lucide-react";
+import {  LogOut, MonitorCog } from "lucide-react";
 import api from "@/api/api";
 import { getInitials } from "@/utils/getIntialUsername";
 
@@ -225,11 +225,7 @@ const PreviewHeader: React.FC<any> = ({
                                     <MonitorCog />  Site Configuration
                                 </DropdownMenuItem>
                             </NavLink>
-                                <NavLink to='/departments'>
-                                    <DropdownMenuItem className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
-                                        <Building2 /> Department
-                                    </DropdownMenuItem>
-                                </NavLink></>)}
+                                </>)}
 
                             <DropdownMenuItem onClick={() => setShowSettings(true)} className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
                                 ⚙️ Profile Setting

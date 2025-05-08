@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { fetchUserById, updateUser } from '@/store/features/user/user';
 import api from '@/api/api';
 
-const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
+const UserSetting = ({  setShowSettings, user }: any) => {
     const dispatch = useDispatch<AppDispatch>();
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -58,7 +58,20 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
                 toast.error("Only single spaces allowed in password.");
                 return;
             }
+
+            const errors = [];
+            if (value.length < 6) errors.push("at least 6 characters");
+            if (!/[a-z]/.test(value)) errors.push("one lowercase letter");
+            if (!/[A-Z]/.test(value)) errors.push("one uppercase letter");
+            if (!/\d/.test(value)) errors.push("one number");
+            if (!/[@$!%*?&]/.test(value)) errors.push("one special symbol");
+
+            if (errors.length > 0) {
+                toast.error(`Password must contain: ${errors.join(", ")}`);
+            }
+
         }
+
 
         setFormData((prev: any) => ({ ...prev, [name]: value }));
     };
@@ -78,12 +91,12 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
                 toast.success("Password verified. You can now update your profile.");
                 // Don't save yet — wait for Save button click to call handleSave
             } else {
-                toast.error("Invalid current password");
+                toast.error("Invalid current password.");
             }
-        } catch (err:any) {
+        } catch (err: any) {
             console.log(err);
-            
-            toast.error(err?.response?.data?.message);
+
+            toast.error("Invalid current password.");
         }
     };
 
@@ -148,10 +161,11 @@ const UserSetting = ({ modalRef, setShowSettings, user }: any) => {
         }
     }, [user]);
 
+    console.log("showPasswordModal:", showPasswordModal)
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <Card
-                ref={modalRef}
+                // ref={modalRef}
                 className="relative p-4 w-full max-w-md bg-white text-black dark:bg-zinc-800 dark:text-white"
             >
                 <button

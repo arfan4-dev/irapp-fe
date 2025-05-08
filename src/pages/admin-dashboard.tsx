@@ -34,7 +34,7 @@ export default function AdminPage() {
   const allOrders = useSelector((state: RootState) => state?.orders?.orders);
   const [pendingPage, setPendingPage] = useState(1);
   const [progressPage, setProgressPage] = useState(1);
-  const ORDERS_PER_PAGE = 5;
+  const ORDERS_PER_PAGE = 6;
 
   const [feedbackModal, setFeedbackModal] = useState<{
     open: boolean;
@@ -180,7 +180,14 @@ export default function AdminPage() {
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showSettings, setShowSettings]);
+  useEffect(() => {
+    setPendingPage(1);
+  }, [pendingFilters.item, pendingFilters.person, pendingFilters.date]);
 
+  // Reset progressPage to 1 when filters change
+  useEffect(() => {
+    setProgressPage(1);
+  }, [progressFilters.item, progressFilters.person, progressFilters.date]);
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
       <Header
@@ -219,11 +226,11 @@ export default function AdminPage() {
             <div className={` ${viewMode === "grid" ? "sm:flex gap-5" : "space-y-5"} `}>
 
 
-              <div>
+              <div className="w-full">
                 <CardContent className="px-4 md:px-6 ">
 
                   <h2 className="text-xl font-semibold mb-4">Pending Requests</h2>
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  {<div className="flex flex-wrap gap-2 mb-4">
                     <Input
                       type="text"
                       placeholder="Search by Item Name"
@@ -250,11 +257,11 @@ export default function AdminPage() {
                       className="cursor-pointer text-[14px] md:text-[16px]"
 
                       variant="outline"
-                      onClick={() => setPendingFilters({ item: "", person: "", date: null})}
+                      onClick={() => setPendingFilters({ item: "", person: "", date: null })}
                     >
                       Clear Filters
                     </Button>
-                  </div>
+                  </div>}
 
                   {viewMode === "list" ? (
                     <table className="w-full text-left ">
@@ -329,7 +336,7 @@ export default function AdminPage() {
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
 
                       {
-                          paginatedPendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>) : (paginatedPendingOrders.map(req => (
+                        paginatedPendingOrders.length === 0 ? (<div className="text-gray-500">No requests in pending.</div>) : (paginatedPendingOrders.map(req => (
                           <Card key={req._id}>
                             <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
                               {/* <div><strong>Type:</strong> {req.type}</div> */}
@@ -372,10 +379,11 @@ export default function AdminPage() {
                         )))}
                     </div>
                   )}
-                  {filteredPendingOrders.length>=5 && <div className="flex justify-end gap-2 mt-4">
+                  {filteredPendingOrders.length >= 5 && <div className="flex justify-end gap-2 mt-4">
                     <Button
                       size="sm"
                       variant="outline"
+                      className="cursor-pointer"
                       disabled={pendingPage === 1}
                       onClick={() => setPendingPage(prev => Math.max(prev - 1, 1))}
                     >
@@ -384,21 +392,22 @@ export default function AdminPage() {
                     <Button
                       size="sm"
                       variant="outline"
+                      className="cursor-pointer"
                       disabled={pendingPage * ORDERS_PER_PAGE >= filteredPendingOrders.length}
                       onClick={() => setPendingPage(prev => prev + 1)}
                     >
-                      Next 
+                      Next
                     </Button>
                   </div>}
                 </CardContent>
-               
+
 
               </div>
               <div className={`border border-l mx-2 sm:mx-0  ${viewMode !== "grid" && "mx-5"} `} />
-              <div>
+              <div className="w-full">
                 <CardContent className="px-4 md:px-6 ">
                   <h2 className="text-xl font-semibold mb-4">In Progress Requests</h2>
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  { <div className="flex flex-wrap gap-2 mb-4">
                     <Input
                       type="text"
                       placeholder="Search by Item Name"
@@ -434,7 +443,7 @@ export default function AdminPage() {
                     >
                       Clear Filters
                     </Button>
-                  </div>
+                  </div>}
                   {paginatedInProgressOrders.length === 0 ? (
                     <div className="text-gray-500">No requests in progress.</div>
                   ) : viewMode === "list" ? (
@@ -452,7 +461,7 @@ export default function AdminPage() {
                         </tr>
                       </thead>
                       <tbody>
-                          {paginatedInProgressOrders.map(req => (
+                        {paginatedInProgressOrders.map(req => (
                           <tr key={req._id} className="border-b align-top">
                             <td className="p-2">
                               {/* <div className="font-semibold italic">{req.type}</div> */}
@@ -497,37 +506,38 @@ export default function AdminPage() {
                       </tbody>
                     </table>
                   ) : (
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                          {paginatedInProgressOrders.map(req => (
-                        <Card key={req._id}>
-                          <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
-                            {/* <div><strong>Type:</strong> {req.type}</div> */}
-                            <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
-                            <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
-                            <div><strong>Department:</strong> {req.department}</div>
-                            <div><strong>Location:</strong> {req.location}</div>
-                            {req.timestamp ? (
-                              <>
-                                <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
-                                <div><strong>Time:</strong> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</div>
-                              </>
-                            ) : (
-                              <div><em>No timestamp available</em></div>
-                            )}
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 w-full ">
+                      {paginatedInProgressOrders.map(req => (
+                        <div >
+                          <Card key={req._id}>
+                            <CardContent className={`space-y-2 min-w-full  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
+                              {/* <div><strong>Type:</strong> {req.type}</div> */}
+                              <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
+                              <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
+                              <div><strong>Department:</strong> {req.department}</div>
+                              <div><strong>Location:</strong> {req.location}</div>
+                              {req.timestamp ? (
+                                <>
+                                  <div><strong>Date:</strong> {new Date(req.timestamp as string).toISOString().split("T")[0]}</div>
+                                  <div><strong>Time:</strong> {new Date(req.timestamp as string).toTimeString().split(" ")[0]}</div>
+                                </>
+                              ) : (
+                                <div><em>No timestamp available</em></div>
+                              )}
 
-                            <div><strong>Status:</strong> {req.status}</div>
-                            {user.role === 'staff' && <div className="pt-2">
-                              <Button className="cursor-pointer hover:opacity-75" size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}>Mark as Answered</Button>
-                            </div>}
-                          </CardContent>
-                        </Card>
+                              <div><strong>Status:</strong> {req.status}</div>
+                              {user.role === 'staff' && <div className="pt-2">
+                                <Button className="cursor-pointer hover:opacity-75" size="sm" variant="outline" onClick={() => handleStatusUpdate(req._id!, "Answered")}>Mark as Answered</Button>
+                              </div>}
+                            </CardContent>
+                          </Card></div>
                       ))}
 
-                      
+
                     </div>
                   )}
 
-                  {filteredInProgressOrders.length>=5 && <div className="flex justify-end gap-2  mt-4">
+                  {paginatedInProgressOrders.length >= 5 && <div className="flex justify-end gap-2  mt-4">
                     <Button
                       size="sm"
                       variant="outline"
@@ -548,16 +558,16 @@ export default function AdminPage() {
                     </Button>
                   </div>}
                 </CardContent>
-               
+
               </div>
             </div>
           </Card>
 
 
         </div>
-      
 
-     
+
+
         {showAdminSettings && (
           <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowAdminSettings} userName={user?.username} setUserName={""} />
         )}

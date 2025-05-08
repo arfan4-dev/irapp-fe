@@ -18,9 +18,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         const checkAuth = async () => {
             try {
                 // await api.get("/refresh-token", { withCredentials: true });
-                if (user.id) {
+               
                     setIsAuthenticated(true);
-                }
+                
             } catch (error) {
                 setIsAuthenticated(false);
             }

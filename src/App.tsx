@@ -21,16 +21,16 @@ import { fetchSiteConfig } from "./store/features/siteConfig/siteConfig";
 import DepartmentManagementPage from "./pages/department";
 import ForgotPassword from "./pages/forgot-password";
 import ResetPassword from "./pages/reset-password";
-// import PublicRoute from "./routes/PublicRoute";
+import PublicRoute from "./routes/PublicRoute";
 
 function App() {
   useOrderSync();
   const { config } = useSelector((state: RootState) => state?.siteConfig);
   const dispatch = useDispatch<AppDispatch>();
-  useDynamicSiteMeta({ faviconUrl:( config?.faviconUrl || '/assets/favicon.ico'), title: (config?.siteTitle || 'Internal Service Management System') })
-    useEffect(() => {
-      dispatch(fetchSiteConfig()).unwrap()
-    }, [])
+  useDynamicSiteMeta({ faviconUrl: (config?.faviconUrl || '/assets/favicon.ico'), title: (config?.siteTitle || 'Internal Service Management System') })
+  useEffect(() => {
+    dispatch(fetchSiteConfig()).unwrap()
+  }, [])
   return (
     <ErrorBoundary>
       <Routes>
@@ -39,38 +39,38 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} /> */}
         <Route path="/login" element={
-          // <PublicRoute>
+          <PublicRoute>
             <Login />
-          // </PublicRoute> 
+          </PublicRoute>
         } />
 
         <Route path="/" element={
-          // <PublicRoute>
+          <PublicRoute>
             <Register />
-          // </PublicRoute>
+          </PublicRoute>
         } />
 
         <Route path="/admin" element={
-          // <PublicRoute>
+          <PublicRoute>
             <AdminLogin />
-        //  </PublicRoute>
+          </PublicRoute>
         } />
         <Route path="/forgot-password" element={
-          // <PublicRoute>
-          <ForgotPassword />
-          // </PublicRoute>
+          <PublicRoute>
+            <ForgotPassword />
+          </PublicRoute>
         } />
 
         <Route path="/reset-password/:token" element={
-          // <PublicRoute>
-          <ResetPassword />
-          // </PublicRoute>
+          <PublicRoute>
+            <ResetPassword />
+          </PublicRoute>
         } />
         {/* Private Route */}
         <Route path="/service-request" element={<ProtectedRoute><ServiceRequest /></ProtectedRoute>} />
         <Route path="/admin-panel" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
         <Route path="/staff-panel" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-       
+
         <Route path="/manage-users" element={<ProtectedRoute><ManageUsers /></ProtectedRoute>} />
         <Route path="/admin-panel/site-config" element={<ProtectedRoute><SiteConfig /></ProtectedRoute>} />
         <Route path="/manage-categories-departments" element={<ProtectedRoute><DepartmentManagementPage /></ProtectedRoute>} />

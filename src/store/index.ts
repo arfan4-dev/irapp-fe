@@ -18,7 +18,7 @@ const userPersistConfig = {
 const rootPersistConfig = {
   key: "root",
   storage,
-  blacklist: [], // No need to blacklist user anymore
+  blacklist: ["user"], // No need to blacklist user anymore
 };
 
 const rootReducer = combineReducers({

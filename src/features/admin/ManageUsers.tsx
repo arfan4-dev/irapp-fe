@@ -34,6 +34,7 @@ export default function ManageUsers() {
     const [searchEmail, setSearchEmail] = useState('');
     const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
 
+    console.log("user:", user)
     const filteredUsers = users?.filter((user: any) => {
         const nameMatch = user.username.toLowerCase().includes(searchName.toLowerCase());
         const emailMatch = user.email.toLowerCase().includes(searchEmail.toLowerCase());
@@ -96,6 +97,9 @@ const [addUserModal,setAddUserModal]=useState(false)
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [showSettings, setShowSettings]);
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchName, searchEmail]);
 
     return (
         <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -59,7 +59,10 @@ const [open,setOpen]=useState(false)
         toast.error("Invalid Email or Password.");
     }
 };
-
+useEffect(()=>{
+    localStorage.removeItem("persist:user");
+    localStorage.removeItem("persist:root");
+},[])
     return (
         <div>
             <PublicHeader theme={theme} setTheme={setTheme} />

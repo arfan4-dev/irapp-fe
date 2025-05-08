@@ -146,8 +146,6 @@ export default function SiteConfig() {
                 <h1 className="text-2xl font-bold">Site Identity</h1>
                 <Card>
                     <CardContent className="p-6 space-y-8">
-
-
                         {/* Site Title */}
                         <div className="flex flex-col md:flex-row items-center gap-4">
                             <Label className="w-40">Site Title</Label>
@@ -209,7 +207,8 @@ export default function SiteConfig() {
                                 value={tabs.T4}
                                 onChange={(e) => setTabs({ ...tabs, T4: filterAlphaSpaces(e.target.value) })}
                                 placeholder="User Tab"
-                            />                        </div>
+                            />                       
+                     </div>
 
                         {/* Logo Upload */}
                         <div className="flex flex-col md:flex-row items-center gap-4">

@@ -1,10 +1,12 @@
 export const getUserIdFromLocalStorage = (): string | null => {
   try {
     const persistedRoot = localStorage.getItem("persist:root");
-
     if (!persistedRoot) return null;
 
     const rootState = JSON.parse(persistedRoot);
+
+    if (!rootState.user || rootState.user === "undefined") return null;
+
     const userState = JSON.parse(rootState.user);
 
     return userState.currentUser?._id || null;

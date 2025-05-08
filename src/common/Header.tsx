@@ -41,6 +41,7 @@ const Header: React.FC<HeaderProps> = ({
   const { config } = useSelector((state: RootState) => state.siteConfig);
   const tabs = config?.tabs || {};
 
+  console.log("user:", user)
 
 
   const handleLogout = async () => {
@@ -51,9 +52,9 @@ const Header: React.FC<HeaderProps> = ({
       dispatch(logout());
 
       // ✅ Clear localStorage (if used with persist)
+    localStorage.removeItem("persist:root");
       localStorage.removeItem("persist:user");
-      localStorage.removeItem("persist:root");
-
+     
       // ✅ Navigate to login
       navigate("/login");
     } catch (error) {
@@ -288,7 +289,7 @@ const Header: React.FC<HeaderProps> = ({
                 )}
               </div>
             </DropdownMenuItem>
-            {user.role == 'admin' && (<><NavLink to='/admin-panel/site-config'>
+            {user?.role == 'admin' && (<><NavLink to='/admin-panel/site-config'>
               <DropdownMenuItem className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
                 <MonitorCog />  Site Configuration
               </DropdownMenuItem>

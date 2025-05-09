@@ -42,10 +42,14 @@ import { setCategories } from "@/store/slices/categorySlice";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import { useSyncPendingCategoryItems, useSyncPendingCategoryUpdates } from "@/utils/categorySync";
 import { useDeptCategoryState } from "@/hooks/useDeptCategoryState";
+import { useSyncPendingDepartments } from "@/utils/departmentSync";
+import { getPendingDepartments, savePendingDepartment } from "@/utils/departmentStorage";
+import { addDepartment } from "@/store/slices/departmentSlice";
 
 export default function DepartmentManagementPage() {
-    useSyncPendingCategoryUpdates()
-    useSyncPendingCategoryItems()
+    useSyncPendingCategoryUpdates();
+    useSyncPendingCategoryItems();
+    useSyncPendingDepartments();
     const dispatch = useDispatch<AppDispatch>();
     const { categories, loading } = useSelector((state: RootState) => state?.categories);
     const { departments, loading: loader } = useSelector((state: RootState) => state.departments);
@@ -88,49 +92,124 @@ export default function DepartmentManagementPage() {
     const [deleteLoading, setDeleteLoading] = useState<boolean>(false); // Track department being deleted
 
 
-    const handleCreate = (e: any) => {
-        e.preventDefault()
+    // const handleCreate = (e: any) => {
+    //     e.preventDefault()
+    //     const trimmed = newDeptInput.trim();
+    //     const regex = /^[a-zA-Z /]+$/;
+    //     if (!regex.test(trimmed)) return toast.error("Only letters, spaces, and '/' allowed.");
+
+    //     if (!trimmed) return toast.error("Department name is required.");
+
+    //     const alreadyExists = departments.some((d) => d.name.toLowerCase() === trimmed.toLowerCase());
+    //     if (alreadyExists) return toast.error("This department already exists.");
+
+    //     dispatch(createDepartment({ name: trimmed }))
+    //         .unwrap()
+    //         .then(() => {
+    //             setNewDeptInput("");
+    //             setNewDeptModalOpen(false);
+    //             toast.success("Department created successfully");
+    //         });
+    // };
+
+    // const handleUpdate = () => {
+    //     if (!editDept?.id || !editDept.name.trim()) return toast.error("Updated name required.");
+    //     const regex = /^[a-zA-Z /]+$/;
+    //     if (!regex.test(editDept.name.trim())) return toast.error("Only letters, spaces, and '/' allowed.");
+
+    //     setEditLoading(true);
+    //     dispatch(updateDepartment({ id: editDept.id, name: editDept.name.trim() }))
+    //         .unwrap()
+    //         .then(() => {
+    //             setEditDept(null); // close the editing row
+    //             toast.success("Department updated successfully.");
+    //             dispatch(fetchDepartments()); // refresh list
+    //         })
+    //         .catch(() => {
+    //             toast.error("Update failed.");
+    //         })
+    //         .finally(() => {
+    //             setEditLoading(false);
+    //         });
+    // };
+
+
+
+    // UPDATE
+
+
+    const handleCreate = async (e: React.FormEvent) => {
+        e.preventDefault();
         const trimmed = newDeptInput.trim();
-        const regex = /^[a-zA-Z /]+$/;
-        if (!regex.test(trimmed)) return toast.error("Only letters, spaces, and '/' allowed.");
 
         if (!trimmed) return toast.error("Department name is required.");
 
-        const alreadyExists = departments.some((d) => d.name.toLowerCase() === trimmed.toLowerCase());
-        if (alreadyExists) return toast.error("This department already exists.");
+        const regex = /^[a-zA-Z /]+$/;
+        if (!regex.test(trimmed)) return toast.error("Only letters, spaces, and '/' allowed.");
+        
+        if (departments.some(d => d.name.toLowerCase() === trimmed.toLowerCase()))
+            return toast.error("This department already exists.");
 
-        dispatch(createDepartment({ name: trimmed }))
-            .unwrap()
-            .then(() => {
+        if (isOnline) {
+            try {
+                await dispatch(createDepartment({ name: trimmed })).unwrap();
                 setNewDeptInput("");
                 setNewDeptModalOpen(false);
                 toast.success("Department created successfully");
-            });
+            } catch (error) {
+                console.error(error);
+                toast.error("Failed to create department online.");
+            }
+        } else {
+            try {
+                const tempKey = await savePendingDepartment({ action: 'create', name: trimmed });
+                toast.success("Saved offline. Will sync when online.");
+                setNewDeptInput("");
+                setNewDeptModalOpen(false);
+
+                // optional: fetch and show pending for debugging
+                const pendings = await getPendingDepartments();
+                console.log("Pending departments (offline):", pendings);
+
+                // optional: show in UI immediately
+                dispatch(addDepartment({
+                    _id: `offline-${tempKey}`,
+                    name: trimmed,
+                    offline: true,
+                }));
+            } catch (error) {
+                console.error("Failed to save department offline:", error);
+                toast.error("Failed to save offline.");
+            }
+        }
     };
 
     const handleUpdate = () => {
         if (!editDept?.id || !editDept.name.trim()) return toast.error("Updated name required.");
+        const trimmed = editDept.name.trim();
         const regex = /^[a-zA-Z /]+$/;
-        if (!regex.test(editDept.name.trim())) return toast.error("Only letters, spaces, and '/' allowed.");
+        if (!regex.test(trimmed)) return toast.error("Only letters, spaces, and '/' allowed.");
 
         setEditLoading(true);
-        dispatch(updateDepartment({ id: editDept.id, name: editDept.name.trim() }))
-            .unwrap()
-            .then(() => {
-                setEditDept(null); // close the editing row
-                toast.success("Department updated successfully.");
-                dispatch(fetchDepartments()); // refresh list
-            })
-            .catch(() => {
-                toast.error("Update failed.");
-            })
-            .finally(() => {
-                setEditLoading(false);
-            });
+        if (isOnline) {
+            dispatch(updateDepartment({ id: editDept.id, name: trimmed }))
+                .unwrap()
+                .then(() => {
+                    toast.success("Department updated successfully");
+                    dispatch(fetchDepartments());
+                    setEditDept(null);
+                })
+                .catch(() => toast.error("Update failed."))
+                .finally(() => setEditLoading(false));
+        } else {
+            savePendingDepartment({ action: 'update', id: editDept.id, name: trimmed })
+                .then(() => {
+                    toast.success("Saved offline. Will sync when online.");
+                    setEditDept(null);
+                })
+                .finally(() => setEditLoading(false));
+        }
     };
-
-
-
     const filtered = departments
         .filter((d) => d.name.toLowerCase().includes(search.toLowerCase()))
         .sort((a, b) => a.name.localeCompare(b.name));
@@ -218,6 +297,7 @@ export default function DepartmentManagementPage() {
             dispatch(fetchCategories()).unwrap(); // Refresh categories when no department is selected
         }
     }, [selectedDept, dispatch]);
+
     return (
         <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
             <Header
@@ -422,8 +502,19 @@ export default function DepartmentManagementPage() {
                                                                         size="sm"
                                                                         disabled={loading}
                                                                         onClick={() => {
+                                                                            const trimmedLabel = editedLabel.trim();
+                                                                            const regex = /^[a-zA-Z\s/_-]+$/;
 
-                                                                            dispatch(updateCategory({ id: cat._id, newLabel: editedLabel, newDepartment: editedDepartment, }))
+                                                                            if (!trimmedLabel) {
+                                                                                toast.error("Category name is required.");
+                                                                                return;
+                                                                            }
+
+                                                                            if (!regex.test(trimmedLabel)) {
+                                                                                toast.error("Category name should only contain letters, Numbers.");
+                                                                                return;
+                                                                            }
+                                                                            dispatch(updateCategory({ id: cat._id, newLabel: trimmedLabel, newDepartment: editedDepartment, }))
                                                                                 .unwrap()
                                                                                 .then(() => {
                                                                                     setEditingCategoryId(null);
@@ -431,7 +522,7 @@ export default function DepartmentManagementPage() {
                                                                                         open: true,
                                                                                         type: "update",
                                                                                         title: "Category Updated",
-                                                                                        message: `The category "${editedLabel}" was updated successfully.`,
+                                                                                        message: `The category "${trimmedLabel}" was updated successfully.`,
                                                                                     });
                                                                                 });
                                                                         }}
@@ -573,6 +664,11 @@ export default function DepartmentManagementPage() {
                                                                                         type="button"
                                                                                         onClick={() => {
                                                                                             setEditItemsLoader(true)
+                                                                                            const isValid = /^[a-zA-Z ]*$/.test(editedItemName);
+                                                                                            if (!isValid) {
+                                                                                                toast.error("Only alphabets and spaces are allowed.");
+                                                                                                return;
+                                                                                            }
                                                                                             dispatch(updateItemInCategory({
                                                                                                 categoryId: cat._id,
                                                                                                 oldItemName: item.name,
@@ -708,6 +804,7 @@ export default function DepartmentManagementPage() {
                                                             onSubmit={(e) => {
                                                                 e.preventDefault();
                                                                 const itemName = newItems[cat._id]?.trim();
+
                                                                 if (itemName) {
                                                                     const allowMultiple = itemOptions[cat._id] ?? false;
                                                                     if (isOnline) {
@@ -858,10 +955,10 @@ export default function DepartmentManagementPage() {
 
                                                     <TableCell>
                                                         {editDept?.id === dept._id ? (
-                                                            <div className="flex items-center">
+                                                            <div className="flex flex-col gap-2">
                                                                 <Input
                                                                     ref={inputRef}
-                                                                    className="h-9"
+                                                                    className="h-9 w-[200px]"
                                                                     value={editDept.name}
                                                                     onChange={(e) => {
                                                                         const value = e.target.value;
@@ -876,21 +973,35 @@ export default function DepartmentManagementPage() {
                                                                     }}
                                                                 />
 
+                                                                <div className="flex flex-end gap-2">
+                                                                    <Button
+                                                                        className="cursor-pointer"
+                                                                        size="sm"
+                                                                        onClick={handleUpdate}
+                                                                        disabled={editLoading || loader}
+                                                                    >
+                                                                        {editLoading ? "Saving..." : "Save"}
+                                                                    </Button>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        className="cursor-pointer"
+                                                                        variant="outline"
+                                                                        onClick={() => setEditDept(null)}
+                                                                    >
+                                                                        Cancel
+                                                                    </Button>
+                                                                </div>
                                                             </div>
+
                                                         ) : (
                                                             <span className="hover:underline ">{dept.name}</span>
                                                         )}
                                                     </TableCell>
 
 
-                                                    <TableCell className="text-right">
+                                                    <TableCell className="text">
                                                         {editDept?.id === dept._id ? (
-                                                            <div className="space-x-2">
-                                                                <Button className="cursor-pointer" size="sm" onClick={handleUpdate} disabled={editLoading || loader}>
-                                                                    {editLoading ? "Saving..." : "Save"}
-                                                                </Button>
-                                                                <Button size="sm" className="cursor-pointer" variant="outline" onClick={() => setEditDept(null)}>Cancel</Button>
-                                                            </div>
+                                                            <></>
                                                         ) : (
                                                             <DropdownMenu>
                                                                 <DropdownMenuTrigger asChild>
@@ -936,17 +1047,16 @@ export default function DepartmentManagementPage() {
                                                                     >
                                                                         Delete
                                                                     </DropdownMenuItem> */}
-                                                                        <DropdownMenuItem
-                                                                            onClick={() =>
-                                                                              {  
-                                                                                setDeleteLoading (true) 
+                                                                    <DropdownMenuItem
+                                                                        onClick={() => {
+                                                                            setDeleteLoading(true)
                                                                             dispatch(deleteDepartment(dept._id))
                                                                                 .unwrap()
                                                                                 .then(() => {
                                                                                     if (selectedDept === dept.name) {
                                                                                         setSelectedDept(null); // Clear selected department
                                                                                     }
-                                                                                    setDeleteLoading(false) 
+                                                                                    setDeleteLoading(false)
                                                                                     // Remove manual state update
                                                                                     // dispatch({ type: "departments/setDepartments", payload: updated });
 
@@ -956,15 +1066,15 @@ export default function DepartmentManagementPage() {
 
                                                                                 .catch((error) => {
                                                                                     console.error("Delete department failed:", error);
-                                                                                    setDeleteLoading(false) 
+                                                                                    setDeleteLoading(false)
                                                                                     toast.error("Failed to delete department.");
                                                                                 })
-                                                                            }}
-                                                                            className="text-red-600"
-                                                                            disabled={deleteLoading }
-                                                                        >
-                                                                            {deleteLoading ?"Deleting..." : "Delete"}
-                                                                        </DropdownMenuItem>
+                                                                        }}
+                                                                        className="text-red-600"
+                                                                        disabled={deleteLoading}
+                                                                    >
+                                                                        {deleteLoading ? "Deleting..." : "Delete"}
+                                                                    </DropdownMenuItem>
                                                                 </DropdownMenuContent>
                                                             </DropdownMenu>
                                                         )}
@@ -998,10 +1108,11 @@ export default function DepartmentManagementPage() {
                                     const label = form.catLabel.value.trim();
                                     const dept = form.department.value.trim();
                                     // Disallow special characters except space, dash, underscore
-                                    const isValid = /^[a-zA-Z0-9 _-]+$/.test(label);
+                                    const isValid = /^[a-zA-Z _/-]+$/.test(label); // allows only letters, spaces, underscores, slashes, and dashes
+
 
                                     if (!label || !isValid) {
-                                        toast.error("Category name should not contain special characters.");
+                                        toast.error("Category name should not contain special characters and Numbers.");
                                         return;
                                     }
 

@@ -24,6 +24,7 @@ export default function Login() {
     const user = useSelector((state: RootState) => state.user.currentUser?.data);
 const [open,setOpen]=useState(false)
     const navigate=useNavigate();
+    console.log("user:", user);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;

@@ -5,7 +5,7 @@ export const saveCategoryOffline = async (category:any) => {
   const db = await initDB();
   await db.add("categories", category);
 };
-
+ 
 export const savePendingCategoryUpdate = async (update:any) => {
   const db = await initDB();
   await db.add("pendingCategoryUpdates", update);

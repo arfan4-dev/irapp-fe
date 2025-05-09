@@ -228,7 +228,7 @@ const PreviewHeader: React.FC<any> = ({
                                 </>)}
 
                             <DropdownMenuItem onClick={() => setShowSettings(true)} className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
-                                ⚙️ Profile Setting
+                                ⚙️ Account Settings
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={handleLogout}

@@ -9,6 +9,7 @@ import {
 interface Department {
   _id: string;
   name: string;
+  offline?: boolean; // ← flag pending sync
 }
 
 interface DepartmentState {
@@ -30,7 +31,11 @@ const departmentSlice = createSlice({
     setDepartments: (state, action) => {
       state.departments = action.payload;
     },
+    addDepartment(state, action: PayloadAction<Department>) {
+      state.departments.push(action.payload);
+    },
   },
+
   extraReducers: (builder) => {
     builder
       // Fetch
@@ -88,5 +93,5 @@ const departmentSlice = createSlice({
   },
 });
 
-export const { setDepartments } = departmentSlice.actions;
+export const { setDepartments, addDepartment } = departmentSlice.actions;
 export default departmentSlice.reducer;

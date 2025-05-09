@@ -20,12 +20,12 @@ import AddUserModal from "@/components/modal/AddUserModal";
 export default function ManageUsers() {
     const dispatch = useDispatch<AppDispatch>();
     const modalRef = useRef<HTMLDivElement>(null);
-    const {users,loading} = useSelector((state: RootState) => state?.user || []);
+    const { users, loading } = useSelector((state: RootState) => state?.user || []);
     const [changes, setChanges] = useState<Record<string, { role: string; department: string }>>({});
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
     const [showSettings, setShowSettings] = useState(false);
     const location = useLocation()
-      const { departments } = useSelector((state: RootState) => state?.departments || []);
+    const { departments } = useSelector((state: RootState) => state?.departments || []);
     const [currentPage, setCurrentPage] = useState(1);
     const usersPerPage = 10;
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
@@ -34,18 +34,17 @@ export default function ManageUsers() {
     const [searchEmail, setSearchEmail] = useState('');
     const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
 
-    console.log("user:", user)
     const filteredUsers = users?.filter((user: any) => {
         const nameMatch = user.username.toLowerCase().includes(searchName.toLowerCase());
         const emailMatch = user.email.toLowerCase().includes(searchEmail.toLowerCase());
         return nameMatch && emailMatch;
     });
- 
-    const sortedFilteredUsers = [...filteredUsers].sort((a:any, b:any) => {
+
+    const sortedFilteredUsers = [...filteredUsers].sort((a: any, b: any) => {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-const [addUserModal,setAddUserModal]=useState(false)
+    const [addUserModal, setAddUserModal] = useState(false)
 
 
     const handleChange = (userId: string, field: 'role' | 'department', value: string) => {
@@ -100,7 +99,7 @@ const [addUserModal,setAddUserModal]=useState(false)
     useEffect(() => {
         setCurrentPage(1);
     }, [searchName, searchEmail]);
-
+    console.log(users.length)
     return (
         <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
             <Header
@@ -116,7 +115,7 @@ const [addUserModal,setAddUserModal]=useState(false)
                     <h2 className="text-2xl font-semibold mb-6">Manage Users</h2>
                     <Button className="cursor-pointer hover:opacity-75" onClick={() => setAddUserModal(true)}>Add User</Button>
                 </div>
-              
+
                 <div className="flex flex-wrap gap-4 mb-4">
                     <Input
                         type="text"
@@ -132,7 +131,7 @@ const [addUserModal,setAddUserModal]=useState(false)
                         onChange={(e) => setSearchEmail(e.target.value)}
                         className=" w-48"
                     />
-                     
+
 
                     {/* ✅ Clear Filter Button */}
                     <Button
@@ -152,74 +151,74 @@ const [addUserModal,setAddUserModal]=useState(false)
                         <UserManageSkeleton />
                     ) : users && users.length > 0 ? (
                         filteredUsers.length > 0 ? (
-                                sortedFilteredUsers
-                                    .slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage)
-                                    .map((user: any) => (
+                            sortedFilteredUsers
+                                .slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage)
+                                .map((user: any) => (
 
-                                <Card key={user._id}>
-                                    <CardContent className="p-4 space-y-3">
-                                        <p className="font-semibold">
-                                            {user.username}{" "}
-                                            <span className="text-sm text-muted-foreground">
-                                                ({user.email})
-                                            </span>
-                                        </p>
+                                    <Card key={user._id}>
+                                        <CardContent className="p-4 space-y-3">
+                                            <p className="font-semibold">
+                                                {user.username}{" "}
+                                                <span className="text-sm text-muted-foreground">
+                                                    ({user.email})
+                                                </span>
+                                            </p>
 
-                                        <div className="flex gap-4">
-                                            <div className="flex flex-col gap-1">
-                                                <Label>Role</Label>
-                                                <Select
-                                                    value={changes[user._id]?.role || user.role}
-                                                    onValueChange={(val) => handleChange(user._id, "role", val)}
-                                                >
-                                                    <SelectTrigger className="w-40">
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="user">User</SelectItem>
-                                                        <SelectItem value="staff">Staff</SelectItem>
-                                                        {/* <SelectItem value="admin">Admin</SelectItem> */}
-                                                    </SelectContent>
-                                                </Select>
+                                            <div className="flex gap-4">
+                                                <div className="flex flex-col gap-1">
+                                                    <Label>Role</Label>
+                                                    <Select
+                                                        value={changes[user._id]?.role || user.role}
+                                                        onValueChange={(val) => handleChange(user._id, "role", val)}
+                                                    >
+                                                        <SelectTrigger className="w-40">
+                                                            <SelectValue />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="user">User</SelectItem>
+                                                            <SelectItem value="staff">Staff</SelectItem>
+                                                            {/* <SelectItem value="admin">Admin</SelectItem> */}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+
+                                                <div className="flex flex-col gap-1">
+                                                    <Label>Department</Label>
+                                                    <Select
+                                                        value={changes[user._id]?.department || user.department || "none"}
+                                                        onValueChange={(val) =>
+                                                            handleChange(user._id, "department", val === "none" ? "" : val)
+                                                        }
+                                                    >
+                                                        <SelectTrigger className="w-44 md:w-56">
+                                                            <SelectValue placeholder="Select department" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="none">No Department</SelectItem>
+                                                            {departments.map((dep) => (
+                                                                <SelectItem key={dep._id} value={dep.name}>
+                                                                    {dep.name}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
                                             </div>
 
-                                            <div className="flex flex-col gap-1">
-                                                <Label>Department</Label>
-                                                <Select
-                                                    value={changes[user._id]?.department || user.department || "none"}
-                                                    onValueChange={(val) =>
-                                                        handleChange(user._id, "department", val === "none" ? "" : val)
-                                                    }
-                                                >
-                                                    <SelectTrigger className="w-44 md:w-56">
-                                                        <SelectValue placeholder="Select department" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="none">No Department</SelectItem>
-                                                        {departments.map((dep) => (
-                                                            <SelectItem key={dep._id} value={dep.name}>
-                                                                {dep.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
+                                            <Button
+                                                size="sm"
+                                                onClick={() => handleSave(user._id)}
 
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleSave(user._id)}
-                                            
-                                            className={`cursor-pointer hover:opacity-75 mt-2 text-white dark:text-zinc-900`}
-                                        >
-                                                    {updatingUserId === user._id ? "Updating..." : "Save Changes"}
+                                                className={`cursor-pointer hover:opacity-75 mt-2 text-white dark:text-zinc-900`}
+                                            >
+                                                {updatingUserId === user._id ? "Updating..." : "Save Changes"}
 
 
-                                        </Button>
-                                    </CardContent>
-                                    
-                                </Card>
-                            ))
+                                            </Button>
+                                        </CardContent>
+
+                                    </Card>
+                                ))
                         ) : (
                             <div className="text-center text-gray-500 dark:text-gray-400 italic mt-6">
                                 No users found matching the current filters.
@@ -242,8 +241,10 @@ const [addUserModal,setAddUserModal]=useState(false)
                             Previous
                         </Button>
                         <span className="text-sm">
-                            Page {currentPage} of {Math.ceil(filteredUsers.length / usersPerPage)}
+                            Page {currentPage} of {Math.ceil(filteredUsers.length / usersPerPage)} —
+                            <span className="ml-1 font-medium">{filteredUsers.length}</span> user{filteredUsers.length !== 1 ? "s" : ""}
                         </span>
+
                         <Button
                             variant="outline"
                             disabled={currentPage === Math.ceil(filteredUsers.length / usersPerPage)}
@@ -258,7 +259,7 @@ const [addUserModal,setAddUserModal]=useState(false)
                     </div>
                 )}
 
-                
+
             </div>
 
 
@@ -270,7 +271,7 @@ const [addUserModal,setAddUserModal]=useState(false)
             {addUserModal && <AddUserModal
                 open={addUserModal}
                 onClose={() => setAddUserModal(false)}
-                
+
             />}
 
         </div>

@@ -37,15 +37,12 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
     });
     const [showPassword, setShowPassword] = useState(false);
     const { departments } = useSelector((state: RootState) => state?.departments || []);
-
     const dispatch = useDispatch<AppDispatch>();
-
-
     const [preview, setPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { loading } = useSelector((state: RootState) => state?.user);
-  
-    
+
+
     const handleChange = (key: string, value: string) => {
         if (key === "email") {
             if (/\s/.test(value)) {
@@ -187,7 +184,7 @@ export default function AddUserModal({ open, onClose }: { open: boolean; onClose
                         <button
                             type="button"
                             onClick={() => setShowPassword((prev) => !prev)}
-                            className="absolute right-3 top-[28px] text-gray-500 dark:text-gray-400"
+                            className="absolute right-3 top-[31px] text-gray-500 dark:text-gray-400"
                         >
                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>

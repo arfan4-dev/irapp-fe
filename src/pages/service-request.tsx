@@ -198,7 +198,7 @@ export default function UserPage() {
                   </TooltipTrigger>
                   {!type.enabled && (
                     <TooltipContent side="right" className="text-sm text-red-500 max-w-xs">
-                      This category is currently disabled by the admin.
+                      This category is currently disabled.
                     </TooltipContent>
                   )}
                 </Tooltip>

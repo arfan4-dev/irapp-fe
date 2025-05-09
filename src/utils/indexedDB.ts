@@ -1,7 +1,7 @@
 import { openDB } from "idb";
 
 export const initDB = async () => {
-  return openDB("AppDB", 4, {
+  return openDB("AppDB", 5, {
     upgrade(db) {
       if (!db.objectStoreNames.contains("orders")) {
         db.createObjectStore("orders", { keyPath: "id", autoIncrement: true });
@@ -25,6 +25,13 @@ export const initDB = async () => {
       // utils/indexedDB.ts
       if (!db.objectStoreNames.contains("pendingCategoryItems")) {
         db.createObjectStore("pendingCategoryItems", {
+          keyPath: "id",
+          autoIncrement: true,
+        });
+      }
+
+      if (!db.objectStoreNames.contains("pendingDepartments")) {
+        db.createObjectStore("pendingDepartments", {
           keyPath: "id",
           autoIncrement: true,
         });

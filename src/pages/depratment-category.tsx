@@ -328,14 +328,14 @@ export default function DepartmentManagementPage() {
                     {activeTab === 'Category' && (
                         <div>
                             {/* Cat tab content goes here */}
-                            <p className="text-muted-foreground">Render category & item UI here</p>
+                            <p className="text-muted-foreground">Render category & item UI here (This Portion In-Progress)</p>
                         </div>
                     )}
 
                     {activeTab === 'mapping' && (
                         <div>
                             {/* Mapping tab content goes here */}
-                            <p className="text-muted-foreground">Render mapping UI here</p>
+                            <p className="text-muted-foreground">Render mapping UI here  (This Portion In-Progress)</p>
                         </div>
                     )}
                 </div>

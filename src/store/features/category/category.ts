@@ -31,11 +31,11 @@ export const fetchCategories = createAsyncThunk(
 export const createCategory = createAsyncThunk(
   "categories/create",
   async (
-    { label, dept }: { label: string; dept: string },
+    { label }: { label: string;  },
     { rejectWithValue }
   ) => {
     try {
-      const res = await api.post("/categories", { label, department: dept });
+      const res = await api.post("/categories", { label });
       return res.data.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || "Creation failed");
@@ -49,7 +49,7 @@ export const updateCategory = createAsyncThunk(
     payload: {
       id: string;
       newLabel: string;
-      newDepartment: string;
+      // newDepartment: string;
       enabled?: boolean;
     },
     { rejectWithValue }

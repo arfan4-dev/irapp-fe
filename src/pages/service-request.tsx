@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,12 +41,6 @@ export default function UserPage() {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
   const allCategories = useSelector((state: RootState) => state.categories.categories || []);
- 
-  const categories = useMemo(() => {
-    if (!user?.department) return [];
-
-    return allCategories.filter(category => category.department === user.department);
-  }, [allCategories, user?.department]);
 
   const order: OfflineOrder = {
     userId: user.id,
@@ -63,7 +57,8 @@ export default function UserPage() {
 
   const confirmSendOrder = () => {
     const orderItems = Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity }));
-   
+    if (user.department === null || user.department === '') return toast.error("Please Request to admin to add your department");
+    if (orderItems.length === 0) return toast.error("Please add items to your cart before submitting.");
     handleOrder({
       type: selectedRequest,
       userId: user.id,
@@ -165,12 +160,12 @@ export default function UserPage() {
       <div className="max-w-4xl mx-auto p-4 space-y-6">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="md:w-1/3 space-y-4">
-            {categories.length === 0 ? (
+            {allCategories.length === 0 ? (
               <p className="text-sm text-gray-500 italic text-center">
                 No categories available. Please contact the admin or try again later.
               </p>
             ) : (
-              categories.map((type) => (
+                allCategories.map((type) => (
                 <Tooltip key={type._id}>
                   <TooltipTrigger asChild>
                     <div className="w-full">
@@ -216,7 +211,7 @@ export default function UserPage() {
               </Card>
             )}
 
-            {selectedRequest && categories.find(r => r._id === selectedRequest) ? (
+            {selectedRequest && allCategories.find(r => r._id === selectedRequest) ? (
               <Card>
                 <CardContent className="space-y-4 p-4 md:px-6 md:py-2">
                   <h2 className="text-xl font-semibold">Submit a Request</h2>
@@ -224,7 +219,7 @@ export default function UserPage() {
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Select Items & Quantity</h3>
                     <div className="space-y-2">
-                      {categories.find(r => r._id === selectedRequest)?.items.map(item => {
+                      {allCategories.find(r => r._id === selectedRequest)?.items.map(item => {
                         const quantity = itemQuantities[item.name] || 1;
                         return (
                           <Card key={item.name} className="p-[13px] flex flex-col md:flex-row md:items-center justify-between gap-4">

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { fetchAllUsers, updateUserRoleAndDepartment } from "@/store/features/user/user";
+import { deleteUser, fetchAllUsers, updateUserRoleAndDepartment } from "@/store/features/user/user";
 import Header from "@/common/Header";
 import useThemeMode from "@/hooks/useTheme";
 import UserSetting from "@/common/UserSetting";
@@ -15,6 +15,9 @@ import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import UserManageSkeleton from "@/components/skeleton/skeleton";
 import { Input } from "@/components/ui/input";
 import AddUserModal from "@/components/modal/AddUserModal";
+import api from "@/api/api";
+import { useDeptCategoryState } from "@/hooks/useDeptCategoryState";
+import ActionFeedbackModal from "@/components/modal/ActionFeedbackModal";
 
 
 export default function ManageUsers() {
@@ -33,12 +36,23 @@ export default function ManageUsers() {
     const [searchName, setSearchName] = useState('');
     const [searchEmail, setSearchEmail] = useState('');
     const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
-
+    const [optLoading, setOptLoading] = useState<string | null>(null);
+     const [searchDept, setSearchDept] = useState('');
+    const { feedbackModal, setFeedbackModal, }=useDeptCategoryState()
     const filteredUsers = users?.filter((user: any) => {
         const nameMatch = user.username.toLowerCase().includes(searchName.toLowerCase());
         const emailMatch = user.email.toLowerCase().includes(searchEmail.toLowerCase());
-        return nameMatch && emailMatch;
+        const deptMatch =
+            searchDept === 'all'
+                ? true
+                : searchDept === 'none'
+                    ? !user.department
+                    : (user.department || '').toLowerCase().includes(searchDept.toLowerCase());
+
+
+        return nameMatch && emailMatch && deptMatch;
     });
+      
 
     const sortedFilteredUsers = [...filteredUsers].sort((a: any, b: any) => {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -56,6 +70,23 @@ export default function ManageUsers() {
             },
         }));
     };
+
+
+
+    const handleGenerateOtp = async (userId: string) => {
+        setOptLoading(userId); // start loader for this user
+        try {
+            const res = await api.post(`/generate-otp/${userId}`);
+            const otp = res.data.otp;
+
+            toast.success(`OTP Generated: ${otp}`, { duration: 10000 });
+        } catch (err) {
+            toast.error("Failed to generate OTP");
+        } finally {
+            setOptLoading(null); // stop loader
+        }
+    };
+
 
     const handleSave = (userId: string) => {
         const change = changes[userId];
@@ -76,7 +107,26 @@ export default function ManageUsers() {
             });
     };
 
-
+    const handleDeleteUser = (userId: string, username: string) => {
+        setFeedbackModal({
+            open: true,
+            type: "delete",
+            title: "Delete User?",
+            message: `Are you sure you want to delete user "${username}"?. This action cannot be undone.`,
+            onConfirm: async () => {
+                try {
+                    await dispatch(deleteUser(`${userId}`));
+                    toast.success("User deleted.");
+                    dispatch(fetchAllUsers());
+                } catch (err) {
+                    toast.error("Failed to delete user.");
+                } finally {
+                    setFeedbackModal(prev => ({ ...prev, open: false }));
+                }
+            },
+        });
+    };
+      
 
     useEffect(() => {
         dispatch(fetchAllUsers());
@@ -99,7 +149,9 @@ export default function ManageUsers() {
     useEffect(() => {
         setCurrentPage(1);
     }, [searchName, searchEmail]);
-    console.log(users.length)
+
+
+
     return (
         <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
             <Header
@@ -131,6 +183,17 @@ export default function ManageUsers() {
                         onChange={(e) => setSearchEmail(e.target.value)}
                         className=" w-48"
                     />
+                    <Select value={searchDept} onValueChange={setSearchDept} >
+                        <SelectTrigger><SelectValue placeholder="Filter by Department" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem value="none">No Department</SelectItem>
+                            {departments.map(dep => (
+                                <SelectItem key={dep._id} value={dep.name}>{dep.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
 
 
                     {/* ✅ Clear Filter Button */}
@@ -164,7 +227,7 @@ export default function ManageUsers() {
                                                 </span>
                                             </p>
 
-                                            <div className="flex gap-4">
+                                            <div className="flex items-center gap-4">
                                                 <div className="flex flex-col gap-1">
                                                     <Label>Role</Label>
                                                     <Select
@@ -203,18 +266,43 @@ export default function ManageUsers() {
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
+                                                <div>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className=" text-xs mt-4.5 p-[17px] cursor-pointer"
+                                                        disabled={optLoading === user._id}
+                                                        onClick={
+                                                            () => handleGenerateOtp(user._id)
+
+                                                        }
+                                                    >
+                                                        {optLoading === user._id ? 'Generating...' : 'Generate OTP'}
+                                                    </Button>
+                                                </div>
+
                                             </div>
 
                                             <Button
                                                 size="sm"
                                                 onClick={() => handleSave(user._id)}
 
-                                                className={`cursor-pointer hover:opacity-75 mt-2 text-white dark:text-zinc-900`}
+                                                className={`cursor-pointer mr-2 hover:opacity-75 mt-2 text-white dark:text-zinc-900`}
                                             >
                                                 {updatingUserId === user._id ? "Updating..." : "Save Changes"}
 
 
                                             </Button>
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                className="mt-2 cursor-pointer "
+                                                onClick={() => handleDeleteUser(user._id, user.username)}
+                                            >
+                                                Delete
+                                            </Button>
+
+
                                         </CardContent>
 
                                     </Card>
@@ -273,6 +361,15 @@ export default function ManageUsers() {
                 onClose={() => setAddUserModal(false)}
 
             />}
+
+              <ActionFeedbackModal
+                            open={feedbackModal.open}
+                            onClose={() => setFeedbackModal((prev) => ({ ...prev, open: false }))}
+                            type={feedbackModal.type}
+                            title={feedbackModal.title}
+                            message={feedbackModal.message}
+                            onConfirm={feedbackModal.onConfirm}
+                        />
 
         </div>
     );

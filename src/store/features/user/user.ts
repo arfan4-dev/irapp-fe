@@ -49,6 +49,8 @@ export const loginUser = createAsyncThunk(
 
       return response?.data;
     } catch (error: any) {
+      console.log("error:", error);
+      
       return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   }
@@ -197,6 +199,35 @@ export const resetPassword = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || " login failed"
+      );
+    }
+  }
+);
+
+export const generateOTP = createAsyncThunk(
+  "user/generateOTP",
+  async ({ userId}: { userId: string }, { rejectWithValue }) => {
+    try {
+      const res = await api.post(`/generate-otp/${userId}`);
+      return res.data;
+    } catch (err:any) {
+      return rejectWithValue(
+        err.response?.data?.message || " Failed to generate OTP"
+      );
+    }
+  }
+);
+
+
+export const deleteUser = createAsyncThunk(
+  "user/deleteUser",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/users/${userId}`);
+      return response; // returning id to update state if needed
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete user"
       );
     }
   }

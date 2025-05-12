@@ -67,7 +67,7 @@ export default function DepartmentManagementPage() {
         feedbackModal, setFeedbackModal,
         editingCategoryId, setEditingCategoryId,
         editedLabel, setEditedLabel,
-        editedDepartment, setEditedDepartment,
+         setEditedDepartment,
         setEditedEnabled,
         editingItem, setEditingItem,
         editItemsLoader, setEditItemsLoader,
@@ -144,9 +144,9 @@ export default function DepartmentManagementPage() {
 
         if (!trimmed) return toast.error("Department name is required.");
 
-        const regex = /^[a-zA-Z /]+$/;
+        const regex = /^[a-zA-Z0-9 /]+$/;
         if (!regex.test(trimmed)) return toast.error("Only letters, spaces, and '/' allowed.");
-        
+
         if (departments.some(d => d.name.toLowerCase() === trimmed.toLowerCase()))
             return toast.error("This department already exists.");
 
@@ -187,7 +187,8 @@ export default function DepartmentManagementPage() {
     const handleUpdate = () => {
         if (!editDept?.id || !editDept.name.trim()) return toast.error("Updated name required.");
         const trimmed = editDept.name.trim();
-        const regex = /^[a-zA-Z /]+$/;
+        const regex = /^[a-zA-Z0-9 /]+$/;
+    
         if (!regex.test(trimmed)) return toast.error("Only letters, spaces, and '/' allowed.");
 
         setEditLoading(true);
@@ -462,7 +463,7 @@ export default function DepartmentManagementPage() {
                                                                             dispatch(updateCategory({
                                                                                 id: cat._id,
                                                                                 newLabel: editedLabel,
-                                                                                newDepartment: editedDepartment,
+                                                                                // newDepartment: editedDepartment,
                                                                             }))
                                                                                 .unwrap()
                                                                                 .then(() => {
@@ -480,7 +481,7 @@ export default function DepartmentManagementPage() {
                                                                     placeholder="Edit Category Label"
                                                                 />
 
-                                                                <Select
+                                                                {/* <Select
                                                                     value={editedDepartment}
                                                                     onValueChange={(val) => setEditedDepartment(val)}
                                                                 >
@@ -494,7 +495,7 @@ export default function DepartmentManagementPage() {
                                                                             </SelectItem>
                                                                         ))}
                                                                     </SelectContent>
-                                                                </Select>
+                                                                </Select> */}
 
                                                                 <div className="flex gap-2 justify-end">
                                                                     <Button
@@ -503,7 +504,8 @@ export default function DepartmentManagementPage() {
                                                                         disabled={loading}
                                                                         onClick={() => {
                                                                             const trimmedLabel = editedLabel.trim();
-                                                                            const regex = /^[a-zA-Z\s/_-]+$/;
+                                                                            const regex = /^[a-zA-Z0-9 /]+$/;
+
 
                                                                             if (!trimmedLabel) {
                                                                                 toast.error("Category name is required.");
@@ -514,7 +516,7 @@ export default function DepartmentManagementPage() {
                                                                                 toast.error("Category name should only contain letters, Numbers.");
                                                                                 return;
                                                                             }
-                                                                            dispatch(updateCategory({ id: cat._id, newLabel: trimmedLabel, newDepartment: editedDepartment, }))
+                                                                            dispatch(updateCategory({ id: cat._id, newLabel: trimmedLabel }))
                                                                                 .unwrap()
                                                                                 .then(() => {
                                                                                     setEditingCategoryId(null);
@@ -558,7 +560,7 @@ export default function DepartmentManagementPage() {
                                                                             dispatch(updateCategory({
                                                                                 id: cat._id,
                                                                                 newLabel: cat.label,
-                                                                                newDepartment: cat.department,
+                                                                                // newDepartment: cat.department,
                                                                                 enabled: checked,
                                                                             }));
 
@@ -1106,7 +1108,7 @@ export default function DepartmentManagementPage() {
                                     e.preventDefault();
                                     const form = e.target as any;
                                     const label = form.catLabel.value.trim();
-                                    const dept = form.department.value.trim();
+                                    // const dept = form.department.value.trim();
                                     // Disallow special characters except space, dash, underscore
                                     const isValid = /^[a-zA-Z _/-]+$/.test(label); // allows only letters, spaces, underscores, slashes, and dashes
 
@@ -1116,16 +1118,16 @@ export default function DepartmentManagementPage() {
                                         return;
                                     }
 
-                                    if (!dept) {
-                                        toast.error("Department is required.");
-                                        return;
-                                    }
+                                    // if (!dept) {
+                                    //     toast.error("Department is required.");
+                                    //     return;
+                                    // }
                                     if (categories.some(cat => cat.label === label)) {
                                         toast.error("Category already exists.");
                                         return;
                                     }
 
-                                    const newCategory = { label, dept };
+                                    const newCategory = { label };
 
                                     if (isOnline) {
                                         dispatch(createCategory(newCategory))
@@ -1157,7 +1159,7 @@ export default function DepartmentManagementPage() {
                                     className="w-full px-3 py-2 border rounded text-sm dark:bg-zinc-800"
                                     required
                                 />
-                                <div className="grid">
+                                {/* <div className="grid">
                                     <Label className="mb-2.5">Department</Label>
                                     <Select
                                         name="department"
@@ -1173,7 +1175,7 @@ export default function DepartmentManagementPage() {
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                </div>
+                                </div> */}
                                 <div className="flex justify-end gap-2">
                                     <Button variant="outline" onClick={() => setShowCategoryModal(false)} type="button">Cancel</Button>
                                     <Button type="submit" className="cursor-pointer hover:opacity-75">{loading ? "Saving..." : "Add"}</Button>

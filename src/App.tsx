@@ -18,9 +18,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "./store";
 import { useEffect } from "react";
 import { fetchSiteConfig } from "./store/features/siteConfig/siteConfig";
-import DepartmentManagementPage from "./pages/department";
 import ForgotPassword from "./pages/forgot-password";
 import ResetPassword from "./pages/reset-password";
+import DepartmentManagementPage from "./pages/depratment-category";
 // import PublicRoute from "./routes/PublicRoute";
 
 function App() {

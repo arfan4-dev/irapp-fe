@@ -11,7 +11,8 @@ import { savePendingCategoryItem } from '@/utils/categoryStorage';
 import { Switch } from '../ui/switch';
 import ActionFeedbackModal from '../modal/ActionFeedbackModal';
 import { useState } from 'react';
-const Category = ({ feedbackModal, selectedDept, setSelectedDept, categorySearch, setCategorySearch, setShowCategoryModal, setCategorySortOrder, categorySortOrder, finalFilteredCategories, editingCategoryId, editedLabel, setEditedLabel, setEditingCategoryId, setFeedbackModal, loading, isOnline, offlineCategoryItems, newItems, itemOptions, setAddItemLoader, setOfflineCategoryItems, setNewItems, setItemOptions
+import CategoryCardSkeleton from '../skeleton/CategoryCardSkeleton';
+const Category = ({ categoryLoading, feedbackModal, selectedDept, setSelectedDept, categorySearch, setCategorySearch, setShowCategoryModal, setCategorySortOrder, categorySortOrder, finalFilteredCategories, editingCategoryId, editedLabel, setEditedLabel, setEditingCategoryId, setFeedbackModal, loading, isOnline, offlineCategoryItems, newItems, itemOptions, setAddItemLoader, setOfflineCategoryItems, setNewItems, setItemOptions
     , setEditedEnabled, editingItem, setEditingItem, editedItemName, setEditedItemName, setEditItemsLoader, editedAllowMultiple, setEditedAllowMultiple, editItemsLoader, addItemLoader
 }: any) => {
     const [catItemLoader, setCatItemLoader] = useState(false)
@@ -81,7 +82,10 @@ const Category = ({ feedbackModal, selectedDept, setSelectedDept, categorySearch
 
 
                             <div className="flex gap-4 flex-wrap items-start">
-                                {finalFilteredCategories && finalFilteredCategories.length > 0 ? (
+                                {
+                                    categoryLoading ? <CategoryCardSkeleton /> :
+                                
+                                finalFilteredCategories && finalFilteredCategories.length > 0 ? (
                                     [...finalFilteredCategories] // create a shallow copy first
                                         .sort((a, b) => {
                                             const nameA = a.label.toLowerCase();
@@ -258,22 +262,22 @@ const Category = ({ feedbackModal, selectedDept, setSelectedDept, categorySearch
                                                         </div>
                                                     )}
                                                 </div>
-                                               
- <div className='flex justify-end gap-2 mt-2'>
-                                                        <Button
-                                                            size="sm"
 
-                                                            className="text-white hover:opacity-85 cursor-pointer "
-                                                            onClick={() => {
-                                                                setActiveCategoryForAddItem((prev) =>
-                                                                    prev === cat._id ? null : cat._id
-                                                                );
-                                                            }}
-                                                        >
-                                                            {activeCategoryForAddItem === cat._id ? "Cancel" : "Add Item"}
+                                                <div className='flex justify-end gap-2 mt-2'>
+                                                    <Button
+                                                        size="sm"
 
-                                                        </Button>
-                                                    </div>
+                                                        className="text-white hover:opacity-85 cursor-pointer dark:text-black"
+                                                        onClick={() => {
+                                                            setActiveCategoryForAddItem((prev) =>
+                                                                prev === cat._id ? null : cat._id
+                                                            );
+                                                        }}
+                                                    >
+                                                        {activeCategoryForAddItem === cat._id ? "Cancel" : "Add Item"}
+
+                                                    </Button>
+                                                </div>
                                                 <div className={`${!cat.enabled ? " opacity-40 blur-[1px] pointer-events-none select-none" : ""}`}>
                                                     <ul className="space-y-2  ">
                                                         {cat?.items?.map((item: any) => {
@@ -483,7 +487,7 @@ const Category = ({ feedbackModal, selectedDept, setSelectedDept, categorySearch
                                                             onSubmit={(e) => {
                                                                 e.preventDefault();
                                                                 const itemName = newItems[cat._id]?.trim();
-                                                                setActiveCategoryForAddItem(null);
+                                                              
                                                                 if (itemName) {
                                                                     const allowMultiple = itemOptions[cat._id] ?? false;
                                                                     if (isOnline) {
@@ -491,6 +495,7 @@ const Category = ({ feedbackModal, selectedDept, setSelectedDept, categorySearch
                                                                         dispatch(addItemToCategory({ categoryId: cat._id, itemName, allowMultiple }))
                                                                             .unwrap()
                                                                             .then(() => {
+                                                                                setActiveCategoryForAddItem(null);
                                                                                 dispatch(fetchCategories()); setAddItemLoader((prev: any) => ({ ...prev, [cat._id]: false }));
 
 
@@ -592,7 +597,7 @@ const Category = ({ feedbackModal, selectedDept, setSelectedDept, categorySearch
                                     </p>
                                 )}
                             </div>
-
+                       =
                         </CardContent>
                     </Card>
                     }

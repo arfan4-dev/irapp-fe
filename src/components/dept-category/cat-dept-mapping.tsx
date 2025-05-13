@@ -128,7 +128,7 @@ export default function CategoryDepartmentMapping({ departments, categories }: a
                                                     <span>{dep?.name || depId}</span>
                                                     <button
                                                         onClick={() => handleRemoveDep(index, depId)}
-                                                        className="ml-2 text-red-500 hover:text-red-700"
+                                                        className="ml-2 cursor-pointer text-red-500 hover:text-red-700"
                                                     >
                                                         <X size={14} />
                                                     </button>

@@ -10,9 +10,9 @@ import { Eye, EyeOff } from "lucide-react";
 import { getPasswordStrength } from "@/utils/passwordStrength";
 
 export default function PasswordChangeModal({ userId, open, setOpen }: any) {
-    const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
-    const [showOld, setShowOld] = useState(false);
+    const [newConfirmPassword, setNewConfirmPassword] = useState('')
+    const [showNewConfirm, setShowConfirmNew] = useState(false);
     const [showNew, setShowNew] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -38,7 +38,10 @@ export default function PasswordChangeModal({ userId, open, setOpen }: any) {
         if (!/[@$!%*?&]/.test(newPassword)) {
             errors.push("one symbol");
         }
-
+if(newConfirmPassword !== newPassword) {
+toast.info("New password and confirm password must match.");
+    return;
+}
         if (errors.length > 0) {
             toast.error(`Password must contain: ${errors.join(", ")}`);
             return;
@@ -47,7 +50,6 @@ export default function PasswordChangeModal({ userId, open, setOpen }: any) {
         setLoading(true);
         try {
             await api.post(`/change-password/${userId}`, {
-                oldPassword,
                 newPassword,
             });
             setOpen(false)
@@ -69,7 +71,7 @@ export default function PasswordChangeModal({ userId, open, setOpen }: any) {
                     <DialogTitle>Change Your Password</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2 relative">
+                    {/* <div className="space-y-2 relative">
                         <Label>Current Password</Label>
                         <Input
                             type={showOld ? "text" : "password"}
@@ -92,7 +94,7 @@ export default function PasswordChangeModal({ userId, open, setOpen }: any) {
                         >
                             {showOld ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
-                    </div>
+                    </div> */}
 
                     <div className="space-y-2 relative">
                         <Label>New Password</Label>
@@ -110,17 +112,8 @@ export default function PasswordChangeModal({ userId, open, setOpen }: any) {
                             required
                         />
 
-                        {newPassword && (
-                            <div className="mt-1">
-                                <div className="h-2 w-full bg-gray-200 rounded">
-                                    <div
-                                        className={`h-2 rounded transition-all duration-300 ${getPasswordStrength(newPassword).color}`}
-                                        style={{ width: `${getPasswordStrength(newPassword).label === "Weak" ? 33 : getPasswordStrength(newPassword).label === "Medium" ? 66 : 100}%` }}
-                                    />
-                                </div>
-
-                            </div>
-                        )}
+                        
+                       
 
                         <button
                             type="button"
@@ -131,6 +124,41 @@ export default function PasswordChangeModal({ userId, open, setOpen }: any) {
                         </button>
                     </div>
 
+                    <div className="space-y-2 relative">
+                        <Label>Confirm Password</Label>
+                        <Input
+                            type={showNewConfirm ? "text" : "password"}
+                            value={newConfirmPassword}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                if (/\s{2,}/.test(value)) {
+                                    toast.error("Only single spaces allowed in new password.");
+                                    return;
+                                }
+                                setNewConfirmPassword(value);
+                            }}
+                            required
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowConfirmNew(!showNewConfirm)}
+                            className="absolute right-3 top-8 text-gray-500"
+                        >
+                            {showNewConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                    </div>
+                   
+                    {newPassword && (
+                        <div className="mt-1">
+                            <div className="h-2 w-full bg-gray-200 rounded">
+                                <div
+                                    className={`h-2 rounded transition-all duration-300 ${getPasswordStrength(newPassword).color}`}
+                                    style={{ width: `${getPasswordStrength(newPassword).label === "Weak" ? 33 : getPasswordStrength(newPassword).label === "Medium" ? 66 : 100}%` }}
+                                />
+                            </div>
+
+                        </div>
+                    )}
                     <p className="text-xs text-muted-foreground">
                         Password must be at least 6 characters, and include 1 uppercase, 1 lowercase, 1 number, and 1 special character.
                     </p>

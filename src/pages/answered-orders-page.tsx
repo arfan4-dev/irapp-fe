@@ -234,7 +234,7 @@ export default function AnsweredOrdersPage() {
                                         <table className="w-full text-left mt-4">
                                             <thead>
                                                 <tr className="bg-gray-200 dark:bg-gray-700">
-                                                    <th className="p-2">Type & Items</th>
+                                                    <th className="p-2"> Items</th>
                                                     <th className="p-2">Requested By</th>
                                                     <th className="p-2">Department</th>
                                                     <th className="p-2">Date</th>
@@ -248,7 +248,7 @@ export default function AnsweredOrdersPage() {
                                                     .map((order) => (
                                                         <tr key={order._id} className="border-b align-top">
                                                             <td className="p-2">
-                                                                <div className="font-semibold italic">{order.type}</div>
+                                                                {/* <div className="font-semibold italic">{order.type}</div> */}
                                                                 <div className="text-sm italic">
                                                                     {order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}
                                                                 </div>
@@ -274,7 +274,7 @@ export default function AnsweredOrdersPage() {
                                             .map((order) => (
                                                 <Card key={order._id}>
                                                     <CardContent className="px-4 space-y-2">
-                                                        <div><strong>Type:</strong> {order.type}</div>
+                                                        {/* <div><strong>Type:</strong> {order.type}</div> */}
                                                         <div><strong>Items:</strong> {order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}</div>
                                                         <div><strong>By:</strong> {userIdToUsername[order.userId] || "Loading..."}</div>
                                                         {order.timestamp && (

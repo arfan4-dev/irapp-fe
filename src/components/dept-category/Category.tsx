@@ -259,7 +259,21 @@ const Category = ({ feedbackModal, selectedDept, setSelectedDept, categorySearch
                                                     )}
                                                 </div>
                                                
+ <div className='flex justify-end gap-2 mt-2'>
+                                                        <Button
+                                                            size="sm"
 
+                                                            className="text-white hover:opacity-85 cursor-pointer "
+                                                            onClick={() => {
+                                                                setActiveCategoryForAddItem((prev) =>
+                                                                    prev === cat._id ? null : cat._id
+                                                                );
+                                                            }}
+                                                        >
+                                                            {activeCategoryForAddItem === cat._id ? "Cancel" : "Add Item"}
+
+                                                        </Button>
+                                                    </div>
                                                 <div className={`${!cat.enabled ? " opacity-40 blur-[1px] pointer-events-none select-none" : ""}`}>
                                                     <ul className="space-y-2  ">
                                                         {cat?.items?.map((item: any) => {
@@ -554,7 +568,7 @@ const Category = ({ feedbackModal, selectedDept, setSelectedDept, categorySearch
                                                         </form>
                                                     }
                                                     <div className='flex justify-end gap-2 mt-2'>
-                                                        <Button
+                                                        {/* <Button
                                                             size="sm"
 
                                                             className="text-white w-full hover:opacity-85 cursor-pointer "
@@ -566,7 +580,7 @@ const Category = ({ feedbackModal, selectedDept, setSelectedDept, categorySearch
                                                         >
                                                             {activeCategoryForAddItem === cat._id ? "Cancel" : "Add Item"}
 
-                                                        </Button>
+                                                        </Button> */}
                                                     </div>
                                                 </div>
 

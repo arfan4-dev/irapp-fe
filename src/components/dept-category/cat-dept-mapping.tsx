@@ -66,6 +66,19 @@ export default function CategoryDepartmentMapping({ departments, categories }: a
         }
     }, [categories]);
 
+    useEffect(() => {
+        if (!departments?.length || !mapping?.length) return;
+
+        const validDeptIds = departments.map((d: any) => d._id);
+
+        mapping.forEach((cat, index) => {
+            const filtered = cat.departments.filter((id: string) => validDeptIds.includes(id));
+            if (filtered.length !== cat.departments.length) {
+                handleUpdateDepartments(index, filtered);
+            }
+        });
+    }, [departments]);
+
     const handleUpdateDepartments = async (index: any, newDeps: any) => {
         const updated = [...mapping];
         updated[index].departments = newDeps;
@@ -85,7 +98,7 @@ export default function CategoryDepartmentMapping({ departments, categories }: a
     const handleRemoveDep = (catIdx: any, depToRemove: any) => {
         const updated = [...mapping];
         const newDeps = updated[catIdx].departments.filter((dep: any) => dep !== depToRemove);
-        handleUpdateDepartments(catIdx, newDeps); // reuse update logic
+        handleUpdateDepartments(catIdx, newDeps);
     };
 
     return (

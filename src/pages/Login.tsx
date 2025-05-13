@@ -98,14 +98,14 @@ useEffect(()=>{
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
-                                <div className="text-right">
+                                {/* <div className="text-right">
                                     <Link
                                         to="/forgot-password"
                                         className="text-sm text-blue-600 hover:underline dark:text-blue-400"
                                     >
                                         Forgot Password?
                                     </Link>
-                                </div>
+                                </div> */}
                             </div>
 
                            

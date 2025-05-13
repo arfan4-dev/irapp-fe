@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { savePendingCategoryItem } from '@/utils/categoryStorage';
 import { Switch } from '../ui/switch';
 import ActionFeedbackModal from '../modal/ActionFeedbackModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CategoryCardSkeleton from '../skeleton/CategoryCardSkeleton';
 const Category = ({ categoryLoading, feedbackModal, selectedDept, setSelectedDept, categorySearch, setCategorySearch, setShowCategoryModal, setCategorySortOrder, categorySortOrder, finalFilteredCategories, editingCategoryId, editedLabel, setEditedLabel, setEditingCategoryId, setFeedbackModal, loading, isOnline, offlineCategoryItems, newItems, itemOptions, setAddItemLoader, setOfflineCategoryItems, setNewItems, setItemOptions
     , setEditedEnabled, editingItem, setEditingItem, editedItemName, setEditedItemName, setEditItemsLoader, editedAllowMultiple, setEditedAllowMultiple, editItemsLoader, addItemLoader
@@ -19,6 +19,10 @@ const Category = ({ categoryLoading, feedbackModal, selectedDept, setSelectedDep
     const dispatch = useDispatch<AppDispatch>();
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const [activeCategoryForAddItem, setActiveCategoryForAddItem] = useState<string | null>(null);
+
+    useEffect(() => {
+        dispatch(fetchCategories()).unwrap()
+    },[])
     return (
         <div>
             <div className="flex flex-col md:flex-row-reverse gap-6 w-full h-auto md:h-[calc(100vh-200px)] ">

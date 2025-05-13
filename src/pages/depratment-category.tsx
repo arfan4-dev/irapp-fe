@@ -17,8 +17,6 @@ import { Input } from "@/components/ui/input";
 import Header from "@/common/Header";
 import { useLocation } from "react-router-dom";
 import useThemeMode from "@/hooks/useTheme";
-import ActionFeedbackModal from "@/components/modal/ActionFeedbackModal";
-
 import UserSetting from "@/common/UserSetting";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,6 +31,9 @@ import { useSyncPendingDepartments } from "@/utils/departmentSync";
 import { getPendingDepartments, savePendingDepartment } from "@/utils/departmentStorage";
 import { addDepartment } from "@/store/slices/departmentSlice";
 import Departments from "@/components/dept-category/Departments";
+import Category from "@/components/dept-category/Category";
+import useCategorySortOrder from "@/hooks/useCategorySortOrder";
+import CategoryDepartmentMapping from "@/components/dept-category/cat-dept-mapping";
 
 export default function DepartmentManagementPage() {
     useSyncPendingCategoryUpdates();
@@ -42,7 +43,6 @@ export default function DepartmentManagementPage() {
     const { categories, loading } = useSelector((state: RootState) => state?.categories);
     const { departments, loading: loader } = useSelector((state: RootState) => state.departments);
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
-    // const { categorySortOrder, setCategorySortOrder } = useCategorySortOrder();
     const { config } = useSelector((state: RootState) => state.siteConfig);
     const { theme, setTheme } = useThemeMode();
     const [editLoading, setEditLoading] = useState(false);
@@ -52,22 +52,22 @@ export default function DepartmentManagementPage() {
     const modalRef = useRef<HTMLDivElement>(null);
     const isOnline = useOfflineStatus();
     const [activeTab, setActiveTab] = useState<'Departments' | 'Category' | 'mapping'>('Departments');
+    const { categorySortOrder, setCategorySortOrder } = useCategorySortOrder();
 
     const {
         feedbackModal, setFeedbackModal,
-        // editingCategoryId, setEditingCategoryId,
-        // editedLabel, setEditedLabel,
-        //  setEditedDepartment,
-        // setEditedEnabled,
-        // editingItem, setEditingItem,
-        // editItemsLoader, setEditItemsLoader,
-        // editedAllowMultiple, setEditedAllowMultiple,
-        // offlineCategoryItems, setOfflineCategoryItems,
-        // addItemLoader, setAddItemLoader,
-        // newItems, setNewItems,
-        // itemOptions, setItemOptions,
+        editingCategoryId, setEditingCategoryId,
+        editedLabel, setEditedLabel,
+        setEditedEnabled,
+        editingItem, setEditingItem,
+        editItemsLoader, setEditItemsLoader,
+        editedAllowMultiple, setEditedAllowMultiple,
+        offlineCategoryItems, setOfflineCategoryItems,
+        addItemLoader, setAddItemLoader,
+        newItems, setNewItems,
+        itemOptions, setItemOptions,
         selectedDept, setSelectedDept,
-        // editedItemName, setEditedItemName,
+        editedItemName, setEditedItemName,
         newDeptModalOpen, setNewDeptModalOpen,
         newDeptInput, setNewDeptInput,
         search,
@@ -77,55 +77,10 @@ export default function DepartmentManagementPage() {
         showCategoryModal,
         setShowCategoryModal,
         showSettings, setShowSettings,
-        // categorySearch, setCategorySearch
+        categorySearch, setCategorySearch,
+        
     } = useDeptCategoryState();
     const [deleteLoading, setDeleteLoading] = useState<boolean>(false); // Track department being deleted
-
-
-    // const handleCreate = (e: any) => {
-    //     e.preventDefault()
-    //     const trimmed = newDeptInput.trim();
-    //     const regex = /^[a-zA-Z /]+$/;
-    //     if (!regex.test(trimmed)) return toast.error("Only letters, spaces, and '/' allowed.");
-
-    //     if (!trimmed) return toast.error("Department name is required.");
-
-    //     const alreadyExists = departments.some((d) => d.name.toLowerCase() === trimmed.toLowerCase());
-    //     if (alreadyExists) return toast.error("This department already exists.");
-
-    //     dispatch(createDepartment({ name: trimmed }))
-    //         .unwrap()
-    //         .then(() => {
-    //             setNewDeptInput("");
-    //             setNewDeptModalOpen(false);
-    //             toast.success("Department created successfully");
-    //         });
-    // };
-
-    // const handleUpdate = () => {
-    //     if (!editDept?.id || !editDept.name.trim()) return toast.error("Updated name required.");
-    //     const regex = /^[a-zA-Z /]+$/;
-    //     if (!regex.test(editDept.name.trim())) return toast.error("Only letters, spaces, and '/' allowed.");
-
-    //     setEditLoading(true);
-    //     dispatch(updateDepartment({ id: editDept.id, name: editDept.name.trim() }))
-    //         .unwrap()
-    //         .then(() => {
-    //             setEditDept(null); // close the editing row
-    //             toast.success("Department updated successfully.");
-    //             dispatch(fetchDepartments()); // refresh list
-    //         })
-    //         .catch(() => {
-    //             toast.error("Update failed.");
-    //         })
-    //         .finally(() => {
-    //             setEditLoading(false);
-    //         });
-    // };
-
-
-
-    // UPDATE
 
 
     const handleCreate = async (e: React.FormEvent) => {
@@ -207,14 +162,14 @@ export default function DepartmentManagementPage() {
 
 
 
-    // const filteredCategories = selectedDept
-    //     ? categories.filter((cat) => cat.department === selectedDept)
-    //     : categories;
+    const filteredCategories = selectedDept
+        ? categories.filter((cat) => cat.department === selectedDept)
+        : categories;
 
 
-    // const finalFilteredCategories = filteredCategories.filter(cat =>
-    //     cat.label.toLowerCase().includes(categorySearch.toLowerCase())
-    // );
+    const finalFilteredCategories = filteredCategories.filter(cat =>
+        cat.label.toLowerCase().includes(categorySearch.toLowerCase())
+    );
 
     useEffect(() => {
         const loadOfflineItems = async () => {
@@ -308,7 +263,7 @@ export default function DepartmentManagementPage() {
                             key={tab}
                             onClick={() => setActiveTab(tab as any)}
                             className={`px-4  cursor-pointer py-2 border-b-2 transition-all duration-200 ease-in-out
-              ${activeTab === tab ? 'border-blue-500 font-semibold text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-300'}`}
+              ${activeTab === tab ? 'border-black font-semibold text-black dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-300'}`}
                         >
                             {tab === 'Departments' ? 'Departments' : tab === 'Category' ? 'Category' : 'Mapping'}
                         </button>
@@ -328,14 +283,15 @@ export default function DepartmentManagementPage() {
                     {activeTab === 'Category' && (
                         <div>
                             {/* Cat tab content goes here */}
-                            <p className="text-muted-foreground text-center">Render category & item UI here (This Portion is In-Progress)</p>
+                            <Category feedbackModal={feedbackModal} selectedDept={selectedDept} setSelectedDept={setSelectedDept} categorySearch={categorySearch} setCategorySearch={setCategorySearch} setShowCategoryModal={setShowCategoryModal} setCategorySortOrder={setCategorySortOrder} categorySortOrder={categorySortOrder} finalFilteredCategories={finalFilteredCategories} editingCategoryId={editingCategoryId} editedLabel={editedLabel} setEditedLabel={setEditedLabel} setEditingCategoryId={setEditingCategoryId} setFeedbackModal={setFeedbackModal} loading={loading} isOnline={isOnline} offlineCategoryItems={offlineCategoryItems} newItems={newItems} itemOptions={itemOptions} setAddItemLoader={setAddItemLoader}  setOfflineCategoryItems={setOfflineCategoryItems} setNewItems={setNewItems} setItemOptions={setItemOptions}
+                                setEditedEnabled={setEditedEnabled} editingItem={editingItem} setEditingItem={setEditingItem} editedItemName={editedItemName} setEditedItemName={setEditedItemName} setEditItemsLoader={setEditItemsLoader} editedAllowMultiple={editedAllowMultiple} setEditedAllowMultiple={setEditedAllowMultiple} editItemsLoader={editItemsLoader} addItemLoader={addItemLoader}/>
                         </div>
                     )}
 
                     {activeTab === 'mapping' && (
                         <div>
                             {/* Mapping tab content goes here */}
-                            <p className="text-muted-foreground text-center">Render mapping UI here  (This Portion is In-Progress)</p>
+                            <CategoryDepartmentMapping categories={categories} departments={departments} />
                         </div>
                     )}
                 </div>
@@ -429,14 +385,7 @@ export default function DepartmentManagementPage() {
                     </Card>
                 </div>
             )}
-            <ActionFeedbackModal
-                open={feedbackModal.open}
-                onClose={() => setFeedbackModal((prev) => ({ ...prev, open: false }))}
-                type={feedbackModal.type}
-                title={feedbackModal.title}
-                message={feedbackModal.message}
-                onConfirm={feedbackModal.onConfirm}
-            />
+           
             {showSettings && (
                 <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={''} />
             )}

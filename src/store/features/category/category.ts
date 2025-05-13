@@ -130,3 +130,25 @@ export const removeItemFromCategory = createAsyncThunk(
     }
   }
 );
+
+export const updateCategoryDepartments = createAsyncThunk(
+  "category/updateDepartments",
+  async (
+    { categoryId, departments }: { categoryId: string; departments: string[] },
+    thunkAPI
+  ) => {
+    try {
+      const response = await api.put(
+        `/categories/${categoryId}/departments`,
+        {
+          departments,
+        }
+      );
+      return response.data.category;
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || "Failed to update departments"
+      );
+    }
+  }
+);

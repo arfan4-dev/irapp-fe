@@ -76,18 +76,7 @@ const Departments = ({ search, setSearch, filtered, newDeptInput, setNewDeptInpu
                               </TableRow>
                           </TableHeader>
                           <TableBody>
-                              <TableRow
-                                  onClick={() => setSelectedDept(null)}
-                                  className={`cursor-pointer transition-all duration-150 transform 
-                                               hover:shadow-md  ${selectedDept === null
-                                          ? "bg-blue-100 dark:bg-zinc-700 font-semibold"
-                                          : "hover:bg-gray-100 dark:hover:bg-zinc-800"
-                                      }`}
-                              >
-                                  <TableCell colSpan={2}>
-                                      <span className="hover:underline">All Categories</span>
-                                  </TableCell>
-                              </TableRow>
+                             
                               {filtered.length === 0 ? (
                                   <TableRow>
                                       <TableCell colSpan={2} className="text-center italic text-gray-500">

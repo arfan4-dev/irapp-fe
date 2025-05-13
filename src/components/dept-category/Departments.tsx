@@ -101,10 +101,16 @@ const Departments = ({ search, setSearch, filtered, newDeptInput, setNewDeptInpu
                                                           value={editDept.name}
                                                           onChange={(e) => {
                                                               const value = e.target.value;
-                                                              if (/^[a-zA-Z /]*$/.test(value)) {
-                                                                  setEditDept((prev: any) => ({ ...prev!, name: value }));
+                                                              // Allow letters, numbers, and spaces
+                                                              const isValid = /^[a-zA-Z0-9 ]*$/.test(value);
+                                                              if (!isValid) {
+                                                                  toast.error("Only letters, numbers, and spaces are allowed.");
+                                                                  return;
                                                               }
+
+                                                              setEditDept((prev: any) => ({ ...prev!, name: value }));
                                                           }}
+                                                          
                                                           onKeyDown={(e) => {
                                                               if (e.key === "Enter") {
                                                                   handleUpdate();

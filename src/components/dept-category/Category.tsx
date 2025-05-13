@@ -12,7 +12,7 @@ import { Switch } from '../ui/switch';
 import ActionFeedbackModal from '../modal/ActionFeedbackModal';
 import { useEffect, useState } from 'react';
 import CategoryCardSkeleton from '../skeleton/CategoryCardSkeleton';
-const Category = ({ categoryLoading, feedbackModal, selectedDept, setSelectedDept, categorySearch, setCategorySearch, setShowCategoryModal, setCategorySortOrder, categorySortOrder, finalFilteredCategories, editingCategoryId, editedLabel, setEditedLabel, setEditingCategoryId, setFeedbackModal, loading, isOnline, offlineCategoryItems, newItems, itemOptions, setAddItemLoader, setOfflineCategoryItems, setNewItems, setItemOptions
+const Category = ({ categoryLoading, feedbackModal, setSelectedDept, categorySearch, setCategorySearch, setShowCategoryModal, setCategorySortOrder, categorySortOrder, finalFilteredCategories, editingCategoryId, editedLabel, setEditedLabel, setEditingCategoryId, setFeedbackModal, loading, isOnline, offlineCategoryItems, newItems, itemOptions, setAddItemLoader, setOfflineCategoryItems, setNewItems, setItemOptions
     , setEditedEnabled, editingItem, setEditingItem, editedItemName, setEditedItemName, setEditItemsLoader, editedAllowMultiple, setEditedAllowMultiple, editItemsLoader, addItemLoader
 }: any) => {
     const [catItemLoader, setCatItemLoader] = useState(false)
@@ -34,11 +34,11 @@ const Category = ({ categoryLoading, feedbackModal, selectedDept, setSelectedDep
                             <div className="flex items-center justify-between gap-2">
                                 <h2 className="sm:text-xl font-semibold mb-4">
                                     Manage Categories
-                                    {selectedDept && (
+                                    {/* {selectedDept && (
                                         <span className="ml-2 text-sm font-medium text-muted-foreground">
                                             for <span className="text-primary">{selectedDept}</span>
                                         </span>
-                                    )}
+                                    )} */}
                                 </h2>
                                 <div className="flex items-center gap-2 sm:mr-[10px] lg:mr-[22px]">
                                     <Input

@@ -20,12 +20,10 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({ email: "", password: "" });
     const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
-    const { loading, error } = useSelector((state: RootState) => state?.user);
+    const { loading } = useSelector((state: RootState) => state?.user);
     const user = useSelector((state: RootState) => state.user.currentUser?.data);
 const [open,setOpen]=useState(false)
     const navigate=useNavigate();
-    console.log(error);
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
 
@@ -42,7 +40,6 @@ const [open,setOpen]=useState(false)
      
     try {
         const res = await dispatch(loginUser(formData)).unwrap();
-console.log(res.data)
         // ✅ Now do role-based navigation here
         if (res.data.changePassword){
             setOpen(true);

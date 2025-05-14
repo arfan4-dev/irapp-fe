@@ -18,6 +18,7 @@ interface Props {
     title?: string;
     message?: string;
     onConfirm?: () => void;
+    loaderDelete:boolean;
 }
 
 const iconMap = {
@@ -38,6 +39,7 @@ export default function ActionFeedbackModal({
     title,
     message,
     onConfirm,
+    loaderDelete=false
 }: Props) {
     useEffect(() => {
         if (open && type === "add") {
@@ -47,7 +49,14 @@ export default function ActionFeedbackModal({
             return () => clearTimeout(timer);
         }
     }, [open, type, onClose]);
-
+     useEffect(() => {
+            if (open && type === "delete" && !onConfirm) {
+                const timer = setTimeout(() => {
+                    onClose();
+                }, 2000);
+                return () => clearTimeout(timer);
+            }
+        }, [open, type, onConfirm, onClose]);
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-md">
@@ -74,6 +83,7 @@ export default function ActionFeedbackModal({
                         {title || `${type[0].toUpperCase() + type.slice(1)} Successful`}
                     </DialogTitle>
                     <p className="dark:text-gray-200 text-sm ">
+                        {/* Category <b>{message}</b> has been deleted.    */}
                         {message || defaultMessages[type]}
                     </p>
                 </DialogHeader>
@@ -85,7 +95,8 @@ export default function ActionFeedbackModal({
                                 Cancel
                             </Button>
                             <Button onClick={onConfirm} className="bg-red-600 hover:bg-red-700 cursor-pointer dark:text-gray-200">
-                                Confirm Delete
+                                {loaderDelete? "Deleting...": "Confirm Delete"}
+                              
                             </Button>
                         </>
                     ) : type !== "add" ? (

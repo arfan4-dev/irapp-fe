@@ -35,7 +35,7 @@ export default function ManageUsers() {
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const [serviceName] = useState("Manage Users");
     const [otpModal, setOtpModal] = useState<{ open: boolean, otp: string | null }>({ open: false, otp: null });
-
+    const [loaderDelUser, setLoaderDelUser] = useState(false)
     const [searchName, setSearchName] = useState('');
     const [searchEmail, setSearchEmail] = useState('');
     const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
@@ -110,6 +110,7 @@ export default function ManageUsers() {
     };
 
     const handleDeleteUser = (userId: string, username: string) => {
+        
         setFeedbackModal({
             open: true,
             type: "delete",
@@ -117,6 +118,7 @@ export default function ManageUsers() {
             message: `Are you sure you want to delete user "${username}"?. This action cannot be undone.`,
             onConfirm: async () => {
                 try {
+                    setLoaderDelUser(true)
                     await dispatch(deleteUser(`${userId}`));
                     toast.success("User deleted.");
                     dispatch(fetchAllUsers());
@@ -124,6 +126,7 @@ export default function ManageUsers() {
                     toast.error("Failed to delete user.");
                 } finally {
                     setFeedbackModal(prev => ({ ...prev, open: false }));
+                    setLoaderDelUser(false)
                 }
             },
         });
@@ -362,6 +365,7 @@ export default function ManageUsers() {
                             title={feedbackModal.title}
                             message={feedbackModal.message}
                             onConfirm={feedbackModal.onConfirm}
+                            loaderDelete={loaderDelUser}
                         />
             <OtpModal otpModal={otpModal} setOtpModal={setOtpModal}/>
 

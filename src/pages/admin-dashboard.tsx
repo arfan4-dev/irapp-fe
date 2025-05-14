@@ -16,7 +16,7 @@ import { updateOrderStatusSync } from "@/utils/orderSync";
 import { setOrder } from "@/store/slices/orderSlice";
 import useViewMode from "@/hooks/useViewMode";
 import { Input } from "@/components/ui/input";
-import useUsername from "@/hooks/useUsername";
+// import useUsername from "@/hooks/useUsername";
 import ActionFeedbackModal from "@/components/modal/ActionFeedbackModal";
 import { fetchDepartments } from "@/store/features/department/department";
 import { isSameDate } from "@/utils/isSameDate";
@@ -64,18 +64,18 @@ export default function AdminPage() {
     if (user.role === "admin") {
       return allOrders; // admin sees all
     }
-
-    if (user.role === "staff" && user.department) {
+    if (user.role === "staff" ) {
+      // return allOrders; // admin sees all
       return allOrders.filter(order => order.department === user.department); // staff sees only department-specific orders
     }
 
     return []; // default fallback
   }, [allOrders, user]);
-  const { userIdToUsername } = useUsername(orders)
+  // const { userIdToUsername } = useUsername(orders)
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
   const { config } = useSelector((state: RootState) => state.siteConfig);
-
+ 
 
   const applyFiltersAndSort = (
     orders: typeof pendingOrders,
@@ -87,7 +87,7 @@ export default function AdminPage() {
         : true;
 
       const matchPerson = filters.person
-        ? (userIdToUsername[order.userId]?.toLowerCase().includes(filters.person.toLowerCase()) ?? false)
+        ? (order.person?.toLowerCase().includes(filters.person.toLowerCase()) ?? false)
         : true;
 
       const matchDate = filters.date
@@ -288,7 +288,7 @@ export default function AdminPage() {
                                 {req.items.map(item => `${item.quantity} × ${item.name}`).join(", ")}
                               </div>
                             </td>
-                            <td className="p-2"> {userIdToUsername[req.userId] || "Loading..."}</td>
+                            <td className="p-2"> {req.person|| "Loading..."}</td>
                             <td className="p-2">{req.department}</td>
                             <td className="p-2">{req.location}</td>
                             <td className="p-2">{req.timestamp ? (
@@ -342,7 +342,7 @@ export default function AdminPage() {
                             <CardContent className={`space-y-2  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
                               {/* <div><strong>Type:</strong> {req.type}</div> */}
                               <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
-                              <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
+                              <div><strong>By:</strong> {req.person || "Loading..."}</div>
                               <div><strong>Department:</strong> {req.department}</div>
                               <div><strong>Location:</strong> {req.location}</div>
                               {req.timestamp ? (
@@ -473,7 +473,7 @@ export default function AdminPage() {
                             </td>
                             <td> <div className="p-2">{req.department}</div></td>
                             <td> <div className="p-2">{req.location}</div></td>
-                            <td className="p-2">{userIdToUsername[req.userId] || "Loading..."}</td>
+                            <td className="p-2">{req.person || "Loading..."}</td>
                             <td className="p-2">{req.timestamp ? (
 
                               <>{new Date(req.timestamp as string).toISOString().split("T")[0]}</>
@@ -514,7 +514,7 @@ export default function AdminPage() {
                             <CardContent className={`space-y-2 min-w-full  ${user.role === 'staff' ? "p-4" : "px-4"}`}>
                               {/* <div><strong>Type:</strong> {req.type}</div> */}
                               <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
-                              <div><strong>By:</strong> {userIdToUsername[req.userId] || "Loading..."}</div>
+                              <div><strong>By:</strong> {req.person || "Loading..."}</div>
                               <div><strong>Department:</strong> {req.department}</div>
                               <div><strong>Location:</strong> {req.location}</div>
                               {req.timestamp ? (
@@ -578,8 +578,10 @@ export default function AdminPage() {
           title={feedbackModal.title}
           message={feedbackModal.message}
           onConfirm={feedbackModal.onConfirm}
-          onClose={() => setFeedbackModal({ ...feedbackModal, open: false })} />
-
+          onClose={() => setFeedbackModal({ ...feedbackModal, open: false })} 
+          loaderDelete={false}
+          />
+       
 
       </div>
     </div>

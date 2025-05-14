@@ -1192,6 +1192,8 @@ export default function DepartmentManagementPage() {
                 title={feedbackModal.title}
                 message={feedbackModal.message}
                 onConfirm={feedbackModal.onConfirm}
+                loaderDelete={false}
+
             />
             {showSettings && (
                 <UserSetting user={user} modalRef={modalRef} setShowSettings={setShowSettings} userName={user?.username} setUserName={''} />

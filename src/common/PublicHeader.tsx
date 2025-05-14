@@ -37,6 +37,19 @@ const PublicHeader: React.FC<PublicHeaderProps> = ({ theme, setTheme, serviceNam
                         <li className="hover:underline">Admin Login</li>
                     </ul>
                 </NavLink>}
+
+                {location.pathname === '/' && <> <NavLink to="/login" className="flex items-center gap-2 ">
+                    <ul >
+                        <li className="hover:underline"> Login</li>
+                    </ul>
+                </NavLink>
+                
+                    <NavLink to="/admin" className="flex items-center gap-2 ">
+                        <ul >
+                            <li className="hover:underline">Admin Login</li>
+                        </ul>
+                    </NavLink></> }
+
             </div>
            
             <Button

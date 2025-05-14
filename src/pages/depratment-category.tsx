@@ -257,7 +257,7 @@ export default function DepartmentManagementPage() {
 
             <div className="max-w-4xl mx-auto px-4 py-6">
                 {/* Tabs */}
-                <div className="flex  gap-48 justify-center border-b mb-4">
+                <div className="flex  md:gap-48 justify-between md:justify-center border-b mb-4">
                     {['Departments', 'Category', 'mapping'].map((tab) => (
                         <button
                             key={tab}
@@ -283,7 +283,7 @@ export default function DepartmentManagementPage() {
                     {activeTab === 'Category' && (
                         <div>
                             {/* Cat tab content goes here */}
-                            <Category categoryLoading={loading} feedbackModal={feedbackModal} selectedDept={selectedDept} setSelectedDept={setSelectedDept} categorySearch={categorySearch} setCategorySearch={setCategorySearch} setShowCategoryModal={setShowCategoryModal} setCategorySortOrder={setCategorySortOrder} categorySortOrder={categorySortOrder} finalFilteredCategories={finalFilteredCategories} editingCategoryId={editingCategoryId} editedLabel={editedLabel} setEditedLabel={setEditedLabel} setEditingCategoryId={setEditingCategoryId} setFeedbackModal={setFeedbackModal} loading={loading} isOnline={isOnline} offlineCategoryItems={offlineCategoryItems} newItems={newItems} itemOptions={itemOptions} setAddItemLoader={setAddItemLoader}  setOfflineCategoryItems={setOfflineCategoryItems} setNewItems={setNewItems} setItemOptions={setItemOptions}
+                            <Category categories={categories} categoryLoading={loading} feedbackModal={feedbackModal} selectedDept={selectedDept} setSelectedDept={setSelectedDept} categorySearch={categorySearch} setCategorySearch={setCategorySearch} setShowCategoryModal={setShowCategoryModal} setCategorySortOrder={setCategorySortOrder} categorySortOrder={categorySortOrder} finalFilteredCategories={finalFilteredCategories} editingCategoryId={editingCategoryId} editedLabel={editedLabel} setEditedLabel={setEditedLabel} setEditingCategoryId={setEditingCategoryId} setFeedbackModal={setFeedbackModal} loading={loading} isOnline={isOnline} offlineCategoryItems={offlineCategoryItems} newItems={newItems} itemOptions={itemOptions} setAddItemLoader={setAddItemLoader}  setOfflineCategoryItems={setOfflineCategoryItems} setNewItems={setNewItems} setItemOptions={setItemOptions}
                                 setEditedEnabled={setEditedEnabled} editingItem={editingItem} setEditingItem={setEditingItem} editedItemName={editedItemName} setEditedItemName={setEditedItemName} setEditItemsLoader={setEditItemsLoader} editedAllowMultiple={editedAllowMultiple} setEditedAllowMultiple={setEditedAllowMultiple} editItemsLoader={editItemsLoader} addItemLoader={addItemLoader}/>
                         </div>
                     )}

@@ -19,16 +19,21 @@ const Category = ({ categoryLoading, feedbackModal, setSelectedDept, categorySea
     const dispatch = useDispatch<AppDispatch>();
     const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
     const [activeCategoryForAddItem, setActiveCategoryForAddItem] = useState<string | null>(null);
-
+const [deleteCategoryLoader, setDeleteCategoryLoader] = useState(false)
     useEffect(() => {
-        dispatch(fetchCategories()).unwrap()
-    },[])
+        if (feedbackModal.open && feedbackModal.type === "delete" && feedbackModal.onConfirm) {
+            dispatch(fetchCategories()).unwrap()
+        }
+       
+    }, [ dispatch,feedbackModal.open]);
+   
+      
     return (
         <div>
             <div className="flex flex-col md:flex-row-reverse gap-6 w-full h-auto md:h-[calc(100vh-200px)] ">
                 <div className="w-full">
                     {user.role === 'admin' && <Card>
-                        <CardContent className="px-4 md:px-6 space-y-6 w-full h-full max-h-[calc(100vh-250px)] mb-3">
+                        <CardContent className="px-4 md:px-6 space-y-6 w-full h-full max-h-[calc(100vh-250px)] mb-3 overflow-y-auto">
 
 
                             <div className="flex items-center justify-between gap-2">
@@ -235,30 +240,51 @@ const Category = ({ categoryLoading, feedbackModal, setSelectedDept, categorySea
                                                                                 >
                                                                                     Update
                                                                                 </DropdownMenuItem>
-                                                                                <DropdownMenuItem
-                                                                                    onClick={() =>
-                                                                                        setFeedbackModal({
-                                                                                            open: true,
-                                                                                            type: "delete",
-                                                                                            title: "Delete Category?",
-                                                                                            message: "Are you sure you want to delete this category? This action cannot be undone.",
-                                                                                            onConfirm: () => {
-                                                                                                dispatch(deleteCategory(cat._id)).then(() => {
-                                                                                                    setFeedbackModal({
-                                                                                                        open: true,
-                                                                                                        type: "delete",
-                                                                                                        title: "Deleted Successfully",
-                                                                                                        message: `Category "${cat.label}" has been deleted.`,
-                                                                                                    });
-                                                                                                });
-                                                                                            },
-                                                                                        })
-                                                                                    }
+                                                                                    <DropdownMenuItem
+                                                                                        onClick={() =>{
+                                                                                            setFeedbackModal({
+                                                                                                open: true,
+                                                                                                type: "delete",
+                                                                                                title: "Delete Category?",
+                                                                                                message: (
+                                                                                                    <>
+                                                                                                        Are you sure you want to delete category <b>{cat.label}</b>? This action cannot be undone.
+                                                                                                    </>
+                                                                                                ),
+                                                                                                onConfirm: async () => {
+                                                                                                    try {
+                                                                                                        setDeleteCategoryLoader(true);
 
-                                                                                    className="text-red-600 focus:text-red-600"
-                                                                                >
-                                                                                    {'Remove'}
-                                                                                </DropdownMenuItem>
+                                                                                                        await dispatch(deleteCategory(cat._id)).unwrap();
+
+                                                                                                        setFeedbackModal({
+                                                                                                            open: true,
+                                                                                                            type: "delete",
+                                                                                                            title: "Deleted Successfully",
+                                                                                                            message: <>Category <b>{cat.label}</b> has been deleted.</>,
+                                                                                                            // onConfirm: () => setFeedbackModal((prev:any) => ({ ...prev, open: false })),
+                                                                                                        });
+
+                                                                                                     await dispatch(fetchCategories()).unwrap(); // ✅ refresh data
+                                                                                                       
+
+                                                                                                    } catch (err) {
+                                                                                                        toast.error("Failed to delete category.");
+                                                                                                    } finally {
+                                                                                                        setDeleteCategoryLoader(false);
+                                                                                                    }
+                                                                                                },
+                                                                                            });
+                                                                                              
+                                                                                        }
+                                                                                            
+                                                                                          
+                                                                                        }
+                                                                                        className="text-red-600 focus:text-red-600"
+                                                                                    >
+                                                                                        Remove
+                                                                                    </DropdownMenuItem>
+
                                                                             </DropdownMenuContent>
                                                                         </DropdownMenu>
                                                                     </div>
@@ -621,6 +647,8 @@ const Category = ({ categoryLoading, feedbackModal, setSelectedDept, categorySea
                 title={feedbackModal.title}
                 message={feedbackModal.message}
                 onConfirm={feedbackModal.onConfirm}
+                loaderDelete={deleteCategoryLoader}
+
             />
         </div>
     )

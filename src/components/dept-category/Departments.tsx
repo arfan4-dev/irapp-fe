@@ -15,12 +15,18 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import { MoreVertical } from "lucide-react";
 import { toast } from "sonner";
+import { useEffect } from "react";
+import { fetchCategories } from "@/store/features/category/category";
 const Departments = ({ search, setSearch, filtered, newDeptInput, setNewDeptInput, newDeptModalOpen, setNewDeptModalOpen, handleCreate,setSelectedDept, selectedDept, editDept, inputRef, setEditDept, handleUpdate, editLoading, loader, setDeleteLoading, deleteLoading }:any) => {
         const dispatch = useDispatch<AppDispatch>();
-    
+     useEffect(() => {
+           
+                dispatch(fetchCategories()).unwrap()
+           
+        }, [ dispatch]);
   return (
     <div>
-          <div className="hidden md:flex  flex-col">
+          <div className=" flex  flex-col">
              <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-[18px] lg:text-2xl font-bold">Department Management</h2>
                                 <Dialog open={newDeptModalOpen} onOpenChange={setNewDeptModalOpen}>
@@ -48,7 +54,7 @@ const Departments = ({ search, setSearch, filtered, newDeptInput, setNewDeptInpu
               <div className="flex-1 flex flex-col bg-white dark:bg-zinc-800 rounded-lg border">
                  <div className="flex items-center justify-between">
                   
-                 <p className="text-muted-foreground text-sm mb-2 px-4">
+                 <p className="hidden sm:block text-muted-foreground text-sm mb-2 px-4">
   Home / Admin Panel / <span className="font-medium text-black dark:text-white">Departments</span>
 </p>
 

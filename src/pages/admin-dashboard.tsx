@@ -188,6 +188,7 @@ export default function AdminPage() {
   useEffect(() => {
     setProgressPage(1);
   }, [progressFilters.item, progressFilters.person, progressFilters.date]);
+ 
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
       <Header

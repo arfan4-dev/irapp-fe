@@ -51,7 +51,7 @@ export default function AdminLogin() {
     return (
         <div>
             <PublicHeader theme={theme} setTheme={setTheme} serviceName={serviceName} />
-            <div className="h-[calc(100vh-64px)] flex items-center justify-center bg-white dark:bg-gray-900">
+            <div className="h-[calc(100vh-58px)] flex items-center justify-center bg-white dark:bg-gray-900">
                 <div className="w-full max-w-md bg-white dark:bg-zinc-800 rounded-lg p-6 shadow-md text-black dark:text-white">
                     <h2 className="text-2xl font-bold text-center mb-6">Admin Login</h2>
                     <form onSubmit={handleSubmit} className="space-y-4">

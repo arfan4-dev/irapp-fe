@@ -79,7 +79,7 @@ export default function AnsweredOrdersPage() {
     }, [searchItem, searchPerson, selectedDate]);
 
     return (
-        <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
+        <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"} `}>
             <Header
                 theme={theme}
                 setTheme={setTheme}
@@ -299,7 +299,7 @@ export default function AnsweredOrdersPage() {
             </div>
 
             {totalPages > 1 && (
-                <div className="flex justify-center items-center my-3 gap-4">
+                <div className="flex justify-center items-center gap-4 pb-2">
                     <Button className="cursor-pointer hover:opacity-85 disabled:cursor-not-allowed" onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}>
                         Previous
                     </Button>

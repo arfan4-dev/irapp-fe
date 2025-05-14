@@ -19,6 +19,7 @@ import { useEffect } from "react";
 import { fetchCategories } from "@/store/features/category/category";
 const Departments = ({ search, setSearch, filtered, newDeptInput, setNewDeptInput, newDeptModalOpen, setNewDeptModalOpen, handleCreate,setSelectedDept, selectedDept, editDept, inputRef, setEditDept, handleUpdate, editLoading, loader, setDeleteLoading, deleteLoading }:any) => {
         const dispatch = useDispatch<AppDispatch>();
+        
      useEffect(() => {
            
                 dispatch(fetchCategories()).unwrap()
@@ -100,7 +101,7 @@ const Departments = ({ search, setSearch, filtered, newDeptInput, setNewDeptInpu
                                           
                                           <TableCell>
                                               {editDept?.id === dept._id ? (
-                                                  <div className="flex flex-col gap-2">
+                                                  <div className="flex  gap-2 items-center">
                                                       <Input
                                                           ref={inputRef}
                                                           className="h-9 w-[200px]"
@@ -124,7 +125,7 @@ const Departments = ({ search, setSearch, filtered, newDeptInput, setNewDeptInpu
                                                           }}
                                                       />
                                                       
-                                                      <div className="flex flex-end gap-2">
+                                                      <div className="flex  gap-2">
                                                           <Button 
                                                               className="cursor-pointer"
                                                               size="sm"

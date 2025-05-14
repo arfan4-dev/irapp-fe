@@ -315,21 +315,28 @@ export default function ManageUsers() {
                     )
                 }
 
+                {filteredUsers.length > 0 && (
+                    <div className="text-sm text-center mt-4 text-muted-foreground">
+                        Showing users {((currentPage - 1) * usersPerPage) + 1}
+                        –
+                        {Math.min(currentPage * usersPerPage, filteredUsers.length)} {``}
+                        of {filteredUsers.length}
+                    </div>
+                )}
                 {filteredUsers.length > usersPerPage && (
                     <div className="flex justify-center mt-6 gap-4 items-center">
                         <Button
+                        className="cursor-pointer hover:opacity-75"
                             variant="outline"
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                         >
                             Previous
                         </Button>
-                        <span className="text-sm">
-                            Page {currentPage} of {Math.ceil(filteredUsers.length / usersPerPage)} —
-                            <span className="ml-1 font-medium">{filteredUsers.length}</span> user{filteredUsers.length !== 1 ? "s" : ""}
-                        </span>
+                       
 
                         <Button
+                            className="cursor-pointer hover:opacity-75"
                             variant="outline"
                             disabled={currentPage === Math.ceil(filteredUsers.length / usersPerPage)}
                             onClick={() =>

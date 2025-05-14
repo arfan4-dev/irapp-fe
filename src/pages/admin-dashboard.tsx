@@ -24,11 +24,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 export default function AdminPage() {
   const { theme, setTheme } = useThemeMode(); // now you have access to theme and toggle
+  const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
   updateOrderStatusSync()
   const [showSettings, setShowSettings] = useState(false);
   const [showAdminSettings, setShowAdminSettings] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const [serviceName] = useState("IntraServe Admin Panel");
+  const [serviceName] = useState(user?.role === "admin" ? "Admin Panel" : "Staff Panel");
   const { viewMode, toggleViewMode } = useViewMode();
   const location = useLocation()
   const allOrders = useSelector((state: RootState) => state?.orders?.orders);
@@ -47,7 +48,6 @@ export default function AdminPage() {
     type: "add",
   });
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
   const isOnline = useOfflineStatus();
   const [pendingFilters, setPendingFilters] = useState({
     item: "",
@@ -74,7 +74,7 @@ export default function AdminPage() {
   // const { userIdToUsername } = useUsername(orders)
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
-  const { config } = useSelector((state: RootState) => state.siteConfig);
+  // const { config } = useSelector((state: RootState) => state.siteConfig);
  
 
   const applyFiltersAndSort = (
@@ -194,7 +194,7 @@ export default function AdminPage() {
       <Header
         location={location.pathname}
         theme={theme}
-        serviceName={config.brandName || serviceName}
+        serviceName={ serviceName}
         setTheme={setTheme}
         setShowSettings={setShowAdminSettings}
         showSettings={showAdminSettings}

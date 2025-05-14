@@ -247,9 +247,9 @@ const [deleteCategoryLoader, setDeleteCategoryLoader] = useState(false)
                                                                                                 type: "delete",
                                                                                                 title: "Delete Category?",
                                                                                                 message: (
-                                                                                                    <>
-                                                                                                        Are you sure you want to delete category <b>{cat.label}</b>? This action cannot be undone.
-                                                                                                    </>
+                                                                                                    <div className='text-center'>
+                                                                                                        Are you sure you want to delete category <b>{cat.label}</b>? <br/> This action cannot be undone.
+                                                                                                    </div>
                                                                                                 ),
                                                                                                 onConfirm: async () => {
                                                                                                     try {
@@ -261,7 +261,7 @@ const [deleteCategoryLoader, setDeleteCategoryLoader] = useState(false)
                                                                                                             open: true,
                                                                                                             type: "delete",
                                                                                                             title: "Deleted Successfully",
-                                                                                                            message: <>Category <b>{cat.label}</b> has been deleted.</>,
+                                                                                                            message: <>Category "<b>{cat.label}</b>" has been deleted.</>,
                                                                                                             // onConfirm: () => setFeedbackModal((prev:any) => ({ ...prev, open: false })),
                                                                                                         });
 

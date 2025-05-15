@@ -16,4 +16,4 @@ export const departments = [
   "Laundry",
 ];
 
-export const roles = ["user", "admin", "staff"];
+export const roles = ["user", "staff"];

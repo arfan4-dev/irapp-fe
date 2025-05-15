@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,8 @@ import { fetchUserById } from "@/store/features/user/user";
 import {LogOut, MonitorCog } from "lucide-react";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { getInitials } from "@/utils/getIntialUsername";
-import { logout } from "@/store/slices/userSlice";
+// import { logout } from "@/store/slices/userSlice";
+import LogoutModal from "@/components/modal/LogoutModal"; // import the modal
 
 interface HeaderProps {
   theme: 'light' | 'dark';
@@ -39,24 +40,30 @@ const Header: React.FC<HeaderProps> = ({
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>(); // ✅ typed dispatch
   const { config } = useSelector((state: RootState) => state.siteConfig);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false); // modal state
+  const [_, setSuccess] = useState(false);
+
   const tabs = config?.tabs || {};
+
+  
   const handleLogout = async () => {
     try {
-      await api.post("/logout", {}, { withCredentials: true });
+      setLogoutModalOpen(true); // show modal immediately
 
-      // ✅ Clear Redux state
-      dispatch(logout());
-
-      // ✅ Clear localStorage (if used with persist)
-    localStorage.removeItem("persist:root");
+     const res= await api.post("/logout", {}, { withCredentials: true });
+      setSuccess(res.data.success)
+      localStorage.removeItem("persist:root");
       localStorage.removeItem("persist:user");
-     
-      // ✅ Navigate to login
-      navigate("/login");
+
+      setTimeout(() => {
+        navigate("/login"); // navigate after modal closes
+      }, 2500); // match the modal auto-close time
     } catch (error) {
       console.error("Logout failed:", error);
+      setLogoutModalOpen(false);
     }
   };
+  
 
   useEffect(() => {
 
@@ -320,6 +327,8 @@ const Header: React.FC<HeaderProps> = ({
 
         </DropdownMenu>
       </div>
+      <LogoutModal  setSuccess={setSuccess} open={logoutModalOpen} onClose={() => setLogoutModalOpen(false)} />
+
     </header>
   );
 };

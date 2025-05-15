@@ -64,7 +64,7 @@ export default function AdminPage() {
     if (user.role === "admin") {
       return allOrders; // admin sees all
     }
-    if (user.role === "staff" ) {
+    if (user.role === "staff") {
       // return allOrders; // admin sees all
       return allOrders.filter(order => order.department === user.department); // staff sees only department-specific orders
     }
@@ -75,7 +75,7 @@ export default function AdminPage() {
   const pendingOrders = orders.filter(order => order.status === "Pending");
   const inProgressOrders = orders.filter(order => order.status === "In Progress");
   // const { config } = useSelector((state: RootState) => state.siteConfig);
- 
+
 
   const applyFiltersAndSort = (
     orders: typeof pendingOrders,
@@ -188,13 +188,13 @@ export default function AdminPage() {
   useEffect(() => {
     setProgressPage(1);
   }, [progressFilters.item, progressFilters.person, progressFilters.date]);
- 
+
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
       <Header
         location={location.pathname}
         theme={theme}
-        serviceName={ serviceName}
+        serviceName={serviceName}
         setTheme={setTheme}
         setShowSettings={setShowAdminSettings}
         showSettings={showAdminSettings}
@@ -288,7 +288,7 @@ export default function AdminPage() {
                                 {req.items.map(item => `${item.quantity} × ${item.name}`).join(", ")}
                               </div>
                             </td>
-                            <td className="p-2"> {req.person|| "Loading..."}</td>
+                            <td className="p-2"> {req.person || "Loading..."}</td>
                             <td className="p-2">{req.department}</td>
                             <td className="p-2">{req.location}</td>
                             <td className="p-2">{req.timestamp ? (
@@ -380,7 +380,7 @@ export default function AdminPage() {
                         )))}
                     </div>
                   )}
-                  { <div className="flex justify-end gap-2 mt-4">
+                  {<div className="flex justify-end gap-2 mt-4">
                     <Button
                       size="sm"
                       variant="outline"
@@ -408,7 +408,7 @@ export default function AdminPage() {
               <div className="w-full">
                 <CardContent className="px-4 md:px-6 ">
                   <h2 className="text-xl font-semibold mb-4">In Progress Requests</h2>
-                  { <div className="flex flex-wrap gap-2 mb-4">
+                  {<div className="flex flex-wrap gap-2 mb-4">
                     <Input
                       type="text"
                       placeholder="Search by Item Name"
@@ -538,7 +538,7 @@ export default function AdminPage() {
                     </div>
                   )}
 
-                  { <div className="flex justify-end gap-2  mt-4">
+                  {<div className="flex justify-end gap-2  mt-4">
                     <Button
                       size="sm"
                       variant="outline"
@@ -578,10 +578,10 @@ export default function AdminPage() {
           title={feedbackModal.title}
           message={feedbackModal.message}
           onConfirm={feedbackModal.onConfirm}
-          onClose={() => setFeedbackModal({ ...feedbackModal, open: false })} 
+          onClose={() => setFeedbackModal({ ...feedbackModal, open: false })}
           loaderDelete={false}
-          />
-       
+        />
+
 
       </div>
     </div>

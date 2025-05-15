@@ -28,10 +28,10 @@ export default function OrderPage() {
   const orders = useSelector((state: RootState) => state.orders.orders);
 
   const filteredOrders = orders.filter((order) => {
-    const isMine = order.person === user.username;
-    if (filter === 'Pending') return isMine && order.status === 'Pending';
-    if (filter === 'In Progress') return isMine && order.status === 'In Progress';
-    if (filter === 'Answered') return isMine && order.status === 'Answered';
+    // const isMine = order.person === user.username;
+    if (filter === 'Pending') return  order.status === 'Pending';
+    if (filter === 'In Progress') return  order.status === 'In Progress';
+    if (filter === 'Answered') return  order.status === 'Answered';
     return false;
   });
 

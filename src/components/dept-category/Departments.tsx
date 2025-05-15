@@ -32,7 +32,7 @@ const Departments = ({ search, setSearch, filtered, newDeptInput, setNewDeptInpu
                                 <h2 className="text-[18px] lg:text-2xl font-bold">Department Management</h2>
                                 <Dialog open={newDeptModalOpen} onOpenChange={setNewDeptModalOpen}>
                                     <DialogTrigger asChild>
-                                        <Button className='cursor-pointer hover:opacity-75'>+ Add Department</Button>
+                          <Button className='cursor-pointer hover:text-black border border-black transition-all duration-300 hover:bg-transparent'>+ Add Department</Button>
                                     </DialogTrigger>
                                     <DialogContent>
                                         <DialogHeader>

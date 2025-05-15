@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { Button } from "@/components/ui/button";
-import { Sun,Moon } from 'lucide-react'; 
+import { Sun,Moon, Mail } from 'lucide-react'; 
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -40,7 +40,6 @@ const Header: React.FC<HeaderProps> = ({
   const dispatch = useDispatch<AppDispatch>(); // ✅ typed dispatch
   const { config } = useSelector((state: RootState) => state.siteConfig);
   const tabs = config?.tabs || {};
-  console.log("serviceName:", serviceName)
   const handleLogout = async () => {
     try {
       await api.post("/logout", {}, { withCredentials: true });
@@ -62,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({
   useEffect(() => {
 
     if (user?.id) {
-      dispatch(fetchUserById(user.id));
+      dispatch(fetchUserById(user?.id));
     }
   }, [dispatch, user?.id]);
 
@@ -109,7 +108,7 @@ const Header: React.FC<HeaderProps> = ({
               </ul>
             </nav>
           )}
-          {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users" && location !== "/staff-panel" && location !== "/manage-categories-departments") && (
+          {(location !== "/admin-panel" && location !== "/answered-order" && location !== "/manage-users" && location !== "/staff-panel" && location !== "/manage-categories-departments" && location !=='/email-settings') && (
             <nav>
               <ul className="flex items-center ml-6">
                 <li>
@@ -124,7 +123,7 @@ const Header: React.FC<HeaderProps> = ({
             </nav>
           )}
 
-          {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users' || location == '/manage-categories-departments' || location =='/staff-panel') && (
+          {(location == "/admin-panel" || location == "/answered-order" || location == '/manage-users' || location == '/manage-categories-departments' || location == '/staff-panel' || location == '/email-settings') && (
             <nav>
               <ul className="flex items-center gap-10 ml-6">
                {
@@ -302,6 +301,13 @@ const Header: React.FC<HeaderProps> = ({
             <DropdownMenuItem onClick={() => setShowSettings(true)} className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
               ⚙️ Account Settings
             </DropdownMenuItem>
+           
+            {user?.role == 'admin' && <DropdownMenuItem onClick={() => setShowSettings(true)} className="cursor-pointer flex items-center gap-2 mt-1 text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white">
+              <NavLink to="/email-settings">
+                <div className="flex items-center gap-2"><Mail /> Email Settings</div>
+                
+              </NavLink>
+            </DropdownMenuItem>}
             <DropdownMenuItem
               onClick={handleLogout}
               className="flex items-center gap-2 text-red-600 hover:text-red-700 cursor-pointer"

@@ -21,6 +21,7 @@ import { fetchSiteConfig } from "./store/features/siteConfig/siteConfig";
 import ForgotPassword from "./pages/forgot-password";
 import ResetPassword from "./pages/reset-password";
 import DepartmentManagementPage from "./pages/depratment-category";
+import EmailSettingsForm from "./pages/EmailSettingsForm";
 // import PublicRoute from "./routes/PublicRoute";
 
 function App() {
@@ -79,6 +80,7 @@ function App() {
         <Route path="/order-status" element={<ProtectedRoute><OrderPage /> </ProtectedRoute>} />
         <Route path="/verify-email/:token" element={<EmailVerification />} />
 
+        <Route path="/email-settings" element={<ProtectedRoute><EmailSettingsForm /></ProtectedRoute>} />
 
       </Routes>
     </ErrorBoundary>

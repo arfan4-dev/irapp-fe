@@ -40,13 +40,13 @@ export default function UserPage() {
   const isOnline = useOfflineStatus();
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
-  const allCategories = useSelector((state: RootState) => state.categories.categories || []);
+  const allCategories = useSelector((state: RootState) => state?.categories?.categories || []);
 
   const order: OfflineOrder = {
-    userId: user.id,
-    person: user.username,
-    department: user.department,
-    location: user.location,
+    userId: user?.id,
+    person: user?.username,
+    department: user?.department,
+    location: user?.location,
     type: selectedRequest,
     items: Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity })),
     status: 'Pending',
@@ -61,10 +61,10 @@ export default function UserPage() {
     if (orderItems.length === 0) return toast.error("Please add items to your cart before submitting.");
     handleOrder({
       type: selectedRequest,
-      userId: user.id,
-      person: user.username,
-      department: user.department,
-      location: user.location,
+      userId: user?.id,
+      person: user?.username,
+      department: user?.department,
+      location: user?.location,
       items: orderItems,
       status: 'Pending',
     });
@@ -165,7 +165,7 @@ export default function UserPage() {
                 No categories available. Please contact the admin or try again later.
               </p>
             ) : (
-                allCategories.map((type) => (
+                allCategories?.map((type) => (
                 <Tooltip key={type._id}>
                   <TooltipTrigger asChild>
                     <div className="w-full">
@@ -211,7 +211,7 @@ export default function UserPage() {
               </Card>
             )}
 
-            {selectedRequest && allCategories.find(r => r._id === selectedRequest) ? (
+            {selectedRequest && allCategories?.find(r => r._id === selectedRequest) ? (
               <Card>
                 <CardContent className="space-y-4 p-4 md:px-6 md:py-2">
                   <h2 className="text-xl font-semibold">Submit a Request</h2>
@@ -219,10 +219,10 @@ export default function UserPage() {
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Select Items & Quantity</h3>
                     <div className="space-y-2">
-                      {allCategories.find(r => r._id === selectedRequest)?.items.map(item => {
+                      {allCategories?.find(r => r._id === selectedRequest)?.items.map(item => {
                         const quantity = itemQuantities[item.name] || 1;
                         return (
-                          <Card key={item.name} className="p-[13px] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <Card key={item?.name} className="p-[13px] flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <span className="text-[14px] font-medium w-[19%] ">{item.name}</span>
                             {item.allowMultiple ? (
                               <div className="flex items-center gap-3 ">

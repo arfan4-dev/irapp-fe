@@ -30,10 +30,7 @@ export const fetchCategories = createAsyncThunk(
 
 export const createCategory = createAsyncThunk(
   "categories/create",
-  async (
-    { label }: { label: string;  },
-    { rejectWithValue }
-  ) => {
+  async ({ label }: { label: string }, { rejectWithValue }) => {
     try {
       const res = await api.post("/categories", { label });
       return res.data.data;
@@ -138,12 +135,9 @@ export const updateCategoryDepartments = createAsyncThunk(
     thunkAPI
   ) => {
     try {
-      const response = await api.put(
-        `/categories/${categoryId}/departments`,
-        {
-          departments,
-        }
-      );
+      const response = await api.put(`/categories/${categoryId}/departments`, {
+        departments,
+      });
       return response.data.category;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(

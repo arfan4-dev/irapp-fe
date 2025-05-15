@@ -310,11 +310,11 @@ export default function DepartmentManagementPage() {
                                     const label = form.catLabel.value.trim();
                                     // const dept = form.department.value.trim();
                                     // Disallow special characters except space, dash, underscore
-                                    const isValid = /^[a-zA-Z _/-]+$/.test(label); // allows only letters, spaces, underscores, slashes, and dashes
+                                    const isValid = /^[a-zA-Z0-9 _\/-]+$/.test(label); // allows only letters, spaces, underscores, slashes, and dashes
 
 
                                     if (!label || !isValid) {
-                                        toast.error("Category name should not contain special characters and Numbers.");
+                                        toast.error("Category name should not contain special characters");
                                         return;
                                     }
 

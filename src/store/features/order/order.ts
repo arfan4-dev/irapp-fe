@@ -60,3 +60,18 @@ export const updateOrderStatus = createAsyncThunk(
     }
   }
 );
+
+export const fetchOrdersForStaff = createAsyncThunk(
+  "orders/fetchOrdersForStaff",
+  async (department: string, { rejectWithValue }) => {
+    try {
+      const res = await api.get(`/staff-order/${department}`);
+      
+      return res.data.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch orders"
+      );
+    }
+  }
+);

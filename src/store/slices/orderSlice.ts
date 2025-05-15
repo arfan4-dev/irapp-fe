@@ -2,6 +2,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   createOrder,
+  fetchOrdersForStaff,
   getOrdersByUser,
   updateOrderStatus,
 } from "@/store/features/order/order";
@@ -25,12 +26,14 @@ interface Order {
 
 interface OrderState {
   orders: Order[];
+  stafforders: Order[];
   loading: boolean;
   error: string | null;
 }
 
 const initialState: OrderState = {
   orders: [],
+  stafforders: [],
   loading: false,
   error: null,
 };
@@ -99,13 +102,26 @@ const orderSlice = createSlice({
         }
       }
     );
-    builder.addCase(
-      updateOrderStatus.rejected,
-      (state, action: PayloadAction<any>) => {
+    builder
+      .addCase(
+        updateOrderStatus.rejected,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.error = action.payload;
+        }
+      )
+      .addCase(fetchOrdersForStaff.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchOrdersForStaff.fulfilled, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
-      }
-    );
+        state.orders = action.payload;
+      })
+      .addCase(fetchOrdersForStaff.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 

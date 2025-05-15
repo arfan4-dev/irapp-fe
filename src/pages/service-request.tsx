@@ -36,7 +36,7 @@ export default function UserPage() {
   const [cart, setCart] = useState<{ [key: string]: { name: string; quantity: number } }>({});
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-
+  console.log(selectedRequest)
   const isOnline = useOfflineStatus();
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => state?.user?.currentUser?.data);
@@ -56,13 +56,14 @@ export default function UserPage() {
   };
 
   const confirmSendOrder = () => {
-    const orderItems = Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity }));
+    const orderItems = Object.entries(cart).map(([name, { quantity }]) => ({ name, quantity, catId: selectedRequest }));
     if (user.department === null || user.department === '') return toast.error("Please Request to admin to add your department");
     if (orderItems.length === 0) return toast.error("Please add items to your cart before submitting.");
     handleOrder({
       type: selectedRequest,
       userId: user?.id,
       person: user?.username,
+
       department: user?.department,
       location: user?.location,
       items: orderItems,
@@ -165,7 +166,7 @@ export default function UserPage() {
                 No categories available. Please contact the admin or try again later.
               </p>
             ) : (
-                allCategories?.map((type) => (
+              allCategories?.map((type) => (
                 <Tooltip key={type._id}>
                   <TooltipTrigger asChild>
                     <div className="w-full">
@@ -282,7 +283,20 @@ export default function UserPage() {
               <h2 className="text-xl font-semibold">Confirm Your Order</h2>
               <p>Would you like to send the order now or add more items?</p>
               <div className="flex justify-end gap-4">
-                <Button className='cursor-pointer' variant="outline" onClick={() => setShowConfirmModal(false)}>Add More Items</Button>
+                {/* <Button className='cursor-pointer' variant="outline" onClick={() => setShowConfirmModal(false)}>Add More Items</Button> */}
+                <Button
+                  className='cursor-pointer'
+                  variant="outline"
+                  onClick={() => {
+                    setShowConfirmModal(false);
+                    setSelectedRequest('');
+                    setCart({});
+                    setItemQuantities({});
+                  }}
+                >
+                  Cancel
+                </Button>
+
                 <Button className="bg-black text-white dark:bg-white dark:text-black cursor-pointer" onClick={confirmSendOrder}>Send Order</Button>
               </div>
             </CardContent>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Header from "@/common/Header";
 import { useLocation } from "react-router-dom";
 import useThemeMode from "@/hooks/useTheme";
-import { getOrdersByUser, updateOrderStatus } from "@/store/features/order/order";
+import { fetchOrdersForStaff, getOrdersByUser, updateOrderStatus } from "@/store/features/order/order";
 import UserSetting from "@/common/UserSetting";
 import { getUserIdFromLocalStorage } from "@/utils/getUserId";
 import { toast } from "sonner";
@@ -66,7 +66,7 @@ export default function AdminPage() {
     }
     if (user.role === "staff") {
       // return allOrders; // admin sees all
-      return allOrders.filter(order => order.department === user.department); // staff sees only department-specific orders
+      return allOrders; // staff sees only department-specific orders
     }
 
     return []; // default fallback
@@ -189,6 +189,11 @@ export default function AdminPage() {
     setProgressPage(1);
   }, [progressFilters.item, progressFilters.person, progressFilters.date]);
 
+  useEffect(() => {
+    if (user?.role === "staff" && user.department) {
+      dispatch(fetchOrdersForStaff(user.department));
+    }
+  }, [dispatch, user]);
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50 text-black"}`}>
       <Header
@@ -270,7 +275,7 @@ export default function AdminPage() {
                         <tr className="bg-gray-200 dark:bg-gray-700">
                           <th className="p-2">Items</th>
                           <th className="p-2">Requested By</th>
-                          <th className="p-2">Department</th>
+                          {/* <th className="p-2">Department</th> */}
                           <th className="p-2">Location</th>
 
                           <th className="p-2">Date</th>
@@ -289,7 +294,7 @@ export default function AdminPage() {
                               </div>
                             </td>
                             <td className="p-2"> {req.person || "Loading..."}</td>
-                            <td className="p-2">{req.department}</td>
+                            {/* <td className="p-2">{req.department}</td> */}
                             <td className="p-2">{req.location}</td>
                             <td className="p-2">{req.timestamp ? (
 
@@ -343,7 +348,7 @@ export default function AdminPage() {
                               {/* <div><strong>Type:</strong> {req.type}</div> */}
                               <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
                               <div><strong>By:</strong> {req.person || "Loading..."}</div>
-                              <div><strong>Department:</strong> {req.department}</div>
+                              {/* <div><strong>Department:</strong> {req.department}</div> */}
                               <div><strong>Location:</strong> {req.location}</div>
                               {req.timestamp ? (
                                 <>
@@ -453,7 +458,7 @@ export default function AdminPage() {
                         <tr className="bg-gray-200 dark:bg-gray-700">
                           <th className="p-2">Items</th>
                           <th className="p-2">Requested By</th>
-                          <th className="p-2">Department</th>
+                          {/* <th className="p-2">Department</th> */}
                           <th className="p-2">Location</th>
                           <th className="p-2">Date</th>
                           <th className="p-2">Time</th>
@@ -471,7 +476,7 @@ export default function AdminPage() {
                               </div>
 
                             </td>
-                            <td> <div className="p-2">{req.department}</div></td>
+                            {/* <td> <div className="p-2">{req.department}</div></td> */}
                             <td> <div className="p-2">{req.location}</div></td>
                             <td className="p-2">{req.person || "Loading..."}</td>
                             <td className="p-2">{req.timestamp ? (
@@ -515,7 +520,7 @@ export default function AdminPage() {
                               {/* <div><strong>Type:</strong> {req.type}</div> */}
                               <div><strong>Items:</strong> {req.items.map(i => `${i.quantity} × ${i.name}`).join(", ")}</div>
                               <div><strong>By:</strong> {req.person || "Loading..."}</div>
-                              <div><strong>Department:</strong> {req.department}</div>
+                              {/* <div><strong>Department:</strong> {req.department}</div> */}
                               <div><strong>Location:</strong> {req.location}</div>
                               {req.timestamp ? (
                                 <>

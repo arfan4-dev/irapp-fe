@@ -164,7 +164,7 @@ export default function AnsweredOrdersPage() {
                     </Button>
                 </div>}
 
-                {user?.role === 'admin' && <div>  {paginatedOrders.length === 0 ? (
+                {<div>  {paginatedOrders.length === 0 ? (
                     <p className="text-center text-gray-500">No answered requests found.</p>
                 ) : viewMode === 'list' ? (
                     <div className="overflow-x-auto">
@@ -222,80 +222,7 @@ export default function AnsweredOrdersPage() {
                 )}</div>}
 
 
-                {user?.role === 'staff' && <div>
-                    {
-                        // ✅ Filter orders by department
-                        user?.department
-                            ? paginatedOrders.filter(order => order.department === user?.department).length === 0
-                                ? (
-                                    <p className="text-center text-gray-500">No answered requests found.</p>
-                                ) : viewMode === 'list' ? (
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-left mt-4">
-                                            <thead>
-                                                <tr className="bg-gray-200 dark:bg-gray-700">
-                                                    <th className="p-2"> Items</th>
-                                                    <th className="p-2">Requested By</th>
-                                                    <th className="p-2">Department</th>
-                                                    <th className="p-2">Date</th>
-                                                    <th className="p-2">Time</th>
-                                                    <th className="p-2">Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {paginatedOrders
-                                                    .filter(order => order.department === user?.department)
-                                                    .map((order) => (
-                                                        <tr key={order._id} className="border-b align-top">
-                                                            <td className="p-2">
-                                                                {/* <div className="font-semibold italic">{order.type}</div> */}
-                                                                <div className="text-sm italic">
-                                                                    {order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}
-                                                                </div>
-                                                            </td>
-                                                            <td className="p-2">{userIdToUsername[order.userId] || "Loading..."}</td>
-                                                            <td className="p-2">{order.department}</td>
-                                                            <td className="p-2">
-                                                                {order.timestamp ? new Date(order.timestamp).toISOString().split("T")[0] : "No date"}
-                                                            </td>
-                                                            <td className="p-2">
-                                                                {order.timestamp ? new Date(order.timestamp).toTimeString().split(" ")[0] : "No time"}
-                                                            </td>
-                                                            <td className="p-2">{order.status}</td>
-                                                        </tr>
-                                                    ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                        {paginatedOrders
-                                            .filter(order => order.department === user.department)
-                                            .map((order) => (
-                                                <Card key={order._id}>
-                                                    <CardContent className="px-4 space-y-2">
-                                                        {/* <div><strong>Type:</strong> {order.type}</div> */}
-                                                        <div><strong>Items:</strong> {order.items.map(item => `${item.quantity} × ${item.name}`).join(', ')}</div>
-                                                        <div><strong>By:</strong> {userIdToUsername[order.userId] || "Loading..."}</div>
-                                                        {order.timestamp && (
-                                                            <>
-                                                                <div><strong>Date:</strong> {new Date(order.timestamp).toISOString().split("T")[0]}</div>
-                                                                <div><strong>Time:</strong> {new Date(order.timestamp).toTimeString().split(" ")[0]}</div>
-                                                            </>
-                                                        )}
-                                                        <div><strong>Department:</strong> {order.department}</div>
-                                                        <div><strong>Status:</strong> {order.status}</div>
-                                                    </CardContent>
-                                                </Card>
-                                            ))}
-                                    </div>
-                                )
-                            : (
-                                <p className="text-center text-gray-500">No department assigned to this user.</p>
-                            )
-                    }
-                </div>
-                }
+               
             </div>
 
             {totalPages > 1 && (

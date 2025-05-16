@@ -73,7 +73,7 @@ const [deleteCategoryLoader, setDeleteCategoryLoader] = useState(false)
                                         size="lg"
                                         type="submit"
                                         onClick={() => setShowCategoryModal(true)}
-                                        className="mt-2 text-[12px] md:text-[16px] cursor-pointer hover:text-black border border-black transition-all duration-300 hover:bg-transparent"
+                                        className="mt-2 text-[12px] md:text-[16px] cursor-pointer hover:text-black border border-black transition-all duration-300 hover:bg-transparent dark:hover:text-white dark:hover:border-white"
                                     >
                                         Add
                                     </Button>
@@ -81,7 +81,7 @@ const [deleteCategoryLoader, setDeleteCategoryLoader] = useState(false)
                                         size="lg"
                                         type="button"
                                         onClick={() => setCategorySortOrder((prev: any) => (prev === 'asc' ? 'desc' : 'asc'))}
-                                        className="mt-2 text-[12px] md:text-[16px] cursor-pointer hover:text-black border border-black transition-all duration-300 hover:bg-transparent sm:mr-[10px] lg:mr-[22px]"
+                                        className="mt-2 text-[12px] md:text-[16px] cursor-pointer hover:text-black border border-black transition-all duration-300 hover:bg-transparent sm:mr-[10px] lg:mr-[22px] dark:hover:text-white dark:hover:border-white"
                                     >
                                         Sort {categorySortOrder === 'asc' ? 'Descending' : 'Ascending'}
                                     </Button>
@@ -296,7 +296,7 @@ const [deleteCategoryLoader, setDeleteCategoryLoader] = useState(false)
                                                         <div className='flex justify-end gap-2 mt-2'>
                                                             <Button
                                                                 size="sm"
-                                                                className={`${!cat.enabled ? " opacity-40 blur-[1px] pointer-events-none select-none" : "text-white hover:text-black border border-black transition-all duration-300 hover:bg-transparent cursor-pointer dark:text-black"}`}
+                                                                className={`${!cat.enabled ? " opacity-40 blur-[1px] pointer-events-none select-none" : "text-white hover:text-black border border-black transition-all duration-300 hover:bg-transparent cursor-pointer dark:text-black dark:hover:text-white dark:hover:border-white"}`}
                                                                
                                                                 onClick={() => {
                                                                     setActiveCategoryForAddItem((prev) =>

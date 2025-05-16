@@ -171,7 +171,7 @@ export default function ManageUsers() {
             <div className="max-w-4xl mx-auto p-4 space-y-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-semibold mb-6">Manage Users</h2>
-                    <Button className="cursor-pointer hover:text-black border border-black transition-all duration-300 hover:bg-transparent" onClick={() => setAddUserModal(true)}>Add User</Button>
+                    <Button className="cursor-pointer hover:text-black border border-black transition-all duration-300 hover:bg-transparent dark:hover:text-white dark:hover:border-white" onClick={() => setAddUserModal(true)}>Add User</Button>
                 </div>
  
                 <div className="flex flex-wrap gap-4 mb-4">
@@ -284,7 +284,7 @@ export default function ManageUsers() {
                                                 size="sm"
                                                 onClick={() => handleSave(user._id)}
 
-                                                className={`cursor-pointer mr-2 mt-2 text-white dark:text-zinc-900 hover:text-black border border-black transition-all duration-300 hover:bg-transparent`}
+                                                className={`cursor-pointer mr-2 mt-2 text-white dark:text-zinc-900 hover:text-black border border-black transition-all duration-300 hover:bg-transparent dark:hover:text-white dark:hover:border-white `}
                                             >
                                                 {updatingUserId === user._id ? "Updating..." : "Save Changes"}
 

@@ -12,7 +12,7 @@ const OtpModal = ({ otpModal, setOtpModal }:any) => {
                 toast.success("OTP copied to clipboard");
             } catch (err) {
                 console.error("Auto-copy failed", err);
-                toast.error("Failed to copy OTP");
+                toast.error("You have to copy OTP Manually.");
             }
         }
     }, [otpModal.open, otpModal.otp]);

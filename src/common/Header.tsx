@@ -203,6 +203,8 @@ const Header: React.FC<HeaderProps> = ({
                     // src={'/logo.png'}
                     src={user?.image}
                     alt={user?.name || "User"}
+                              className="w-full h-full object-cover"
+
                   />
                   : <AvatarFallback>{getInitials(user?.username || "U")}</AvatarFallback>}
               </Avatar>

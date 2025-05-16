@@ -32,7 +32,7 @@ const OtpModal = ({ otpModal, setOtpModal }:any) => {
                       {otpModal.otp}
                   </div>
                   <p className="text-muted-foreground text-sm">
-                      This OTP is valid for a short time. Please share it securely.
+                      This OTP is valid for 15 mints. Please share it securely.
                   </p>
                   {/* <Button
                       variant="outline"
